@@ -1,14 +1,13 @@
-FROM nvidia/cuda:10.1-devel-ubuntu18.04
+FROM nvidia/cuda:10.2-devel-ubuntu18.04
 
 # ADD clean-layer.sh  /tmp/clean-layer.sh
 # TensorFlow version is tightly coupled to CUDA and cuDNN so it should be selected carefully
 ENV TENSORFLOW_VERSION=2.3.0
-ENV PYTORCH_VERSION=1.6.0
-ENV TORCHVISION_VERSION=0.7.0
-ENV CUDNN_VERSION=7.6.5.32-1+cuda10.1
-ENV NCCL_VERSION=2.7.8-1+cuda10.1
-ENV MXNET_VERSION=1.6.0
-
+ENV PYTORCH_VERSION=1.5.1
+ENV TORCHVISION_VERSION=0.6.1
+ENV CUDNN_VERSION=7.6.5.32-1+cuda10.2
+ENV NCCL_VERSION=2.7.8-1+cuda10.2
+ENV MXNET_VERSION=1.5.1
 # Python 3.7 is supported by Ubuntu Bionic out of the box
 ARG python=3.7
 ENV PYTHON_VERSION=${python}
@@ -19,7 +18,7 @@ RUN sed -i s@/archive.ubuntu.com/@/mirrors.aliyun.com/@g /etc/apt/sources.list
 RUN apt-get update && apt-get install -y --allow-downgrades --allow-change-held-packages --no-install-recommends \
         build-essential \
         cmake \
-        g++-4.8 \
+        g++-7 \
         git \
         curl \
         vim \
@@ -67,10 +66,9 @@ RUN pip install tensorflow==${TENSORFLOW_VERSION} \
                 h5py
 
 RUN PYTAGS=$(python -c "from packaging import tags; tag = list(tags.sys_tags())[0]; print(f'{tag.interpreter}-{tag.abi}')") && \
-    pip install https://download.pytorch.org/whl/cu101/torch-${PYTORCH_VERSION}%2Bcu101-${PYTAGS}-linux_x86_64.whl \
-        https://download.pytorch.org/whl/cu101/torchvision-${TORCHVISION_VERSION}%2Bcu101-${PYTAGS}-linux_x86_64.whl
+    pip install https://download.pytorch.org/whl/cu102/torch-${PYTORCH_VERSION}%2Bcu101-${PYTAGS}-linux_x86_64.whl \
+        https://download.pytorch.org/whl/cu102/torchvision-${TORCHVISION_VERSION}%2Bcu101-${PYTAGS}-linux_x86_64.whl
 RUN pip install mxnet-cu101==${MXNET_VERSION}
-
 
 # Install Open MPI
 RUN mkdir /tmp/openmpi && \
@@ -88,20 +86,28 @@ RUN mkdir /tmp/openmpi && \
 # Install MMCV
 RUN pip install mmcv-full==latest+torch1.6.0+cu101 -f https://openmmlab.oss-accelerate.aliyuncs.com/mmcv/dist/index.html
 
+
 # Install MMDetection
 RUN conda clean --all
-RUN git clone https://github.com/open-mmlab/mmdetection.git /mmdetection
-WORKDIR /mmdetection
+WORKDIR /openmmlab
+RUN git clone https://github.com/open-mmlab/mmdetection.git mmdetection
+WORKDIR /openmmlab/mmdetection
 ENV FORCE_CUDA="1"
 RUN pip install -r requirements/build.txt
 RUN pip install --no-cache-dir -e .
-# RUN /tmp/clean-layer.sh
+
+# Install mmsegmentation
+RUN WORKDIR /openmmlab
+RUN git clone https://github.com/open-mmlab/mmsegmenation.git mmsegmentation
+WORKDIR /openmmlab/mmsegmentation
+RUN pip install -r requirements/build.txt
+RUN pip install --no-cache-dir -e .
+WORKDIR /openmmlab
 
 # Install python packages
 RUN pip install numpy && \
     pip install Pillow && \
     pip install scipy && \
-    pip install scikit-image && \
     pip install scikit-learn && \
     pip install networkx && \
     pip install tf-slim && \
@@ -115,20 +121,17 @@ RUN pip install numpy && \
     pip install seaborn && \
     pip install matplotlib && \
     pip install xgboost && \
-    pip install lightgbm && \
-    pip install dm-sonnet==1.23
+    pip install lightgbm
     #/tmp/clean-layer.sh
 
 # Install tensorboard jypyterlab
 RUN pip install jupyterlab && \
-    pip install tensorboard && \
-    pip install mlflow
-
+    pip install tensorboard
 
 # Install Horovod, temporarily using CUDA stubs
 RUN ldconfig /usr/local/cuda/targets/x86_64-linux/lib/stubs && \
     HOROVOD_GPU_OPERATIONS=NCCL HOROVOD_WITH_TENSORFLOW=1 HOROVOD_WITH_PYTORCH=1 HOROVOD_WITH_MXNET=1 \
-         pip install --no-cache-dir horovod && \
+         pip install --no-cache-dir horovod[all-frameworks] && \
     ldconfig
 
 # Install OpenSSH for MPI to communicate between containers
