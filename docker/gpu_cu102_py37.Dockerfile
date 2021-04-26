@@ -1,4 +1,4 @@
-FROM nvidia/cuda:10.2-devel-ubuntu18.04
+FROM nvidia/cuda:10.2-devel-ubuntu16.04
 
 # ADD clean-layer.sh  /tmp/clean-layer.sh
 # TensorFlow version is tightly coupled to CUDA and cuDNN so it should be selected carefully
@@ -66,9 +66,12 @@ RUN pip install tensorflow==${TENSORFLOW_VERSION} \
                 h5py
 
 RUN PYTAGS=$(python -c "from packaging import tags; tag = list(tags.sys_tags())[0]; print(f'{tag.interpreter}-{tag.abi}')") && \
-    pip install https://download.pytorch.org/whl/cu102/torch-${PYTORCH_VERSION}%2Bcu101-${PYTAGS}-linux_x86_64.whl \
-        https://download.pytorch.org/whl/cu102/torchvision-${TORCHVISION_VERSION}%2Bcu101-${PYTAGS}-linux_x86_64.whl
+    pip install https://download.pytorch.org/whl/cu102/torch-${PYTORCH_VERSION}-${PYTAGS}-linux_x86_64.whl \
+        https://download.pytorch.org/whl/cu102/torchvision-${TORCHVISION_VERSION}-${PYTAGS}-linux_x86_64.whl
 RUN pip install mxnet-cu101==${MXNET_VERSION}
+
+# https://download.pytorch.org/whl/cu102/torch-1.5.1-cp37-cp37m-linux_x86_64.whl
+# https://download.pytorch.org/whl/cu102/torchvision-0.6.1-cp37-cp37m-linux_x86_64.whl
 
 # Install Open MPI
 RUN mkdir /tmp/openmpi && \
@@ -84,7 +87,7 @@ RUN mkdir /tmp/openmpi && \
     #/tmp/clean-layer.sh
 
 # Install MMCV
-RUN pip install mmcv-full==latest+torch1.6.0+cu101 -f https://openmmlab.oss-accelerate.aliyuncs.com/mmcv/dist/index.html
+RUN pip install mmcv-full==latest+torch1.5.1+cu102 -f https://openmmlab.oss-accelerate.aliyuncs.com/mmcv/dist/index.html
 
 
 # Install MMDetection
