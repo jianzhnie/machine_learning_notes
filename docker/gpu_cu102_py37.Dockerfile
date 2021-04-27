@@ -1,5 +1,4 @@
-FROM nvidia/cuda:10.2-devel-ubuntu16.04
-
+FROM nvidia/cuda:10.2-devel-ubuntu18.04
 # ADD clean-layer.sh  /tmp/clean-layer.sh
 # TensorFlow version is tightly coupled to CUDA and cuDNN so it should be selected carefully
 ENV TENSORFLOW_VERSION=2.3.0
@@ -14,6 +13,7 @@ ENV PYTHON_VERSION=${python}
 
 # Set default shell to /bin/bash
 SHELL ["/bin/bash", "-cu"]
+RUN rm /etc/apt/sources.list.d/cuda.list
 RUN sed -i s@/archive.ubuntu.com/@/mirrors.aliyun.com/@g /etc/apt/sources.list
 RUN apt-get update && apt-get install -y --allow-downgrades --allow-change-held-packages --no-install-recommends \
         build-essential \
@@ -38,13 +38,9 @@ RUN apt-get update && apt-get install -y --allow-downgrades --allow-change-held-
         #/tmp/clean-layer.sh 
 
 # for mmdetection
-RUN apt-get update && apt-get install -y ffmpeg libsm6 libxext6 ninja-build libglib2.0-0 libxrender-dev  \
-    nano \
-    htop \
-    screen \
-    nodejs \
+RUN apt-get update && apt-get install -y ffmpeg libsm6 libxext6 git ninja-build libglib2.0-0 libsm6 libxrender-dev libxext6 \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* 
+    && rm -rf /var/lib/apt/lists/*
     #/tmp/clean-layer.sh 
 
 # Install python and pip
@@ -68,7 +64,6 @@ RUN pip install tensorflow==${TENSORFLOW_VERSION} \
 RUN PYTAGS=$(python -c "from packaging import tags; tag = list(tags.sys_tags())[0]; print(f'{tag.interpreter}-{tag.abi}')") && \
     pip install https://download.pytorch.org/whl/cu102/torch-${PYTORCH_VERSION}-${PYTAGS}-linux_x86_64.whl \
         https://download.pytorch.org/whl/cu102/torchvision-${TORCHVISION_VERSION}-${PYTAGS}-linux_x86_64.whl
-RUN pip install mxnet-cu101==${MXNET_VERSION}
 
 # https://download.pytorch.org/whl/cu102/torch-1.5.1-cp37-cp37m-linux_x86_64.whl
 # https://download.pytorch.org/whl/cu102/torchvision-0.6.1-cp37-cp37m-linux_x86_64.whl
@@ -87,25 +82,25 @@ RUN mkdir /tmp/openmpi && \
     #/tmp/clean-layer.sh
 
 # Install MMCV
-RUN pip install mmcv-full==latest+torch1.5.1+cu102 -f https://openmmlab.oss-accelerate.aliyuncs.com/mmcv/dist/index.html
-
+RUN pip install mmcv-full -f https://openmmlab.oss-accelerate.aliyuncs.com/mmcv/dist/index.html
 
 # Install MMDetection
-RUN conda clean --all
-WORKDIR /openmmlab
-RUN git clone https://github.com/open-mmlab/mmdetection.git mmdetection
+RUN git clone --depth 1 https://github.com/open-mmlab/mmdetection.git /openmmlab/mmdetection
 WORKDIR /openmmlab/mmdetection
 ENV FORCE_CUDA="1"
 RUN pip install -r requirements/build.txt
 RUN pip install --no-cache-dir -e .
 
 # Install mmsegmentation
-RUN WORKDIR /openmmlab
-RUN git clone https://github.com/open-mmlab/mmsegmenation.git mmsegmentation
-WORKDIR /openmmlab/mmsegmentation
-RUN pip install -r requirements/build.txt
-RUN pip install --no-cache-dir -e .
-WORKDIR /openmmlab
+# RUN git clone --depth 1 https://github.com/open-mmlab/mmsegmentation.git /openmmlab/mmsegmentation
+# WORKDIR /openmmlab/mmsegmentation
+# ENV FORCE_CUDA="1"
+# RUN pip install -r requirements/build.txt
+# RUN pip install --no-cache-dir -e .
+# RUN pip install git+https://github.com/open-mmlab/mmsegmentation.git # install the master branch
+# WORKDIR /openmmlab
+RUN pip install mmsegmentation # install the latest release
+
 
 # Install python packages
 RUN pip install numpy && \
