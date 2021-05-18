@@ -2,7 +2,6 @@
 
 _Projects that have a higher project-quality score compared to the last update. There might be a variety of reasons, such as increased downloads or code activity._
 
-<<<<<<< HEAD
 - <b><a href="https://github.com/plotly/dash">dash</a></b> (🥇35 ·  ⭐ 14K · 📈) - Analytical Web Apps for Python, R, Julia, and Jupyter. No JavaScript.. <code><a href="http://bit.ly/34MBwT8">MIT</a></code>
 - <b><a href="https://github.com/lmcinnes/umap">UMAP</a></b> (🥇31 ·  ⭐ 4.7K · 📈) - Uniform Manifold Approximation and Projection. <code><a href="http://bit.ly/3aKzpTv">BSD-3</a></code>
 - <b><a href="https://github.com/Zulko/moviepy">MoviePy</a></b> (🥈30 ·  ⭐ 7.5K · 📈) - Video editing with Python. <code><a href="http://bit.ly/34MBwT8">MIT</a></code>
@@ -13,24 +12,11 @@ _Projects that have a higher project-quality score compared to the last update. 
 - <b><a href="https://github.com/qubvel/efficientnet">efficientnet</a></b> (🥉25 ·  ⭐ 1.8K · 💤) - Implementation of EfficientNet model. Keras and.. <code><a href="http://bit.ly/3nYMfla">Apache-2</a></code> <code><img src="https://git.io/JLy1A" style="display:inline;" width="13" height="13"></code>
 - <b><a href="https://github.com/PaddlePaddle/PaddleDetection">PaddleDetection</a></b> (🥉20 ·  ⭐ 2.5K · 📈) - Object detection and instance segmentation toolkit.. <code><a href="http://bit.ly/3nYMfla">Apache-2</a></code> <code><img src="https://git.io/JLy1M" style="display:inline;" width="13" height="13"></code>
 - <b><a href="https://github.com/Tencent/MedicalNet">MedicalNet</a></b> (🥉13 ·  ⭐ 1.1K · 💤) - Many studies have shown that the performance on deep learning is.. <code><a href="http://bit.ly/34MBwT8">MIT</a></code>
-=======
-- <b><a href="https://github.com/google/jax">jax</a></b> (🥈34 ·  ⭐ 13K · 📈) - Composable transformations of Python+NumPy programs: differentiate,.. <code><a href="http://bit.ly/3nYMfla">Apache-2</a></code>
-- <b><a href="https://github.com/tensorflow/tensor2tensor">tensor2tensor</a></b> (🥇33 ·  ⭐ 11K · 📈) - Library of deep learning models and datasets designed.. <code><a href="http://bit.ly/3nYMfla">Apache-2</a></code> <code><img src="https://git.io/JLy1A" style="display:inline;" width="13" height="13"></code>
-- <b><a href="https://github.com/facebookresearch/fastText">fastText</a></b> (🥇31 ·  ⭐ 23K · 💤) - Library for fast text representation and classification. <code><a href="http://bit.ly/34MBwT8">MIT</a></code>
-- <b><a href="https://github.com/mozilla/DeepSpeech">DeepSpeech</a></b> (🥇31 ·  ⭐ 17K · 📈) - DeepSpeech is an open source embedded (offline, on-.. <code><a href="http://bit.ly/3postzC">MPL-2.0</a></code> <code><img src="https://git.io/JLy1A" style="display:inline;" width="13" height="13"></code>
-- <b><a href="https://github.com/flairNLP/flair">flair</a></b> (🥇31 ·  ⭐ 10K · 📈) - A very simple framework for state-of-the-art Natural Language.. <code><a href="http://bit.ly/34MBwT8">MIT</a></code> <code><img src="https://git.io/JLy1Q" style="display:inline;" width="13" height="13"></code>
-- <b><a href="https://github.com/google/dopamine">Dopamine</a></b> (🥇30 ·  ⭐ 9.4K · 📈) - Dopamine is a research framework for fast prototyping of.. <code><a href="http://bit.ly/3nYMfla">Apache-2</a></code> <code><img src="https://git.io/JLy1A" style="display:inline;" width="13" height="13"></code>
-- <b><a href="https://github.com/life4/textdistance">TextDistance</a></b> (🥉25 ·  ⭐ 2K · 📈) - Compute distance between sequences. 30+ algorithms, pure python.. <code><a href="http://bit.ly/34MBwT8">MIT</a></code>
-- <b><a href="https://github.com/tensortrade-org/tensortrade">TensorTrade</a></b> (🥈24 ·  ⭐ 3.2K · 📈) - An open source reinforcement learning framework for.. <code><a href="http://bit.ly/3nYMfla">Apache-2</a></code>
-- <b><a href="https://github.com/NifTK/NiftyNet">NiftyNet</a></b> (🥉22 ·  ⭐ 1.3K · 💀) - [unmaintained] An open-source convolutional neural.. <code><a href="http://bit.ly/3nYMfla">Apache-2</a></code> <code><img src="https://git.io/JLy1A" style="display:inline;" width="13" height="13"></code>
-- <b><a href="https://github.com/Trusted-AI/AIX360">Explainability 360</a></b> (🥈22 ·  ⭐ 830 · 📈) - Interpretability and explainability of data and.. <code><a href="http://bit.ly/3nYMfla">Apache-2</a></code>
->>>>>>> ml/main
 
 ## 📉 Trending Down
 
 _Projects that have a lower project-quality score compared to the last update. There might be a variety of reasons such as decreased downloads or code activity._
 
-<<<<<<< HEAD
 - <b><a href="https://github.com/apache/arrow">Arrow</a></b> (🥈30 ·  ⭐ 7.8K · 📉) - Apache Arrow is a cross-language development platform for in-.. <code><a href="http://bit.ly/3nYMfla">Apache-2</a></code>
 - <b><a href="https://github.com/keras-team/keras">Keras</a></b> (🥈27 ·  ⭐ 51K · 📉) - Deep Learning for humans. <code>❗Unlicensed</code> <code><img src="https://git.io/JLy1A" style="display:inline;" width="13" height="13"></code>
 - <b><a href="https://github.com/pyqtgraph/pyqtgraph">PyQtGraph</a></b> (🥉23 ·  ⭐ 2.4K · 📉) - Fast data visualization and GUI tools for scientific /.. <code>❗Unlicensed</code>
@@ -41,23 +27,4 @@ _Projects that have a lower project-quality score compared to the last update. T
 - <b><a href="{}">Tensorflow</a></b> (🥉14 ·  ⭐ 1.9K · 📉) - TensorFlow is an open source machine learning.. <code>❗Unlicensed</code> <code><img src="https://git.io/JLy1A" style="display:inline;" width="13" height="13"></code>
 - <b><a href="https://foss.heptapod.net/openpyxl/openpyxl">openpyxl</a></b> (🥉14 ·  ⭐ 19 · 📉) - A Python library to read/write Excel 2010 xlsx/xlsm files. <code><a href="http://bit.ly/34MBwT8">MIT</a></code>
 - <b><a href="{}">DeepSpeech</a></b> (🥉4 · 📉) -  <code>❗Unlicensed</code> <code><img src="https://git.io/JLy1A" style="display:inline;" width="13" height="13"></code>
-=======
-- <b><a href="https://github.com/apple/coremltools">Core ML Tools</a></b> (🥈24 ·  ⭐ 2.2K · 📉) - Core ML tools contain supporting tools for Core ML model.. <code><a href="http://bit.ly/3aKzpTv">BSD-3</a></code>
-- <b><a href="https://github.com/annoviko/pyclustering">pyclustering</a></b> (🥈24 ·  ⭐ 830 · 📉) - pyclustring is a Python, C++ data mining library. <code><a href="http://bit.ly/3aKzpTv">BSD-3</a></code>
-- <b><a href="https://github.com/fastnlp/fastNLP">fastNLP</a></b> (🥉23 ·  ⭐ 2.1K · 📉) - fastNLP: A Modularized and Extensible NLP Framework. Currently.. <code><a href="http://bit.ly/3nYMfla">Apache-2</a></code>
-- <b><a href="https://github.com/tableau/TabPy">TabPy</a></b> (🥉23 ·  ⭐ 1.1K · 📉) - Execute Python code on the fly and display results in Tableau.. <code><a href="http://bit.ly/34MBwT8">MIT</a></code>
-- <b><a href="https://github.com/pytroll/satpy">Satpy</a></b> (🥉21 ·  ⭐ 700 · 📉) - Python package for earth-observing satellite data processing. <code><a href="http://bit.ly/2M0xdwT">❗️GPL-3.0</a></code>
-- <b><a href="https://github.com/instacart/lore">lore</a></b> (🥉20 ·  ⭐ 1.5K · 💤) - Lore makes machine learning approachable for Software Engineers and.. <code><a href="http://bit.ly/34MBwT8">MIT</a></code>
-- <b><a href="https://github.com/fairlearn/fairlearn">fairlearn</a></b> (🥉20 ·  ⭐ 790 · 📉) - A Python package to assess and improve fairness of machine.. <code><a href="http://bit.ly/34MBwT8">MIT</a></code> <code><img src="https://git.io/JLy1F" style="display:inline;" width="13" height="13"></code>
-- <b><a href="https://github.com/xhochy/fletcher">fletcher</a></b> (🥉19 ·  ⭐ 210 · 📉) - Pandas ExtensionDType/Array backed by Apache Arrow. <code><a href="http://bit.ly/34MBwT8">MIT</a></code> <code><img src="https://git.io/JLy1S" style="display:inline;" width="13" height="13"></code>
-- <b><a href="https://github.com/nok/sklearn-porter">sklearn-porter</a></b> (🥉16 ·  ⭐ 1K · 💀) - Transpile trained scikit-learn estimators to C, Java,.. <code><a href="http://bit.ly/34MBwT8">MIT</a></code> <code><img src="https://git.io/JLy1F" style="display:inline;" width="13" height="13"></code>
-- <b><a href="https://github.com/ScottfreeLLC/AlphaPy">AlphaPy</a></b> (🥉15 ·  ⭐ 590 · 📉) - Automated Machine Learning [AutoML] with Python, scikit-learn,.. <code><a href="http://bit.ly/3nYMfla">Apache-2</a></code>
-
-## ➕ Added Projects
-
-_Projects that were recently added to this best-of list._
-
-- <b><a href="https://github.com/KinWaiCheuk/nnAudio">nnAudio</a></b> (🥉20 ·  ⭐ 460 · ➕) - Audio processing by using pytorch 1D convolution network. <code><a href="http://bit.ly/34MBwT8">MIT</a></code>
-- <b><a href="https://github.com/ml-tooling/opyrator">opyrator</a></b> (🥉17 ·  ⭐ 2.1K · 🐣) - Turns your machine learning code into microservices with web API,.. <code><a href="http://bit.ly/34MBwT8">MIT</a></code>
->>>>>>> ml/main
 
