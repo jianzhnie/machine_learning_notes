@@ -126,17 +126,20 @@ RUN pip install numpy && \
 RUN pip install jupyterlab && \
     pip install tensorboard
 
-# Install Horovod, temporarily using CUDA stubs
-RUN ldconfig /usr/local/cuda/targets/x86_64-linux/lib/stubs && \
-    HOROVOD_GPU_OPERATIONS=NCCL HOROVOD_WITH_TENSORFLOW=1 HOROVOD_WITH_PYTORCH=1 HOROVOD_WITH_MXNET=1 \
-         pip install --no-cache-dir horovod[all-frameworks] && \
-    ldconfig
+RUN pip install mxnet-cu102
+RUN pip install autogluon
 
-# Install OpenSSH for MPI to communicate between containers
-RUN apt-get install -y --no-install-recommends openssh-client openssh-server && \
-    mkdir -p /var/run/sshd
+# # Install Horovod, temporarily using CUDA stubs
+# RUN ldconfig /usr/local/cuda/targets/x86_64-linux/lib/stubs && \
+#     HOROVOD_GPU_OPERATIONS=NCCL HOROVOD_WITH_TENSORFLOW=1 HOROVOD_WITH_PYTORCH=1 HOROVOD_WITH_MXNET=1 \
+#          pip install --no-cache-dir horovod[all-frameworks] && \
+#     ldconfig
+
+# # Install OpenSSH for MPI to communicate between containers
+# RUN apt-get install -y --no-install-recommends openssh-client openssh-server && \
+#     mkdir -p /var/run/sshd
 
 # Allow OpenSSH to talk to containers without asking for confirmation
-RUN cat /etc/ssh/ssh_config | grep -v StrictHostKeyChecking > /etc/ssh/ssh_config.new && \
-    echo "    StrictHostKeyChecking no" >> /etc/ssh/ssh_config.new && \
-    mv /etc/ssh/ssh_config.new /etc/ssh/ssh_config
+# RUN cat /etc/ssh/ssh_config | grep -v StrictHostKeyChecking > /etc/ssh/ssh_config.new && \
+#     echo "    StrictHostKeyChecking no" >> /etc/ssh/ssh_config.new && \
+#     mv /etc/ssh/ssh_config.new /etc/ssh/ssh_config
