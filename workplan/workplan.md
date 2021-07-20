@@ -1,22 +1,9 @@
-### 2021  年工作计划
-
-#### 1. AutoDL （第一周）
-
-| 计划                                         | 备注 |
-| -------------------------------------------- | ---- |
-| Autokeras 框架调研                           |      |
-| AutoGluon 框架调研                           |      |
-| AutoDL 框架设计和讨论                        |      |
-| MXNet 生态和稳定性问题、AutoGluon 社区活跃度 |      |
-
-
-
-#### 2. AutoDL （第二周）
-
-| 计划                   | 备注 |
-| ---------------------- | ---- |
-| Autokeras 框架深入调研 |      |
-| AutoGluon 框架深入调研 |      |
-|                        |      |
-|                        |      |
-
+## 2021工作
+### 2021年7月
+#### 7月19号
+1. 完成 autodl pytorch pipeline 
+2. pytorch pipeline 分布式训练
+3. transformer 论文调研和分享
+####  7月26号
+1. 将 Proxy dataset 封装为一个 Module 添加到 Pipeline
+2. 测试 autodl pipleine 的性能和稳定性
