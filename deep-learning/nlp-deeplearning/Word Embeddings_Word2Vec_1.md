@@ -2,9 +2,9 @@
 
 ![img](https://jalammar.github.io/images/word2vec/word2vec.png)
 
-词嵌入（embedding）是机器学习中最迷人的想法之一。 如果你曾经使用 Siri、Google Assistant、Alexa、Google翻译，使用智能手机键盘进行下一词的预测，那么你很有可能从这个已经成为自然语言处理模型核心的想法中受益。在过去的几十年中，词嵌入用于神经网络模型已有相当大的发展。尤其是最近，出现了像 BERT 和 GPT2 等尖端模型的语境化嵌入方法。
+词嵌入（embedding）是机器学习中最迷人的想法之一。 如果你曾经使用 Siri、Google Assistant、Alexa、Google翻译，或者使用智能手机键盘进行下一词的预测，那么你很有可能从这个已经成为自然语言处理模型核心的想法中受益。在过去的几十年中，词嵌入用于神经网络模型已有相当大的发展。尤其是最近，出现了像 BERT 和 GPT2 等尖端模型的语境化嵌入方法。
 
-Word2vec 是一种有效创建词嵌入的方法，它自2013年以来就一直存在。但除了作为词嵌入的方法之外，它的一些概念已经被证明可以在商业领域，非自然语言任务中有效地用于创建推荐系统和理解分析序列数据。像Airbnb、阿里巴巴、Spotify 这样的公司都从NLP领域中提取灵感并将相关技术应用于产品中，从而为新型推荐引擎提供支持。
+Word2vec 是一种有效创建词嵌入的方法，它自2013年以来就一直存在。但除了作为词嵌入的方法之外，它的一些概念已经被证明可以在商业领域，非自然语言处理任务中有效地用于创建推荐系统和理解分析序列数据。像Airbnb、阿里巴巴、Spotify 这样的公司都从NLP领域中获取灵感并将相关技术应用于产品中，从而为新型推荐引擎提供支持。
 
 在这篇文章中，我们将讨论词嵌入的概念，以及使用word2vec生成词嵌入的机制。让我们从一个例子开始，熟悉使用向量来表示事物。你是否知道你的个性可以仅被五个数字的列表（向量）表示？
 
@@ -36,7 +36,7 @@ Word2vec 是一种有效创建词嵌入的方法，它自2013年以来就一直�
 
 ![img](https://jalammar.github.io/images/word2vec/personality-two-persons.png)
 
-处理向量时，计算相似度得分的常用方法是余弦相似度：[cosine_similarity](https://en.wikipedia.org/wiki/Cosine_similarity):
+在处理向量时，计算相似度得分的常用方法是余弦相似度：[cosine_similarity](https://en.wikipedia.org/wiki/Cosine_similarity):
 
 ![img](https://jalammar.github.io/images/word2vec/cosine-similarity.png)
 
@@ -54,7 +54,7 @@ Word2vec 是一种有效创建词嵌入的方法，它自2013年以来就一直�
 
 在本节的最后，我希望提出两个中心思想：
 
-1.我们可以将人和事物表示为数值向量（这对机器来说很棒！）。
+1.我们可以将人和事物表示为数值向量（这对机器来说非常有用）。
 
 2.我们可以很容易地计算出相似的向量之间的相互关系。
 
@@ -82,7 +82,7 @@ Word2vec 是一种有效创建词嵌入的方法，它自2013年以来就一直�
 
 ![img](https://jalammar.github.io/images/word2vec/king-man-woman-embedding.png)
 
-看看“Man”和“Woman”彼此之间比它们任一单词与“King”相比更相似的, 这暗示你一些事情。这些向量图示很好的展现了这些单词的信息/含义/关联。
+看到“Man”和“Woman”彼此之间比它们任一单词与“King”相比更相似, 这暗示你一些事情。这些向量图示很好的展现了这些单词的信息/含义/关联。
 
 这是另一个示例列表（通过垂直扫描列来查找具有相似颜色的列）：
 
@@ -179,15 +179,13 @@ Word2vec 是一种有效创建词嵌入的方法，它自2013年以来就一直�
 
 ![img](https://jalammar.github.io/images/word2vec/lm-sliding-window-3.png)
 
-这时第二个样本也生成了。
-
-不用多久，我们就能得到一个较大的数据集，从数据集中我们能看到在不同的单词组后面会出现的单词:
+这时第二个样本也生成了。不用多久，我们就能得到一个较大的数据集，从数据集中我们能看到在不同的单词组后面会出现的单词:
 
 ![img](https://jalammar.github.io/images/word2vec/lm-sliding-window-4.png)
 
-在实际应用中，模型往往在我们滑动窗口时就被训练的。但是我觉得将生成数据集和训练模型分为两个阶段会显得更清晰易懂一些。除了使用神经网络建模之外，大家还常用一项名为N-gams的技术进行模型训练。 (see: Chapter 3 of [Speech and Language Processing](http://web.stanford.edu/~jurafsky/slp3/)).
+在实际应用中，模型是往往在我们滑动窗口时就被训练的。但是我觉得将生成数据集和训练模型分为两个阶段会显得更清晰易懂一些。除了使用神经网络建模之外，大家还常用一项名为N-gams的技术进行模型训练。 (see: Chapter 3 of [Speech and Language Processing](http://web.stanford.edu/~jurafsky/slp3/)).
 
-如果想了解现实产品从使用N-gams模型到使用神经模型的转变，可以看一下Swiftkey (我最喜欢的安卓输入法)在2015年的发表一篇博客 [here’s a 2015 blog post from Swiftkey](https://blog.swiftkey.com/neural-networks-a-meaningful-leap-for-mobile-typing/), 文中介绍了他们的自然语言模型及该模型与早期N-gams模型的对比。我很喜这个例子，因为这个它能告诉你如何在营销宣讲中把Embedding的算法属性解释清楚。
+如果想了解现实产品从使用N-gams模型到使用神经网络模型的转变，可以看一下Swiftkey (我最喜欢的安卓输入法)在2015年的发表一篇博客 [here’s a 2015 blog post from Swiftkey](https://blog.swiftkey.com/neural-networks-a-meaningful-leap-for-mobile-typing/), 文中介绍了他们的自然语言模型及该模型与早期N-gams模型的对比。我很喜这个例子，因为这个它能告诉你如何在营销宣讲中把Embedding的算法属性解释清楚。
 
 ###  顾及两头
 
@@ -255,7 +253,9 @@ Word2vec 是一种有效创建词嵌入的方法，它自2013年以来就一直�
 
 该模型会执行三个步骤并输入预测向量(对应于单词表中每个单词的概率)。因为模型未经训练，该阶段的预测肯定是错误的。但是没关系，我们知道应该猜出的是哪个单词——这个词就是我训练集数据中的输出标签:
 
-![img](https://jalammar.github.io/images/word2vec/skipgram-language-model-training-3.png)目标单词概率为1，其他所有单词概率为0，这样数值组成的向量就是“目标向量”。
+![img](https://jalammar.github.io/images/word2vec/skipgram-language-model-training-3.png)
+
+目标单词概率为1，其他所有单词概率为0，这样数值组成的向量就是“目标向量”。
 
 模型的偏差有多少？将两个向量相减，就能得到偏差向量:
 
@@ -289,7 +289,9 @@ Word2vec 是一种有效创建词嵌入的方法，它自2013年以来就一直�
 
 将其切换到一个提取输入与输出单词的模型，并输出一个表明它们是否是邻居的分数（0表示“不是邻居”，1表示“邻居”）
 
-![img](https://jalammar.github.io/images/word2vec/are-the-words-neighbors.png)这个简单的变换将我们需要的模型从神经网络改为逻辑回归模型——因此它变得更简单，计算速度更快。
+![img](https://jalammar.github.io/images/word2vec/are-the-words-neighbors.png)
+
+这个简单的变换将我们需要的模型从神经网络改为逻辑回归模型——因此它变得更简单，计算速度更快。
 
 这个开关要求我们切换数据集的结构——标签值现在是一个值为0或1的新列。它们将全部为1，因为我们添加的所有单词都是邻居。
 
