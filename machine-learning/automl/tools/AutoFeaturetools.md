@@ -401,15 +401,3 @@ Trane库可用来处理存储在关系数据库中的时间序列数据，和表
 这个过程存储在JSON文件中，数据科学家能改写这个文件来描述列和数据类型。该框架通过处理这个文件来生成可能的预测问题，这些问题能用于修改数据集。
 
 这个项目对feature-tools库很有帮助，可用来以半自动方式生成额外特征。
-
-### 3.6. FeatureHub
-
-[HDI-Project/FeatureHub](https://link.zhihu.com/?target=https%3A//github.com/HDI-Project/FeatureHub)
-32星，5 Forks ，249 Commits
-最新版本0.3.0，2018.5.9更新
-
-这个项目也是麻省理工学院HDI实验室的，它建立在JupyterHub（支持多用户的 Jupyter Notebook服务器）上，让数据科学家在特征工程开发过程中能协作。
-
-这个系统能自动对生成特征评分，以确定当前模型的总体价值。这种以众包方式进行特征工程和机器学习的方法，在测试时也取得了很好效果。
-
-![img](https://pic1.zhimg.com/80/v2-e866ecb4297cc04477732b7284f40e88_1440w.jpg)

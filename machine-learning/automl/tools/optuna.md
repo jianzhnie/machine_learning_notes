@@ -1,24 +1,83 @@
 # Optuna: 一个超参数优化框架
 
-*Optuna* 是一个特别为机器学习设计的自动超参数优化软件框架。它具有命令式的，*define-by-run* 风格的 API。由于这种 API 的存在，用 Optuna 编写的代码模块化程度很高，Optuna 的用户因此也可以动态地构造超参数的搜索空间。
+*Optuna* 是一个特别为机器学习设计的自动超参数优化软件框架。它具有命令式的，*define-by-run* 风格的 API。由于这种 API 的存在，用 Optuna 编写的代码模块化程度很高，Optuna 的用户因此也可以动态地构造超参数的搜索空间。Optuna的文档和代码，也是设计清晰，工程质量上乘，有不少特性上的闪光点。
 
 ## 主要特点
 
 Optuna 有如下现代化的功能：
 
 - [轻量级、多功能和跨平台架构](https://tigeraus.gitee.io/doc-optuna-chinese-build/tutorial/first.html)
-
 - [并行的分布式优化](https://tigeraus.gitee.io/doc-optuna-chinese-build/tutorial/distributed.html)
-
 - [对不理想实验 (trial) 的剪枝 (pruning)](https://tigeraus.gitee.io/doc-optuna-chinese-build/tutorial/pruning.html)
-
 - 超参数重要性
-
 - 集成新的 CMA-ES 采样
-
 - 集成 MLflow
 
-  
+
+
+![img](https://pic3.zhimg.com/80/v2-ca18c69cfdcd2688546b89bef87749ae_1440w.jpg)
+
+### 框架结合
+
+Optuna 的框架结合做的非常好，第一次看到下面的 sample 代码时简直令我震惊：
+
+
+
+![img](https://pic2.zhimg.com/80/v2-cc27d250e60522e9538154e7b2d24741_1440w.jpg)
+
+上面这串代码，如果不仔细看还以为就是在跑原生的 lightgbm，基本只改了一个 import，就成了一个自动搜参的 lightgbm！它背后会具体执行：
+
+
+
+![img](https://pic3.zhimg.com/80/v2-ca09d5d510d2b58204e8739ba3e9cf4a_1440w.jpg)
+
+也是一个经验固化的调优 pipeline，不过事实上可以推广到各种不同模型的调优思路总结，比如 NN 应该先调学习率，batch size，再调网络结构，然后再精细化调整一下学习率等（欢迎有经验的同学 comment）。
+
+### 高效搜参
+
+虽然很多研究中都提到了 Successive Halving，Hyperband，Multi-fidelity 优化等提高搜索效率的手段，但真正在产品框架中做了很好实现的，Optuna 是我发现的第一家。只需要加个参数，就能实现在训练过程中提前终止那些看起来表现不好的参数组合，节省大量的搜参时间：
+
+
+
+![img](https://pic2.zhimg.com/80/v2-68a999ee2089d9b73f3aab4a17bbc989_1440w.jpg)
+
+上面的搜参过程会在经过设定的 warm up 阶段后，针对每一组搜索的参数做定期的评估。比如训练 10 轮后，评估一下模型效果，如果发现比历史模型的表现中位值更差，就提前终止训练。
+
+如果是自定义的模型，只要能支持增量训练（比如 NN 按照 epoch 来训练，树模型按照 boost round 来训练），就可以在训练过程中实现相应的 pruning 机制：
+
+
+
+![img](https://pic2.zhimg.com/80/v2-cca4b32aa5a39072c3b4a62b69959831_1440w.jpg)
+
+在实际使用过程中，使用 pruning 机制对于我们的搜索速度有成倍的效率提升，非常好用。
+
+### 灵活的搜参空间定义
+
+Optuna 还有一个很不一样的功能点在于动态定义搜索空间。例如我们在构建 NN 模型时，想动态决定一共构建多少层 MLP，以及每一层的神经元数量，如果用 hyperopt 之类的框架就不太容易实现。而用 Optuna，则可以直接用 Python 的循环，逻辑判断语句来生成：
+
+
+
+![img](https://pic1.zhimg.com/80/v2-4d8d92e19c9210f4a5e61c851b4f185c_1440w.jpg)
+
+在这个基础上，我们甚至可以对整个 pipeline 的结构做灵活的搜索调整，比如看是否做数据的 categorical encoding，是否做 label transform，以及对应的用什么方法来转换等。
+
+### 其它特性
+
+Optuna 也支持分布式的优化执行，主要通过存储层（比如 MySQL db）来进行各个 trial 信息的记录和同步，实际执行中对于代码来说几乎没有什么“侵入性”。而对于资源管理，调度执行等方面的问题，都交给其它框架（例如 K8s，Ray）去解决，不失为一种相当简洁优雅的实现。当然缺点就是搜索上的调度，资源限制等就无法自行管理，比较简单的例子是如果你在一台 8 核机器上开 2 个使用 8 个 thread 训练的 lightgbm 的话，2 个任务都可能因为资源争抢而长时间无法完成。
+
+此外，Optuna 也开始引入了 dashboard 来展现优化过程的各类信息，便于用户来分析各个超参数对模型效果的影响等。
+
+
+
+![img](https://pic3.zhimg.com/80/v2-d54aaf8ebe5bd063b1caf039487a84f6_1440w.jpg)
+
+### 总结
+
+Optuna 作为新世代的 autoML 工具，非常适合轻量级的模型参数优化与分析场景。其灵活的搜索空间定义，也很方便用户在此基础上来构建垂直场景的整体 pipeline 优化框架。
+
+**一句话点评：如果只想要一个快速灵活的调参工具，就选 Optuna。**
+
+
 
 ### 超参数重要性
 
