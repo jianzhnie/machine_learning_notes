@@ -61,9 +61,10 @@ RUN pip install future typing packaging
 
 # install pytorch 
 RUN PYTAGS=$(python -c "from packaging import tags; tag = list(tags.sys_tags())[0]; print(f'{tag.interpreter}-{tag.abi}')") && \
-    pip install https://download.pytorch.org/whl/cu102/torch-${PYTORCH_VERSION}-${PYTAGS}-linux_x86_64.whl \
-        https://download.pytorch.org/whl/cu102/torchvision-${TORCHVISION_VERSION}-${PYTAGS}-linux_x86_64.whl
+    pip install https://download.pytorch.org/whl/cu102/torch-${PYTORCH_VERSION}-${PYTAGS}-linux_x86_64.whl 
+        # https://download.pytorch.org/whl/cu102/torchvision-${TORCHVISION_VERSION}-${PYTAGS}-linux_x86_64.whl
 
+RUN pip install torchvision
 # install mmcv, mmdetection, mmsegmentation
 RUN pip install openmim
 RUN mim install mmdet
