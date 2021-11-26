@@ -212,6 +212,10 @@ Delta P |    |   Delta P|  |         Delta P|  |
   +---------+       +----------+               +--------+
 ```
 
+![图片](https://mmbiz.qpic.cn/mmbiz_png/spRQ3DAOCpNtRpGBaR20EOSSL7PpibsDRTT9NM1ImV9Mqva6oNQdVcpmRGDPjicqhrNq9YGribFdsNDKUfTVYDQyA/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+
+
+
 参数服务器既可以用在数据并行上，也可以被用到模型并行训练上。比如可以将模型切分为多个部分，存储在不同的PS Server节点上，并提供方便的访问服务，这是参数服务器的本质。
 
 以参数 ![[公式]](https://www.zhihu.com/equation?tex=%5Ctheta) 为同步基础，我们可以采用 master-slave 的同步模式：将 node 分成两种角色：parameter server(ps) 负责维护一份最新的参数 ，worker 负责利用从 ps 读到的最新参数计算出梯度(forward 和 backprop)，并对 ps 发送梯度和参数更新请求。这被称为 parameter server 的模式，tensorflow 就是围绕这个思路设计的。
@@ -271,6 +275,10 @@ node 异构带来的阻塞也是同步更新的通病。
 对于落后于当前迭代的梯度(staled gradients)，上述实现采取的做法是直接丢掉。这造成了不同 worker racing 的情况，对计算资源和数据的利用效率不高。
 
 上述两个不稳定性来源要求模型采用更小的学习率(learning rate)。而小学习率加上上述的不稳定性会带来收敛速度的显著降低，同时训练发散(divergence)的风险也增大了，这两者抵消了异步训练带来的吞吐量的提高。实际使用中经常会看到 loss 有时候会突然变得很高(overshoot)。所以异步更新目前已经不是主流优化方向了。
+
+1. 很难评估Parameter Server和Worker的比例，一个PS的数据流是all to one，多个PS的数据流是all to all，都会存在网络瓶颈和计算资源瓶颈。举个例子，AlexNet的参数个数是6000万，假设每个参数都是32位浮点数（4字节），假设有10个Worker和1个PS，那么总共需要传输的数据量是6000万**4*(10+10)=4.4GB，其中2.2GB是所有Worker以all to one的方式传输模型梯度到一个PS，另外2.2GB，是PS广播模型梯度到所有Worker，单点就会成为瓶颈。如果有4个PS呢，那么总共需要传输的数据量是6000万*4*(10+10)*4=17.8GB，同样会存在网络瓶颈。这样的问题，随着Worker和PS的增加会越发明显。
+
+2. 代码复杂度提高很多，需要花更多的时间在代码调试而非建模本身
 
 ### 3.3 Decentralized Network
 
@@ -500,6 +508,24 @@ Allgather 数据传输（迭代 4）
 工作原理也可以借助[Horovod的发布帖子](https://eng.uber.com/manifold-open-source/) 来看看。
 
 ![Image for post](https://img-blog.csdnimg.cn/img_convert/6a3d3168f9dcacd8df8d2b5a50d6ff5b.png)
+
+Horovod跨多Worker的分布式训练的原理是数据并行化，简单来讲，就是把每个batch的数据分割成多份，每个Worker上任务只消费一份数据，计算梯度更新。所有Worker上计算出的梯度会同步到所有Worker上，计算平均之后再更新本地模型副本。
+
+![图片](https://mmbiz.qpic.cn/mmbiz_png/spRQ3DAOCpNtRpGBaR20EOSSL7PpibsDROl3VazzSCRdWkribO1t7pRX5lLG5lkhfEFHpqjtAW86wia10CI7lPbicA/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+
+
+
+下面是Horovod分布式训练的步骤：
+
+1. 每个Worker节点都拥有一份模型权重和训练数据的副本
+
+2. 当Worker收到start的信号之后，每个worker读取当前batch对应的训练样本，计算梯度更新
+
+3. 所有Worker利用ring all-reduce算法同步各自的梯度更新到其它Worker，然后在本地计算梯度平均
+
+4. 所有Worker用最新的梯度更新本地的模型副本
+
+5. 执行下一个batch，重复2～5步骤，直到所有batch遍历完
 
 #### 5.2.5 百度思路
 
