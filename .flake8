@@ -1,0 +1,10 @@
+[flake8]
+ignore =
+max-line-length = 160
+show-source = False
+exclude =
+    .git
+    venv
+    build
+    config
+    history
