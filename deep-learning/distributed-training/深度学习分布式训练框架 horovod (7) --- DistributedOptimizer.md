@@ -139,7 +139,7 @@ if _LegacyOptimizer is not None:
             self._agg_helper = None
             if backward_passes_per_step > 1:
                 # 可以先做本地梯度累积，再夸进程合并
-                self._agg_helper = LocalGradientAggregationHelper( 
+                self._agg_helper = LocalGradientAggregationHelper(
                     backward_passes_per_step=backward_passes_per_step,
                     allreduce_func=self._allreduce_grads,
                     sparse_as_dense=sparse_as_dense,
@@ -172,13 +172,13 @@ DistributedOptimizer 重写Optimizer类compute_gradients()方法。
             In DistributedOptimizer, compute_gradients() is overriden to also
             allreduce the gradients before returning them.
             """
-            
+
             # _optimizer是原始配置的官方优化器，先调用其compute_gradients方法来计算所有训练参数的梯度
-            # 官方优化器的compute_gradients()方法返回一个元组(gradient，variable)的列表    
+            # 官方优化器的compute_gradients()方法返回一个元组(gradient，variable)的列表
             # gradients 被赋值为这个元组(gradient，variable)列表
             gradients = self._optimizer.compute_gradients(*args, **kwargs)
             grads, vars = zip(*gradients)
-            
+
             if self._agg_helper: # 是否本地先累积
                 avg_grads = self._agg_helper.compute_gradients(grads, vars)
             else:
@@ -347,7 +347,7 @@ compute_gradients方法具体如下：
         with tf.control_dependencies([aggregation_ops]):
             update_counter = self.counter.assign_add(tf.constant(1))
 
-        # 应用梯度    
+        # 应用梯度
         with tf.control_dependencies([update_counter]):
             grads = get_not_none_from_list(grads)
             assert len(grads) == len(self.locally_aggregated_grads)
@@ -599,7 +599,7 @@ def _allreduce(tensor, name=None, op=Sum, prescale_factor=1.0, postscale_factor=
                                      prescale_factor=prescale_factor,
                                      postscale_factor=postscale_factor,
                                      ignore_name_scope=ignore_name_scope)
-  
+
 def allgather(tensor, name=None, ignore_name_scope=False):
     """An op which concatenates the input tensor with the same input tensor on
     all other Horovod processes.
@@ -617,7 +617,7 @@ def allgather(tensor, name=None, ignore_name_scope=False):
     if name is None and not _executing_eagerly():
         name = 'HorovodAllgather_%s' % _normalize_name(tensor.name)
     return MPI_LIB.horovod_allgather(tensor, name=name,
-                                     ignore_name_scope=ignore_name_scope)  
+                                     ignore_name_scope=ignore_name_scope)
 ```
 
 ### 4.7 操作映射
@@ -777,7 +777,7 @@ for gpu in gpus:
 if gpus:
     tf.config.experimental.set_visible_devices(gpus[hvd.local_rank()], 'GPU')
 
-# 加载数据    
+# 加载数据
 (mnist_images, mnist_labels), _ = \
     tf.keras.datasets.mnist.load_data(path='mnist-%d.npz' % hvd.rank())
 
@@ -853,7 +853,7 @@ class _DistributedGradientTape(tf.GradientTape):
         else:
             super(self.__class__, self).__init__(persistent)
 
-        # 把TF官方tape保存起来    
+        # 把TF官方tape保存起来
         self._tape = tape
         # 配置allreduce函数
         self._allreduce_grads = _make_allreduce_grads_fn(
@@ -917,8 +917,8 @@ def _allreduce(tensor, name=None, op=Sum):
     """
     if name is None and not _executing_eagerly():
         name = 'HorovodAllreduce_%s' % _normalize_name(tensor.name)
-    # # 调用HorovodAllreduceOp    
-    return MPI_LIB.horovod_allreduce(tensor, name=name, reduce_op=op) 
+    # # 调用HorovodAllreduceOp
+    return MPI_LIB.horovod_allreduce(tensor, name=name, reduce_op=op)
 ```
 
 逻辑如下：
@@ -973,8 +973,8 @@ public:
     OP_REQUIRES_OK_ASYNC(context, ConvertStatus(common::CheckInitialized()),
                          done);
     ... // 省略一些变量验证，初始化代码
-          
-    // 将张量的Allreduce操作OP加入队列       
+
+    // 将张量的Allreduce操作OP加入队列
     auto enqueue_result = EnqueueTensorAllreduce(
         hvd_context, hvd_tensor, hvd_output, ready_event, node_name, device,
         [context, done](const common::Status& status) {

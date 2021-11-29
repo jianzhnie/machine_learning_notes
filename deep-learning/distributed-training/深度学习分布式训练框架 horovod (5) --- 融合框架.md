@@ -148,11 +148,11 @@ public:
   virtual bool Enabled(const ParameterManager& param_manager,
                        const std::vector<TensorTableEntry>& entries,
                        const Response& response) const = 0;
-protected:  
+protected:
   virtual void
   MemcpyInFusionBuffer(const std::vector<TensorTableEntry>& entries,
                        const void*& fused_input_data, void*& buffer_data,
-                       size_t& buffer_len);  
+                       size_t& buffer_len);
   ......
 };
 ```
@@ -194,7 +194,7 @@ protected:
 Status MPIAllreduce::Execute(std::vector<TensorTableEntry>& entries, const Response& response) {
   // Copy memory into the fusion buffer.
   ...
-  MemcpyInFusionBuffer(entries, fused_input_data, buffer_data, buffer_len);  
+  MemcpyInFusionBuffer(entries, fused_input_data, buffer_data, buffer_len);
   ...
 
   // Do allreduce.
@@ -286,7 +286,7 @@ Status OperationManager::ExecuteOperation(std::vector<TensorTableEntry>& entries
     return ExecuteAlltoall(entries, response);
   } else if (response.response_type() == Response::JOIN) {
     return ExecuteJoin(entries, response);
-  } 
+  }
   .....
 }
 ```
@@ -366,7 +366,7 @@ OperationManager* CreateOperationManager(HorovodGlobalState& state) {
   std::vector<std::shared_ptr<AlltoallOp>> alltoall_ops;
 
 #if HAVE_MPI && HAVE_GPU // 如果配置了MPI
-  if (mpi_context.IsEnabled()) { 
+  if (mpi_context.IsEnabled()) {
 #if HOROVOD_GPU_ALLREDUCE == 'M'
     allreduce_ops.push_back(std::shared_ptr<AllreduceOp>(
         new MPI_GPUAllreduce(&mpi_context, &gpu_context, &state)));
@@ -384,8 +384,8 @@ OperationManager* CreateOperationManager(HorovodGlobalState& state) {
   allreduce_ops.push_back(std::shared_ptr<AllreduceOp>(
       new NCCLAllreduce(&nccl_context, &gpu_context, &state)));
 #endif
-    
-......    
+
+......
 ```
 
 因此我们知道，如何使用这些 Operation。
@@ -512,7 +512,7 @@ HorovodAllreduceOp 类继承 AsyncOpKernel，覆盖 其ComputeAsync() 方法。C
 
 class HorovodAllreduceOp : public AsyncOpKernel {
 public:
-  // 防止类构造函数的隐式自动转换，只能显示调用该构造函数  
+  // 防止类构造函数的隐式自动转换，只能显示调用该构造函数
   explicit HorovodAllreduceOp(OpKernelConstruction* context)
       : AsyncOpKernel(context) {
     OP_REQUIRES_OK(context, context->GetAttr("reduce_op", &reduce_op_));
@@ -542,12 +542,12 @@ public:
     // ReadyEvent makes sure input tensor is ready, and output is allocated.
     // shared_ptr 是一个标准的共享所有权的智能指针, 允许多个指针指向同一个对象
     auto ready_event = std::shared_ptr<common::ReadyEvent>(RecordReadyEvent(context));
-    // 模板函数 std::make_shared 可以返回一个指定类型的 std::shared_ptr  
+    // 模板函数 std::make_shared 可以返回一个指定类型的 std::shared_ptr
     auto hvd_context = std::make_shared<TFOpContext>(context);
     auto hvd_tensor = std::make_shared<TFTensor>(tensor);
     auto hvd_output = std::make_shared<TFTensor>(*output);
-      
-    // 将张量的Allreduce操作OP加入队列  
+
+    // 将张量的Allreduce操作OP加入队列
     auto enqueue_result = EnqueueTensorAllreduce(
         hvd_context, hvd_tensor, hvd_output, ready_event, node_name, device,
         [context, done](const common::Status& status) {
@@ -675,14 +675,14 @@ Status EnqueueTensorAllreduces(std::vector<std::shared_ptr<OpContext>>& contexts
   Status status;
 
   ......
-    
+
   std::vector<Request> messages;
   std::vector<TensorTableEntry> entries;
   messages.reserve(tensors.size());
   entries.reserve(tensors.size());
 
-  for (int n = 0; n < tensors.size(); ++n) { // 遍历需要 reduce 的 tensor 
-    // 把tensor组装成一个Request 
+  for (int n = 0; n < tensors.size(); ++n) { // 遍历需要 reduce 的 tensor
+    // 把tensor组装成一个Request
     Request message;
     message.set_request_rank(horovod_global.controller->GetRank());
     message.set_tensor_name(names[n]);

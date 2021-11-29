@@ -83,7 +83,7 @@ DropoutNet: Addressing Cold Start in Recommender Systems. [[pdf]](https://papers
   [[pdf]](http://ama.liglab.fr/~sidana/PDF/SIGIR17_short) [[KASANDR Data Set ](http://archive.ics.uci.edu/ml/datasets/KASANDR)]
 
 ### Blogs
-- [Deep Learning Meets Recommendation Systems by Wann-Jiun](https://blog.nycdatascience.com/student-works/deep-learning-meets-recommendation-systems/) 
+- [Deep Learning Meets Recommendation Systems by Wann-Jiun](https://blog.nycdatascience.com/student-works/deep-learning-meets-recommendation-systems/)
 
 - [Quora: Has there been any work on using deep learning for recommendation engines?](https://www.quora.com/Has-there-been-any-work-on-using-deep-learning-for-recommendation-engines).
 

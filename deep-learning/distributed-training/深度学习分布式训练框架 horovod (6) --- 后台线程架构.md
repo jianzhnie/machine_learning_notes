@@ -416,13 +416,13 @@ BackgroundThreadLoop(HorovodGlobalState& state) {
   // Otherwise, let MPI ops be in charge.
   auto mpi_ctx_manager = MPIContextManager();
 #endif
-  // mpi_context 会根据前端和环境变量传过来的信息，创建 mpi 线程，和一些 mpiOps 
+  // mpi_context 会根据前端和环境变量传过来的信息，创建 mpi 线程，和一些 mpiOps
   mpi_context.Initialize(state.controller->GetRanks(), mpi_ctx_manager);
 #endif
 
   ......
-    
-  // 会同步不同 node 的 global_size, local_size, rank, is_coordinator 等信息  
+
+  // 会同步不同 node 的 global_size, local_size, rank, is_coordinator 等信息
   // Initialize controller
   state.controller->Initialize();
 
@@ -430,8 +430,8 @@ BackgroundThreadLoop(HorovodGlobalState& state) {
   int local_rank = state.controller->GetLocalRank();
 
   ......
-    
-  // 设置op_manager，这里主要是注册不同的集合通信库的 ops  
+
+  // 设置op_manager，这里主要是注册不同的集合通信库的 ops
   op_manager.reset(CreateOperationManager(state));
 
   // Signal that initialization is completed.
@@ -589,7 +589,7 @@ ncclComm_t 实际是 ncclComm 的typedef，因此我们看看ncclComm定义，�
 ```c++
 struct ncclComm {
   struct ncclChannel channels[MAXCHANNELS];
-  ... 
+  ...
   // Bitmasks for ncclTransportP2pSetup
   int connect;
   uint32_t* connectSend;
@@ -785,8 +785,8 @@ RunLoopOnce 负责总体业务逻辑，其功能如下：
 bool RunLoopOnce(HorovodGlobalState& state) {
   // This delay determines thread frequency and communication message latency
   .....
-    
-  // 让 rank 0 与 worker 协调，获取 Request，计算 response  
+
+  // 让 rank 0 与 worker 协调，获取 Request，计算 response
   auto response_list =
       state.controller->ComputeResponseList(horovod_global.shut_down, state);
 
@@ -1025,11 +1025,11 @@ ResponseList Controller::ComputeResponseList(std::atomic_bool& shut_down,
     // 这里会同步，也会从 response_cache_ 之中移除 invalid 的。
     // 目的是得到每个worker 共同存储的 response列表
     CoordinateCacheAndState(cache_coordinator);
-      
+
     // Remove uncommon cached tensors from queue and replace to state
     // queue for next cycle. Skip adding common cached tensors to
     // queue as they are handled separately.
-      
+
     // 此时 cache_coordinator 已经是所有worker 共有的response 列表了。需要移除那些 不在共有response 列表中的 response。
     // 为什么有的worker会没有某种response?
     // 会从 tensor request messages 之中看看是否已经有cache的了，然后相应更新 tensor_queue_。
@@ -1055,10 +1055,10 @@ ResponseList Controller::ComputeResponseList(std::atomic_bool& shut_down,
       message_queue_tmp.pop_front();
     }
     tensor_queue_.PushMessagesToQueue(messages_to_replace);
-  } 
+  }
   // End of response_cache_.capacity()
 
-  
+
   ResponseList response_list;
   response_list.set_shutdown(cache_coordinator.should_shut_down());
 
@@ -1162,7 +1162,7 @@ ResponseList Controller::ComputeResponseList(std::atomic_bool& shut_down,
       // Process messages.
       // 遍历 rank 0+1 ~ rank n，逐一处理每个 rank 的 response
       for (int i = 1; i < size_; ++i) { // size_是指有多少个rank
-        
+
         // 每一个 rank 的 response list。
         auto received_message_list = ready_list[i];
         for (auto& received_message : received_message_list.requests()) {
@@ -1178,7 +1178,7 @@ ResponseList Controller::ComputeResponseList(std::atomic_bool& shut_down,
           stall_inspector_.RecordUncachedTensorStart(
               received_message.tensor_name(), received_message.request_rank(),
               size_);
-            
+
           // 如果已经达到了最大数值，则可以 reduce 了，加入到 ready_to_reduce。
           if (reduce) {
             ready_to_reduce.push_back(received_name);
@@ -1254,7 +1254,7 @@ ResponseList Controller::ComputeResponseList(std::atomic_bool& shut_down,
       }
 
 	  // 此时，message table 之中已经有了所有的可以reduce的列表
-        
+
       // At this point, rank zero should have a fully updated tensor count
       // table and should know all the tensors that need to be reduced or
       // gathered, and everyone else should have sent all their information
@@ -1264,7 +1264,7 @@ ResponseList Controller::ComputeResponseList(std::atomic_bool& shut_down,
       std::deque<Response> responses;
 
       // responses 的来源是以下三部分
-        
+
       // 来源1，response_cache_ in rank 0
       if (response_cache_.capacity() > 0) {
         // Prepopulate response list with cached responses. Populate so that
@@ -1291,8 +1291,8 @@ ResponseList Controller::ComputeResponseList(std::atomic_bool& shut_down,
         Response response = ConstructResponse(tensor_name, state.joined_size);
         responses.push_back(std::move(response));
       }
-        
-      // 来源3，join_response  
+
+      // 来源3，join_response
       if (state.joined_size == size_) {
         // All ranks did Join(). Send the response, reset joined size.
         Response join_response;
@@ -1301,7 +1301,7 @@ ResponseList Controller::ComputeResponseList(std::atomic_bool& shut_down,
         responses.push_back(std::move(join_response));
         state.joined_size = 0;
       }
-        
+
       // 进行融合
       FuseResponses(responses, state, response_list);
       response_list.set_shutdown(should_shut_down);
@@ -1327,7 +1327,7 @@ ResponseList Controller::ComputeResponseList(std::atomic_bool& shut_down,
       RecvFinalTensors(response_list);
     }
   }
-  
+
   if (!response_list.responses().empty()) {
     std::string tensors_ready;
     for (const auto& r : response_list.responses()) {
@@ -1520,7 +1520,7 @@ void MPIController::RecvFinalTensors(ResponseList& response_list) {
   auto buffer = new uint8_t[msg_length];
   ret_code =
       MPI_Bcast(buffer, msg_length, MPI_BYTE, RANK_ZERO, mpi_ctx_.mpi_comm);
-    
+
   ResponseList::ParseFromBytes(response_list, buffer);
   delete[] buffer;
 }
@@ -1541,11 +1541,11 @@ void MPIController::RecvFinalTensors(ResponseList& response_list) {
 ```c++
  auto response_list =
    state.controller->ComputeResponseList(horovod_global.shut_down, state);
-   
+
   int rank = state.controller->GetRank();
   for (auto& response : response_list.responses()) {
     PerformOperation(response, horovod_global);
-  }  
+  }
 ```
 
 #### 5.3.1 PerformOperation
@@ -1619,7 +1619,7 @@ void PerformOperation(Response response, HorovodGlobalState& state) {
   } catch (const std::exception& ex) {
     status = Status::UnknownError(ex.what());
   }
-  
+
   ... // 调用 callback 函数
 }
 ```

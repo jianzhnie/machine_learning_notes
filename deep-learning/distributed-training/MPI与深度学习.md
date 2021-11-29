@@ -19,16 +19,16 @@ int MPI_Recv(void *buf, int count, MPI_Datatype datatype,
 集合通讯是建立在端到端通信的基础上，在一组进程内的通讯原语。其中主要包括：
 
 ```c++
-// Broadcasts a message from the process with rank root to all other processes of the group. 
+// Broadcasts a message from the process with rank root to all other processes of the group.
 int MPI_Bcast(void *buffer, int count, MPI_Datatype datatype,
     int root, MPI_Comm comm)
 
-// Gathers values from a group of processes. 
+// Gathers values from a group of processes.
 int MPI_Gather(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
     void *recvbuf, int recvcount, MPI_Datatype recvtype, int root,
     MPI_Comm comm)
 
-// Sends data from one task to all tasks in a group. 
+// Sends data from one task to all tasks in a group.
 int MPI_Scatter(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
     void *recvbuf, int recvcount, MPI_Datatype recvtype, int root,
     MPI_Comm comm)

@@ -51,4 +51,3 @@ X = vectorizer.fit_transform(corpus)
 print(vectorizer.get_feature_names())
 print(X.toarray())
 ```
-

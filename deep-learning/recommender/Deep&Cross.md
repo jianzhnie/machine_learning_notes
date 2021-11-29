@@ -74,7 +74,7 @@ Cross的目的是以一种显示、可控且高效的方式，**自动**构造**
 
 那么为什么这样设计呢？Cross究竟做了什么？对此论文中给出了定理3.1以及相关证明，但定理与证明过程都比较晦涩，为了直观清晰地讲解清楚，我们直接看一个具体的例子：假设Cross有2层， 为便于讨论令各层 ![[公式]](https://www.zhihu.com/equation?tex=%5Cbm%7Bb%7D_i%3D0++) ，则
 
-![[公式]](https://www.zhihu.com/equation?tex=%5Cbegin%7Baligned%7D++%5Cbm%7Bx%7D_1%26%3D%5Cbm%7Bx%7D_0+%5Cbm%7Bx%7D_0%5ET+%5Cbm%7Bw%7D_0+%2B+%5Cbm%7Bx%7D_0+%3D+%5B+%5Cbegin%7Baligned%7D+%26~x_%7B0%2C1%7D++%5C%5C%26~x_%7B0%2C2%7D++%5Cend%7Baligned%7D+%5D+++%5Bx_%7B0%2C1%7D%2C++x_%7B0%2C2%7D%5D+%5B+%5Cbegin%7Baligned%7D++%26~w_%7B0%2C1%7D++%5C%5C+%26~w_%7B0%2C2%7D++%5Cend%7Baligned%7D+%5D+%2B++%5B+%5Cbegin%7Baligned%7D+%26~x_%7B0%2C1%7D++%5C%5C%26~x_%7B0%2C2%7D++%5Cend%7Baligned%7D+%5D++%3D+%5B+%5Cbegin%7Baligned%7D++%26~w_%7B0%2C1%7Dx_%7B0%2C1%7D%5E2+%2B+w_%7B0%2C2%7D+x_%7B0%2C1%7Dx_%7B0%2C2%7D%2Bx_%7B0%2C1%7D%5C%5C+%26~w_%7B0%2C1%7Dx_%7B0%2C2%7D+x_%7B0%2C1%7D+%2B+w_%7B0%2C2%7D+++x_%7B0%2C2%7D%5E2++%2B+x_%7B0%2C2%7D%5Cend%7Baligned%7D%5D++%5Cend%7Baligned%7D+) 
+![[公式]](https://www.zhihu.com/equation?tex=%5Cbegin%7Baligned%7D++%5Cbm%7Bx%7D_1%26%3D%5Cbm%7Bx%7D_0+%5Cbm%7Bx%7D_0%5ET+%5Cbm%7Bw%7D_0+%2B+%5Cbm%7Bx%7D_0+%3D+%5B+%5Cbegin%7Baligned%7D+%26~x_%7B0%2C1%7D++%5C%5C%26~x_%7B0%2C2%7D++%5Cend%7Baligned%7D+%5D+++%5Bx_%7B0%2C1%7D%2C++x_%7B0%2C2%7D%5D+%5B+%5Cbegin%7Baligned%7D++%26~w_%7B0%2C1%7D++%5C%5C+%26~w_%7B0%2C2%7D++%5Cend%7Baligned%7D+%5D+%2B++%5B+%5Cbegin%7Baligned%7D+%26~x_%7B0%2C1%7D++%5C%5C%26~x_%7B0%2C2%7D++%5Cend%7Baligned%7D+%5D++%3D+%5B+%5Cbegin%7Baligned%7D++%26~w_%7B0%2C1%7Dx_%7B0%2C1%7D%5E2+%2B+w_%7B0%2C2%7D+x_%7B0%2C1%7Dx_%7B0%2C2%7D%2Bx_%7B0%2C1%7D%5C%5C+%26~w_%7B0%2C1%7Dx_%7B0%2C2%7D+x_%7B0%2C1%7D+%2B+w_%7B0%2C2%7D+++x_%7B0%2C2%7D%5E2++%2B+x_%7B0%2C2%7D%5Cend%7Baligned%7D%5D++%5Cend%7Baligned%7D+)
 
 ![[公式]](https://www.zhihu.com/equation?tex=%5Cbegin%7Baligned%7D++%5Cbm%7Bx%7D_2%26%3D%5Cbm%7Bx%7D_0+%5Cbm%7Bx%7D_1%5ET+%5Cbm%7Bw%7D_1+%2B+%5Cbm%7Bx%7D_1+%5C%5C+%26%3D+%5B+%5Cbegin%7Baligned%7D++%26~w_%7B1%2C1%7Dx_%7B0%2C1%7D+x_%7B1%2C1%7D+%2B+w_%7B1%2C2%7D+x_%7B0%2C1%7Dx_%7B1%2C2%7D%2Bx_%7B1%2C1%7D%5C%5C+%26~w_%7B1%2C1%7Dx_%7B0%2C2%7D+x_%7B1%2C1%7D+%2B+w_%7B1%2C2%7D++x_%7B0%2C2%7D+x_%7B1%2C2%7D++%2B+x_%7B1%2C2%7D%5Cend%7Baligned%7D%5D+++%5C%5C+%26%3D%5B%5Cbegin%7Baligned%7D++++w_%7B0%2C1%7Dw_%7B1%2C1%7Dx_%7B0%2C1%7D%5E3%2B+%28w_%7B0%2C2%7Dw_%7B1%2C1%7D%2Bw_%7B0%2C1%7Dw_%7B1%2C2%7D%29x_%7B0%2C1%7D%5E2x_%7B0%2C2%7D%2B+%26w_%7B0%2C2%7Dw_%7B1%2C2%7Dx_%7B0%2C1%7Dx_%7B0%2C2%7D%5E2%2B+%28w_%7B0%2C1%7D%2Bw_%7B1%2C1%7D%29x_%7B0%2C1%7D%5E2%2B+%28w_%7B0%2C2%7D%2Bw_%7B1%2C2%7D%29x_%7B0%2C1%7Dx_%7B0%2C2%7D%2B+x_%7B0%2C1%7D+%5C%5C+%26.........+%5Cend%7Baligned%7D%5D++%5Cend%7Baligned%7D+)
 
@@ -90,9 +90,9 @@ Cross的目的是以一种显示、可控且高效的方式，**自动**构造**
 def cross_layer(x0, x, name):
   with tf.variable_scope(name):
     input_dim = x0.get_shape().as_list()[1]
-    w = tf.get_variable("weight", [input_dim], 	  
+    w = tf.get_variable("weight", [input_dim],
                         initializer=tf.truncated_normal_initializer(stddev=0.01))
-    b = tf.get_variable("bias", [input_dim],    
+    b = tf.get_variable("bias", [input_dim],
                         initializer=tf.truncated_normal_initializer(stddev=0.01))
     xb = tf.tensordot(tf.reshape(x, [-1, 1, input_dim]), w, 1)
     return x0 * xb + b + x
@@ -137,4 +137,3 @@ p是最终的预测概率；XL1是d维的，表示Cross Network的最终输出�
 跟FM一样，DCN同样也是基于参数共享机制的，参数共享不仅仅使得模型更加高效而且使得模型可以泛化到之前没有出现过的特征组合，并且对噪声的抵抗性更加强。
 
 FM是一个非常浅的结构，并且限制在表达二阶组合特征上，DeepCrossNetwork(DCN)把这种参数共享的思想从一层扩展到多层，并且可以学习高阶的特征组合。但是和FM的高阶版本的变体不同，DCN的参数随着输入维度的增长是线性增长的。
-

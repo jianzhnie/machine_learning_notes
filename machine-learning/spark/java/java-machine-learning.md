@@ -38,7 +38,7 @@ Frank Greco of IBM and Zoran Severac are leading an effort to define a [computer
 
 ### Pathmind
 
-[Pathmind](https://wiki.pathmind.com/pathmind.com)’s application applies deep reinforcement learning to simulations, and trains AI decision-making agents that can respond to real events. Its users are industrial engineers and simulation modelers. Pathmind is being used by simulation modelers at Accenture and other global engineering teams to optimize in use cases like reducing carbon emissions in supply chain throughput, coordinating the activity of AGVs and cranes. It augments the control systems of organizations that have physical operations like factories, mines and warehouses. It helps them increase the efficiency and throughput of their operations by as much as 30%. 
+[Pathmind](https://wiki.pathmind.com/pathmind.com)’s application applies deep reinforcement learning to simulations, and trains AI decision-making agents that can respond to real events. Its users are industrial engineers and simulation modelers. Pathmind is being used by simulation modelers at Accenture and other global engineering teams to optimize in use cases like reducing carbon emissions in supply chain throughput, coordinating the activity of AGVs and cranes. It augments the control systems of organizations that have physical operations like factories, mines and warehouses. It helps them increase the efficiency and throughput of their operations by as much as 30%.
 
 ## Machine Learning Model Servers
 
@@ -106,7 +106,7 @@ Machine learning encompasses a wide range of algorithms that are able to adapt t
 
 [RapidMiner](https://rapidminer.com/) is a data science platform that supports various machine- and deep-learning algorithms through its GUI and Java API. It has a very big community, many available tutorials, and an extensive documentation.
 
-### Weka 
+### Weka
 
 [Weka](http://www.cs.waikato.ac.nz/ml/weka/) is a collection of machine learning algorithms that can be applied directly to a dataset, through the Weka GUI or API. The WEKA community is large, providing various tutorials for Weka and machine learning itself.
 

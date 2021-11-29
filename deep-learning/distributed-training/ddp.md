@@ -64,6 +64,3 @@ The parallelized `module` must have its parameters and buffers on `device_ids[0]
 Data Parallelism is when we split the mini-batch of samples into multiple smaller mini-batches and run the computation for each of the smaller mini-batches in parallel.
 
 Data Parallelism is implemented using `torch.nn.DataParallel`. One can wrap a Module in `DataParallel` and it will be parallelized over multiple GPUs in the batch dimension.
-
-
-

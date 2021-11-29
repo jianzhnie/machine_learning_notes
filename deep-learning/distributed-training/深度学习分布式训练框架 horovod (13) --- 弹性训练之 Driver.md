@@ -320,7 +320,7 @@ def launch_gloo_elastic(command, exec_command, settings, env, get_common_interfa
 它会调用 create_run_env_vars 得到gloo需要信息，并据此构建 run_command，其格式如下：
 
 ```python
-HOROVOD_GLOO_RENDEZVOUS_ADDR=1.1.1.1 HOROVOD_GLOO_RENDEZVOUS_PORT=2222 HOROVOD_CPU_OPERATIONS=gloo HOROVOD_GLOO_IFACE=lo HOROVOD_CONTROLLER=gloo python 
+HOROVOD_GLOO_RENDEZVOUS_ADDR=1.1.1.1 HOROVOD_GLOO_RENDEZVOUS_PORT=2222 HOROVOD_CPU_OPERATIONS=gloo HOROVOD_GLOO_IFACE=lo HOROVOD_CONTROLLER=gloo python
 ```
 
 可以看到，elastic 和 spark gloo 版本很类似，都是使用 RendezvousServer 来完成一些master的控制功能。
@@ -392,10 +392,10 @@ def wait_for_available_slots(self, min_np, min_hosts=1):
     try:
         while True: # 无限循环等待
             current_hosts = self._host_manager.current_hosts
-            
+
             avail_slots = current_hosts.count_available_slots()
             avail_hosts = len(current_hosts.available_hosts)
-            
+
             if avail_slots >= min_np and avail_hosts >= min_hosts:
                 return current_hosts
             if self._shutdown.is_set():
@@ -600,4 +600,3 @@ def _handle_worker_exit(self, slot_info, exit_code, timestamp):
 我们接下来会具体看看弹性训练的其他部分。
 
 因为 Driver 是弹性训练主要框架，所以不可避免的在其他文章中也会出现 本文部分文字，敬请谅解。
-

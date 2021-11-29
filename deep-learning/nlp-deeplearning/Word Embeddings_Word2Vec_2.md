@@ -81,7 +81,7 @@ In n-gram based language models, we can calculate a word's probability based on 
 
 ​                              $p(w_t \: | \: w_{t-1} , \cdots , w_{t-n+1}) = \dfrac{count(w_{t-n+1}, \cdots , w_{t-1},w_t)}{count({w_{t-n+1}, \cdots , w_{t-1}})}$
 
-Setting n=2 yields bigram probabilities, while n=5 together with Kneser-Ney smoothing leads to smoothed 5-gram models that have been found to be a strong baseline for language modelling. 
+Setting n=2 yields bigram probabilities, while n=5 together with Kneser-Ney smoothing leads to smoothed 5-gram models that have been found to be a strong baseline for language modelling.
 
 
 
@@ -221,37 +221,36 @@ sample training data：
 
 ###  参考资料
 
- 1 . Mikolov 两篇原论文： 
+ 1 . Mikolov 两篇原论文：
 
 『Distributed Representations of Sentences and Documents』
 
- 贡献：在前人基础上提出更精简的语言模型（language model）框架并用于生成词向量，这个框架就是 Word2vec 
+ 贡献：在前人基础上提出更精简的语言模型（language model）框架并用于生成词向量，这个框架就是 Word2vec
 
-『Efficient estimation of word representations in vector space』      
+『Efficient estimation of word representations in vector space』
 
-贡献：专门讲训练 Word2vec 中的两个trick：hierarchical softmax 和 negative sampling 
+贡献：专门讲训练 Word2vec 中的两个trick：hierarchical softmax 和 negative sampling
 
-优点：Word2vec 开山之作，两篇论文均值得一读 
+优点：Word2vec 开山之作，两篇论文均值得一读
 
-缺点：只见树木，不见森林和树叶，读完不得要义。      这里『森林』指 word2vec 模型的理论基础——即 以神经网络形式表示的语言模型      『树叶』指具体的神经网络形式、理论推导、hierarchical softmax 的实现细节等等 
+缺点：只见树木，不见森林和树叶，读完不得要义。      这里『森林』指 word2vec 模型的理论基础——即 以神经网络形式表示的语言模型      『树叶』指具体的神经网络形式、理论推导、hierarchical softmax 的实现细节等等
 
 2. 北漂浪子的博客：『深度学习word2vec 笔记之基础篇』
 
-优点：非常系统，结合源码剖析，语言平实易懂 
+优点：非常系统，结合源码剖析，语言平实易懂
 
-缺点：太啰嗦，有点抓不住精髓 
+缺点：太啰嗦，有点抓不住精髓
 
 3. Yoav Goldberg 的论文：『word2vec Explained- Deriving Mikolov et al.’s Negative-Sampling Word-Embedding Method』
 
-优点：对 negative-sampling 的公式推导非常完备 
+优点：对 negative-sampling 的公式推导非常完备
 
-缺点：不够全面，而且都是公式，没有图示，略显干枯 
+缺点：不够全面，而且都是公式，没有图示，略显干枯
 
 4. Xin Rong 的论文：『word2vec Parameter Learning Explained』：
 
- 重点推荐！ 理论完备由浅入深非常好懂，且直击要害，既有 high-level 的 intuition 的解释，也有细节的推导过程 
+ 重点推荐！ 理论完备由浅入深非常好懂，且直击要害，既有 high-level 的 intuition 的解释，也有细节的推导过程
 
 5. 来斯惟的博士论文『基于神经网络的词和文档语义向量表示方法研究』以及他的博客（网名：licstar） 可以作为更深入全面的扩展阅读，这里不仅仅有 word2vec，而是把词嵌入的所有主流方法通通梳理了一遍
-6. 几位大牛在知乎的回答：『word2vec 相比之前的 Word Embedding 方法好在什么地方？』 刘知远、邱锡鹏、李韶华等知名学者从不同角度发表对 Word2vec 的看法，非常值得一看 
+6. 几位大牛在知乎的回答：『word2vec 相比之前的 Word Embedding 方法好在什么地方？』 刘知远、邱锡鹏、李韶华等知名学者从不同角度发表对 Word2vec 的看法，非常值得一看
 7. Sebastian 的博客：『On word embeddings - Part 2: Approximating the Softmax』 详细讲解了 softmax 的近似方法，Word2vec 的 hierarchical softmax 只是其中一种
-

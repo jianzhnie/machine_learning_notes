@@ -447,7 +447,7 @@ Of course, the situation in which a class grows this long is strongly discourage
   ```scala
   case class Pokemon(name: String, weight: Int, hp: Int, attack: Int, defense: Int)
   case class Human(name: String, hp: Int)
-  
+
   // Do NOT do the following, because
   // 1. When a new field is added to Pokemon, we need to change this pattern matching as well
   // 2. It is easy to mismatch the arguments, especially for the ones that have the same data types
@@ -458,7 +458,7 @@ Of course, the situation in which a class grows this long is strongly discourage
     case target @ Human(_, hp) =>
       target.copy(hp = hp - myAttack)
   }
-  
+
   // Do this:
   targets.foreach {
     case target: Pokemon =>

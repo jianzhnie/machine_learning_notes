@@ -32,7 +32,7 @@
 因此，如果你要在Spark上使用deeplearning4j，我们推荐通过dl4j-spark-ml包来实现。与往常一样，必须下载或自己编译Spark源码。这里对Spark版本没有特别要求，就算使用最早的版本也可以。deeplearning4j项目准备了样例存储库。要在Spark上使用deeplearning4j，dl4j-Spark-ml-examples是可参考的最佳示例（https:// github.com/deeplearning4j/dl4j-Spark-ml-examples）
 
 
-### DJL 
+### DJL
 https://github.com/awslabs/djld
 Apache Spark是一个优秀的大数据处理工具。在机器学习领域，Spark可以用于对数据分类，预测需求以及进行个性化推荐。虽然Spark支持多种语言，但是大部分Spark任务设定及部署还是通过Scala来完成的。尽管如此，Scala并没有很好的支持深度学习平台。大部分的深度学习应用都部署在Python以及相关的框架之上，造成Scala开发者一个很头痛的问题：到底是全用Python写整套spark架构呢，还是说用Scala包装Python code在pipeline里面跑。这两个方案都会增加工作量和维护成本。而且，目前看来，PySpark在深度学习多进程的支持上性能不如Scala的多线程，导致许多深度学习应用速度都卡在了这里。
 
@@ -69,11 +69,11 @@ TFoS 程序由标准的 Apache Spark 命令 _spark-submit_ 来启动。如下图
 复制代码
 
 ```shell
- 
-     spark-submit –master ${MASTER} \ 
-     ${TFoS_HOME}/examples/slim/train_image_classifier.py \ 
+
+     spark-submit –master ${MASTER} \
+     ${TFoS_HOME}/examples/slim/train_image_classifier.py \
      –model_name inception_v3 \
-     –train_dir hdfs://default/slim_train \ 
+     –train_dir hdfs://default/slim_train \
      –dataset_dir hdfs://default/data/imagenet \
      –dataset_name imagenet \
      –dataset_split_name train \
@@ -83,7 +83,7 @@ TFoS 程序由标准的 Apache Spark 命令 _spark-submit_ 来启动。如下图
      –sync_replicas \
      –replicas_to_aggregate ${NUM_WORKERS} \
      –tensorboard \
-     –rdma  
+     –rdma
 ```
 
 TFoS 提供了一个高层次的 Python API（在我[们示例 Python notebook ](http://t.umblr.com/redirect?z=https://github.com/yahoo/TensorFlowOnSpark/blob/master/examples/mnist/TFOS_demo.ipynb&t=MWFkZDEwZTExNDY1NDQ0ZTkwODgxODgzMmM0MTgwZTk1MTU4NzAwNSx1VmR1UG1vZg==&b=t%3afgAkOE96nMUZDZ4JRZ0Fgw&p=http://yahoohadoop.tumblr.com/post/157196317141/open-sourcing-tensorflowonspark-distributed-deep&m=1)说明）：

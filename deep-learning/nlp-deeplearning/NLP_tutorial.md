@@ -53,4 +53,3 @@
 **Open Dataset**
 
 - [Dual Word Embeddings Trained on Bing Queries](https://msropendata.com/datasets/30a504b0-cff2-4d4a-864f-3bc9a66f9d7e)
-

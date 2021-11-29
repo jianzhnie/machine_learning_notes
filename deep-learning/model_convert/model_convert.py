@@ -1,11 +1,9 @@
-import os
-import time
 import subprocess
 
 
 class Model(object):
-    """
-    [Input]
+    """[Input]
+
     --model             Model file
     --weight            Weight file. Required when framework is Caffe
     --om                The model file to be converted to json
@@ -21,7 +19,7 @@ class Model(object):
     --singleop          Single op definition file. atc will generate offline model(s) for single op if --singleop is set.
 
     [Output]
-    --output            Output file path&name(needn't suffix, will add .om automatically). 
+    --output            Output file path&name(needn't suffix, will add .om automatically).
                         If --singleop is set, this arg specifies the directory to which the single op offline model will be generated
     --output_type       Set net output type. Support FP32, FP16, UINT8. E.g.: FP16, indicates that all out nodes are set to FP16.
                         "node1:0:FP16;node2:1:FP32", indicates setting the datatype of multiple out nodes.
@@ -32,7 +30,7 @@ class Model(object):
     --soc_version       The soc version.
     --core_type         Set core type AiCore or VectorCore. VectorCore: use vector core. Default value is: AiCore
     --aicore_num        Set aicore num
-    
+
     ===== Advanced Functionality =====
     [Feature]
     --out_nodes         Output nodes designated by users. Separate multiple nodes with semicolons (;).Use double quotation marks (") to enclose each argument.
@@ -66,20 +64,30 @@ class Model(object):
                             2: Enable TBE pipe_all, generate the operator CCE file and Python-CCE mapping file (.json), and enable the CCE compiler -O0-g.
                             3: Disable debug, and keep generating kernel file (.o and .json)
     """
-
     def __init__(self):
-        self.framework = "mindspore"
-        self.soc_version = "Ascend310"
-        self.src_format = "air"
-        self.dst_format = "om"
-        self.framework2id = {"mindspore": 1, "caffe": 0, "tensorflow": 3,  "onnx": 5}
+        self.framework = 'mindspore'
+        self.soc_version = 'Ascend310'
+        self.src_format = 'air'
+        self.dst_format = 'om'
+        self.framework2id = {
+            'mindspore': 1,
+            'caffe': 0,
+            'tensorflow': 3,
+            'onnx': 5
+        }
 
-    def convert(self, input_dir, output_dir, kvs, framework="mindspore", src_format="air", dst_format="om"):
+    def convert(self,
+                input_dir,
+                output_dir,
+                kvs,
+                framework='mindspore',
+                src_format='air',
+                dst_format='om'):
         """
         Args:
             src_format: source serilization format
             dst_format: target serilization format
-            input_dir:  directory of source files 
+            input_dir:  directory of source files
             output_dir: directory of output files
             kvs:        extended params, dictionary
 
@@ -97,24 +105,24 @@ class Model(object):
             --insert_op_conf=../src/aipp.cfg \
             --precision_mode=allow_fp32_to_fp16 \
             --soc_version=Ascend310
-        
+
         command =  ["atc", "--input_format=NCHW", "--framework=1", "--model=lenet.air",  "--output=lenet", "--soc_version=Ascend310"]
         subprocess.call(command)
         """
         code = 0
-        command = ["atc", "--input_format=NCHW", "--soc_version=Ascend310"]
+        command = ['atc', '--input_format=NCHW', '--soc_version=Ascend310']
 
         assert framework in self.framework2id, 'not support framework'
         frameworkidx = self.framework2id[framework]
-        param = "--" + str("framework") + "=" + str(frameworkidx)
+        param = '--' + str('framework') + '=' + str(frameworkidx)
         command.append(param)
 
         for key, value in kvs.items():
-            param = "--" + str(key) + "=" + str(value)
+            param = '--' + str(key) + '=' + str(value)
             command.append(param)
         code = subprocess.call(command)
         if code == 0:
-            msg = "ATC run success, welcome to the next use."
+            msg = 'ATC run success, welcome to the next use.'
         else:
             msg = "ATC run failed, Please check the detail log, Try 'atc --help' for more information"
 
@@ -123,9 +131,6 @@ class Model(object):
 
 if __name__ == '__main__':
     model = Model()
-    kvs = {
-        "model": "lenet.air",
-        "output": "lenet"
-    }
+    kvs = {'model': 'lenet.air', 'output': 'lenet'}
     (code, msg) = model.convert(input_dir=None, output_dir=None, kvs=kvs)
     print(code, msg)

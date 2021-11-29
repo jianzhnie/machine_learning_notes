@@ -181,7 +181,7 @@ print iris.target_names # output names
 print iris.DESCR # everything else
 ```
 
-我们使用下面的代码通过功能和类的可视化更好地了解数据。 
+我们使用下面的代码通过功能和类的可视化更好地了解数据。
 
 ```python
 import seaborn as sns
@@ -595,7 +595,7 @@ print 'best:'
 print best
 ```
 
-由于我们增加了评估数量，因此该代码需要一段时间才能运行：max_evals = 1500。 
+由于我们增加了评估数量，因此该代码需要一段时间才能运行：max_evals = 1500。
 
 ### 总结
 

@@ -39,7 +39,7 @@ $ sh ./discover_hosts.sh    # 运行脚本，输出节点信息
 
 ```python
 class HostDiscoveryScript(HostDiscovery):
-  
+
     def __init__(self, discovery_script, slots):
         self._discovery_script = discovery_script # 设定脚本
         self._default_slots = slots # 审定slots
@@ -104,7 +104,7 @@ class HostManager(object):
         prev_host_slots = self._current_hosts.host_slots
         prev_host_assignment_order = self._current_hosts.host_assignment_order
         host_slots = self._discovery.find_available_hosts_and_slots()
-        
+
         if prev_host_slots != host_slots: # 有修改
             # 找到不在黑名单里的host
             available_hosts = set([host for host in host_slots.keys() if not self._hosts_state[host].is_blacklisted()])
@@ -568,17 +568,17 @@ State 的作用是：在不同的 worker 之中跟踪内存状态。
 
 - check_host_updates : 会从
 
-   
+
 
   ```
   _host_messages
   ```
 
-   
+
 
   中读取消息，积累更新，如方法中注释所述，会在每个 worker 之间同步状态，目的是让这些 worker 同时抛出异常。具体同步使用
 
-   
+
 
   ```
   _bcast_object
@@ -591,11 +591,11 @@ State 的作用是：在不同的 worker 之中跟踪内存状态。
 
 - _reset_callbacks ：用户可以注册一些回调函数到
 
-   
+
 
   hvd.elastic.State
 
-   
+
 
   对象中，用于响应worker成员发生变化的情况。
 

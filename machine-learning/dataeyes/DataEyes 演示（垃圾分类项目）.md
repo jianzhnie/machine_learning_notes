@@ -40,7 +40,7 @@ select objectId, replace(filename, '.csv','') as filename, wavelet_arr from  col
 
 ```sql
 SELECT collect_desc.ObjID, collect_desc.Filename, collect_desc.Material, collect_boundaries.Direction, collect_boundaries.Length, collect_boundaries.Samplings
-FROM collect_desc, collect_boundaries 
+FROM collect_desc, collect_boundaries
 where collect_desc.ObjID = collect_boundaries.ObjID
 ```
 
@@ -48,7 +48,7 @@ where collect_desc.ObjID = collect_boundaries.ObjID
 
 ```sql
 SELECT merge1.ObjID, merge1.Filename, merge1.Material, merge1.Direction, merge1.Length, merge1.Samplings, collect_label.Category
-FROM merge1, collect_label 
+FROM merge1, collect_label
 where collect_label.Material = merge1.Material
 ```
 
@@ -85,8 +85,3 @@ where collect_absorbance1.filename = merge2.Filename
 - transform_function:  simpleOnevsRest
 
 - input_coloum:  wavelete_std
-
-  
-
-
-

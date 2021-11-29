@@ -599,7 +599,7 @@ def _exec_command_fn(settings):
             stderr = MultiFile([sys.stderr, stderr_file])
 
             # 实现安全执行能力
-            exit_code = safe_shell_exec.execute(command, 
+            exit_code = safe_shell_exec.execute(command,
                                                 index=index,
                                                 stdout=stdout,
                                                 stderr=stderr,
@@ -879,9 +879,9 @@ def get_run_command(command, server_ip, nics, port, elastic=False):
 此步完成之后，得到类似如下：
 
 ```python
-HOROVOD_HOSTNAME=1.1.1.1 HOROVOD_RANK=1 HOROVOD_SIZE=2 HOROVOD_LOCAL_RANK=1 
+HOROVOD_HOSTNAME=1.1.1.1 HOROVOD_RANK=1 HOROVOD_SIZE=2 HOROVOD_LOCAL_RANK=1
 SHELL=/bin/bash PATH=XXXX USER=xxx PWD=xxx SSH_CONNECTION="1.1.1.1 11 2.2.2.2 22" HOME=xxx SSH_CLIENZT=xxxx
-HOROVOD_GLOO_IFACE=lo NCCL_SOCKET_IFNAME=lo 
+HOROVOD_GLOO_IFACE=lo NCCL_SOCKET_IFNAME=lo
 HOROVOD_GLOO_RENDEZVOUS_ADDR=1.1.1.1 HOROVOD_GLOO_RENDEZVOUS_PORT=2222 HOROVOD_CPU_OPERATIONS=gloo HOROVOD_GLOO_IFACE=lo HOROVOD_CONTROLLER=gloo python train.py
 ```
 
@@ -923,9 +923,9 @@ def _slot_info_to_command_fn(run_command, env):
 
 ```python
 cd /code directory > /dev/null 2 >&1
-HOROVOD_HOSTNAME=1.1.1.1 HOROVOD_RANK=1 HOROVOD_SIZE=2 HOROVOD_LOCAL_RANK=1 
+HOROVOD_HOSTNAME=1.1.1.1 HOROVOD_RANK=1 HOROVOD_SIZE=2 HOROVOD_LOCAL_RANK=1
 SHELL=/bin/bash PATH=XXXX USER=xxx PWD=xxx SSH_CONNECTION="1.1.1.1 11 2.2.2.2 22" HOME=xxx SSH_CLIENZT=xxxx
-HOROVOD_GLOO_IFACE=lo NCCL_SOCKET_IFNAME=lo 
+HOROVOD_GLOO_IFACE=lo NCCL_SOCKET_IFNAME=lo
 HOROVOD_GLOO_RENDEZVOUS_ADDR=1.1.1.1 HOROVOD_GLOO_RENDEZVOUS_PORT=2222 HOROVOD_CPU_OPERATIONS=gloo HOROVOD_GLOO_IFACE=lo HOROVOD_CONTROLLER=gloo python train.py
 ```
 
@@ -934,9 +934,9 @@ HOROVOD_GLOO_RENDEZVOUS_ADDR=1.1.1.1 HOROVOD_GLOO_RENDEZVOUS_PORT=2222 HOROVOD_C
 ```python
 ssh -o PasswordAuthentication=no -o StrictHostKeyChecking=no 1.1.1.1
 cd /code directory > /dev/null 2 >&1
-HOROVOD_HOSTNAME=1.1.1.1 HOROVOD_RANK=1 HOROVOD_SIZE=2 HOROVOD_LOCAL_RANK=1 
+HOROVOD_HOSTNAME=1.1.1.1 HOROVOD_RANK=1 HOROVOD_SIZE=2 HOROVOD_LOCAL_RANK=1
 SHELL=/bin/bash PATH=XXXX USER=xxx PWD=xxx SSH_CONNECTION="1.1.1.1 11 2.2.2.2 22" HOME=xxx SSH_CLIENZT=xxxx
-HOROVOD_GLOO_IFACE=lo NCCL_SOCKET_IFNAME=lo 
+HOROVOD_GLOO_IFACE=lo NCCL_SOCKET_IFNAME=lo
 HOROVOD_GLOO_RENDEZVOUS_ADDR=1.1.1.1 HOROVOD_GLOO_RENDEZVOUS_PORT=2222 HOROVOD_CPU_OPERATIONS=gloo HOROVOD_GLOO_IFACE=lo HOROVOD_CONTROLLER=gloo python train.py
 ```
 
@@ -986,7 +986,7 @@ def execute_function_multithreaded(fn,
             exec_index = arg[-1]
             # fn 就是前面提到的程序运行环境（能力）exec_command
             # fn(*arg[:-1])是在 exec_command 之中运行 slot_info_to_command
-            res = fn(*arg[:-1]) 
+            res = fn(*arg[:-1])
             result_queue.put((exec_index, res))
 
     threads = []
@@ -1137,7 +1137,7 @@ mpirun_command = (
         '{tcp_intf_arg} '
         '{nccl_socket_intf_arg} '
         '{output_filename_arg} '
-        '{env} {extra_mpi_args} {command}'  
+        '{env} {extra_mpi_args} {command}'
         .format(basic_args=basic_args,
                 num_proc=settings.num_proc,
                 ppn_arg=ppn_arg,
@@ -1206,7 +1206,7 @@ def mpi_run(settings, nics, env, command, stdout=None, stderr=None):
         joined_ssh_args = ' '.join(ssh_args)
         mpi_ssh_args = f'-bootstrap=ssh -bootstrap-exec-args \"{joined_ssh_args}\"' if impi else f'-mca plm_rsh_args \"{joined_ssh_args}\"'
 
-    # 处理网络配置，网卡信息等    
+    # 处理网络配置，网卡信息等
     tcp_intf_arg = '-mca btl_tcp_if_include {nics}'.format(
         nics=','.join(nics)) if nics and not impi else ''
     nccl_socket_intf_arg = '-{opt} NCCL_SOCKET_IFNAME={nics}'.format(
@@ -1232,7 +1232,7 @@ def mpi_run(settings, nics, env, command, stdout=None, stderr=None):
         for h_name in host_names[1:]:
         ppn_arg = ' -ppn {} '.format(ppn)
 
-    # 处理超时配置    
+    # 处理超时配置
     if settings.prefix_output_with_timestamp and not impi:
         mpi_impl_flags.append('--timestamp-output')
 
@@ -1246,7 +1246,7 @@ def mpi_run(settings, nics, env, command, stdout=None, stderr=None):
         output.append('-outfile-pattern' if impi else '--output-filename')
         output.append(settings.output_filename)
 
-    # 构建环境信息列表    
+    # 构建环境信息列表
     env_list = '' if impi else ' '.join(
                     '-x %s' % key for key in sorted(env.keys()) if env_util.is_exportable(key))
 

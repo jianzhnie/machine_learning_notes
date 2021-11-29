@@ -183,7 +183,7 @@ ComputationGraphSpace cgs = new ComputationGraphSpace.Builder()
                 .l2(new ContinuousParameterSpace(0.2, 0.5))
                 .addInputs("in")
                 .addLayer("0",new  DenseLayerSpace.Builder().nIn(10).nOut(10).activation(
-            new DiscreteParameterSpace<>(Activation.RELU,Activation.TANH).build(),"in")           
+            new DiscreteParameterSpace<>(Activation.RELU,Activation.TANH).build(),"in")
 
         .addLayer("1", new OutputLayerSpace.Builder().nIn(10).nOut(10)
                              .activation(Activation.SOFTMAX).build(), "0")
@@ -253,7 +253,7 @@ Arbiter目前仅支持两种终止条件：MaxTimeCondition和MaxCandidatesCondi
 以下是一个简单的示例，搜索在持续十五分钟或训练完十个候选项之后终止：
 
 ```java
-TerminationCondition[] terminationConditions = { 
+TerminationCondition[] terminationConditions = {
     new MaxTimeCondition(15, TimeUnit.MINUTES),
     new MaxCandidatesCondition(10)
 };

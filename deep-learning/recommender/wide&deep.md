@@ -18,7 +18,7 @@ Wide & Deep的主要特点:
 - **泛化（generalization）即相关性的传递，发现在历史数据中很少或者没有出现的新的特征组合；——Deep部分**。
   在推荐系统中，记忆体现的准确性，而泛化体现的是新颖性。
 
-  
+
 
 ![img](https://miro.medium.com/max/1794/1*jqa4JTOUb_xUhG5Tqapo4A.png)
 

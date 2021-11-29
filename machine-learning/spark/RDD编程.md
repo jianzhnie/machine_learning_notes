@@ -175,7 +175,7 @@ Python
 ```python
 >>> list = ["Hadoop","Spark","Hive"]
 >>> rdd = sc.parallelize(list)
->>> print(rdd.count()) //行动操作，触发一次真正从头到尾的计算 
+>>> print(rdd.count()) //行动操作，触发一次真正从头到尾的计算
 >>> print(','.join(rdd.collect())) //行动操作，触发一次真正从头到尾的计算Hadoop,Spark,Hive
 ```
 
@@ -467,4 +467,3 @@ Python
 >>> sc.parallelize([1, 2, 3, 4]).foreach(lambda x : accum.add(x))
 >>> accum.value10
 ```
-

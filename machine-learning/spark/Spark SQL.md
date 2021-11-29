@@ -90,7 +90,7 @@ cd /usr/local/spark./bin/pyspark
 root
  |-- age: long (nullable = true)
  |-- name: string (nullable = true)
- 
+
 // 选择多列
 >>> df.select(df.name,df.age + 1).show()
 +-------+---------+
@@ -100,7 +100,7 @@ root
 |   Andy|       31|
 | Justin|       20|
 +-------+---------+
- 
+
 // 条件过滤
 >>> df.filter(df.age > 20 ).show()
 +---+----+
@@ -108,7 +108,7 @@ root
 +---+----+
 | 30|Andy|
 +---+----+
- 
+
 // 分组聚合
 >>> df.groupBy("age").count().show()
 +----+-----+
@@ -118,7 +118,7 @@ root
 |null|    1|
 |  30|    1|
 +----+-----+
- 
+
 // 排序
 >>> df.sort(df.age.desc()).show()
 +----+-------+
@@ -128,7 +128,7 @@ root
 |  19| Justin|
 |null|Michael|
 +----+-------+
- 
+
 //多列排序
 >>> df.sort(df.age.desc(), df.name.asc()).show()
 +----+-------+
@@ -138,7 +138,7 @@ root
 |  19| Justin|
 |null|Michael|
 +----+-------+
- 
+
 //对列进行重命名
 >>> df.select(df.name.alias("username"),df.age).show()
 +--------+----+
@@ -168,13 +168,13 @@ Spark官网提供了两种方法来实现从RDD转换得到DataFrame，第一种
 ...     rel['name'] = x[0]
 ...     rel['age'] = x[1]
 ...     return rel
-... 
+...
 >>> peopleDF = sc.textFile("file:///usr/local/spark/examples/src/main/resources/people.txt").map(lambda line : line.split(',')).map(lambda x: Row(**f(x))).toDF()
 >>> peopleDF.createOrReplaceTempView("people")  //必须注册为临时表才能供下面的查询使用
- 
+
 >>> personsDF = spark.sql("select * from people")
 >>> personsDF.rdd.map(lambda t : "Name:"+t[0]+","+"Age:"+t[1]).foreach(print)
- 
+
 Name: 19,Age:Justin
 Name: 29,Age:Michael
 Name: 30,Age:Andy
@@ -189,33 +189,33 @@ Name: 30,Age:Andy
 >>>  from pyspark.sql.types import StructType
 >>> from pyspark.sql.types import StructField
 >>> from pyspark.sql.types import StringType
- 
+
 //生成 RDD
 >>> peopleRDD = sc.textFile("file:///usr/local/spark/examples/src/main/resources/people.txt")
- 
+
 //定义一个模式字符串
 >>> schemaString = "name age"
- 
+
 //根据模式字符串生成模式
 >>> fields = list(map( lambda fieldName : StructField(fieldName, StringType(), nullable = True), schemaString.split(" ")))
 >>> schema = StructType(fields)
 //从上面信息可以看出，schema描述了模式信息，模式中包含name和age两个字段
- 
- 
+
+
 >>> rowRDD = peopleRDD.map(lambda line : line.split(',')).map(lambda attributes : Row(attributes[0], attributes[1]))
- 
+
 >>> peopleDF = spark.createDataFrame(rowRDD, schema)
- 
+
 //必须注册为临时表才能供下面查询使用
 scala> peopleDF.createOrReplaceTempView("people")
- 
+
 >>> results = spark.sql("SELECT * FROM people")
 >>> results.rdd.map( lambda attributes : "name: " + attributes[0]+","+"age:"+attributes[1]).foreach(print)
- 
+
 name: Michael,age: 29
 name: Andy,age: 30
 name: Justin,age: 19
- 
+
 ```
 
 在上面的代码中，peopleRDD.map(lambda line : line.split(‘,’))作用是对people这个RDD中的每一行元素都进行解析。比如，people这个RDD的第一行是：
@@ -237,7 +237,7 @@ peopleDF = spark.createDataFrame(rowRDD, schema)，这条语句就相当于建�
 
 ```python
 >>> peopleDF = spark.read.format("json").load("file:///usr/local/spark/examples/src/main/resources/people.json")
- 
+
 >>> peopleDF.select("name", "age").write.format("csv").save("file:///usr/local/spark/mycode/newpeople.csv")
 ```
 
@@ -255,7 +255,7 @@ Shell 命令
 可以看到/usr/local/spark/mycode/这个目录下面有个newpeople.csv文件夹（注意，不是文件），这个文件夹中包含下面两个文件：
 
 ```
-part-r-00000-33184449-cb15-454c-a30f-9bb43faccac1.csv 
+part-r-00000-33184449-cb15-454c-a30f-9bb43faccac1.csv
 _SUCCESS
 ```
 
@@ -283,7 +283,7 @@ Python
 
 ```python
 >>> peopleDF = spark.read.format("json").load("file:///usr/local/spark/examples/src/main/resources/people.json"
->>> peopleDF.rdd.saveAsTextFile("file:///usr/local/spark/mycode/newpeople.txt") 
+>>> peopleDF.rdd.saveAsTextFile("file:///usr/local/spark/mycode/newpeople.txt")
 ```
 
 Python
@@ -300,7 +300,7 @@ Shell 命令
 可以看到/usr/local/spark/mycode/这个目录下面有个newpeople.txt文件夹（注意，不是文件），这个文件夹中包含下面两个文件：
 
 ```python
-part-00000  
+part-00000
 _SUCCESS
 ```
 
@@ -339,10 +339,10 @@ Spark已经为我们提供了parquet样例数据，就保存在“/usr/local/spa
 
 ```python
 >>> parquetFileDF = spark.read.parquet("file:///usr/local/spark/examples/src/main/resources/users.parquet")
->>> parquetFileDF.createOrReplaceTempView("parquetFile") 
->>> namesDF = spark.sql("SELECT * FROM parquetFile") 
+>>> parquetFileDF.createOrReplaceTempView("parquetFile")
+>>> namesDF = spark.sql("SELECT * FROM parquetFile")
 >>> namesDF.rdd.foreach(lambda person: print(person.name))
- AlyssaBen 
+ AlyssaBen
 ```
 
 Python
@@ -352,8 +352,8 @@ Python
 进入pyspark执行下面命令：
 
 ```python
->>> peopleDF = spark.read.json("file:///usr/local/spark/examples/src/main/resources/people.json") 
->>> peopleDF.write.parquet("file:///usr/local/spark/mycode/newpeople.parquet") 
+>>> peopleDF = spark.read.json("file:///usr/local/spark/examples/src/main/resources/people.json")
+>>> peopleDF.write.parquet("file:///usr/local/spark/mycode/newpeople.parquet")
 ```
 
 Python

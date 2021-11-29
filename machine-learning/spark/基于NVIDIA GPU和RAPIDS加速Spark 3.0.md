@@ -163,7 +163,7 @@ Query 5也是一个比较经典的一个查询，它特别在哪儿？因为它�
 
 对于Scala UDF的话，也有了一些初步的支持，目前支持的算子不是特别多，但是也可以具体的跑一些例子可以看一下，就是说对应的实际的用到的UDF是不是已经可以被编译成GPU版本，如果是GPU版本的话，其实应该是能达到一个比较好的一个性能收益。
 
-**4. 加速Pandas UDFS** 
+**4. 加速Pandas UDFS**
 
 ![图片](https://mmbiz.qpic.cn/mmbiz_png/zHbzQPKIBPiarFQaj6NWOKQHnN8w2GnGlqkG20SShiakMlCXZVNIOEGDFF0x1DJUPNB2IXTGVE7OKibCBcqVKquRA/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
 
@@ -195,7 +195,7 @@ Query 5也是一个比较经典的一个查询，它特别在哪儿？因为它�
 
 - **Apache Spark在现代企业中的应用**
 
-  
+
 
 ![图片](https://mmbiz.qpic.cn/mmbiz_png/QDdcCFX9vIeF7xDKCZ9oIG7LAUfpOb95YHnHRPRyejQIv1fW6e5nkApwXFWpOia92XY7OEBh9a28vBHgzorxanw/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
 

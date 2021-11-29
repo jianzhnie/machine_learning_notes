@@ -53,7 +53,7 @@ class SparkDriverService(driver_service.BasicDriverService):
         self._initial_np = initial_np
         self._fn = fn # 保存用户代码
         self._args = args # 用户参数
-        self._kwargs = kwargs 
+        self._kwargs = kwargs
         self._key = key
         self._nics = nics # 网卡信息
         self._ranks_to_indices = {}
@@ -120,7 +120,7 @@ mapPartitionsWithIndex 这句代码会促使 Spark 在多个 Executor 之中运�
 def _make_spark_thread(spark_context, spark_job_group, driver, result_queue,
                        settings, use_gloo, is_elastic):
     """Creates `settings.num_proc` Spark tasks in a parallel thread."""
-    
+
     def run_spark():
         """Creates `settings.num_proc` Spark tasks, each executing `_task_fn` and waits for them to terminate."""
         try:
@@ -172,7 +172,7 @@ _notify_and_register_task_addresses(driver, settings)
 def _notify_and_register_task_addresses(driver, settings, notify=True):
     # wait for num_proc tasks to register
     # 等待task来注册，需要等待 num_proc 个task
-    driver.wait_for_initial_registration(settings.start_timeout) 
+    driver.wait_for_initial_registration(settings.start_timeout)
 
     def notify_and_register(index): # 注册task，并且通知各个 task 开始下一步
         task_client = task_service.SparkTaskClient(index,
@@ -205,7 +205,7 @@ def _notify_and_register_task_addresses(driver, settings, notify=True):
 
 ```python
 class BasicDriverService(network.BasicService):
-  
+
   def wait_for_initial_registration(self, timeout):
       self._wait_cond.acquire()
       try:
@@ -405,7 +405,7 @@ def _task_fn(index, driver_addresses, key, settings, use_gloo, is_elastic):
                 task_service.SparkTaskClient(local_rank_zero_index,
                                              first_task_addresses, settings.key,
                                              settings.verbose)
-            # 调用 task.wait_for_command_termination() 等待结束  
+            # 调用 task.wait_for_command_termination() 等待结束
             first_task_client.wait_for_command_termination()
 
         return task.fn_result()
@@ -478,7 +478,7 @@ def _handle(self, req, client_address):
     if isinstance(req, ResourcesRequest):
         return ResourcesResponse(self._get_resources())
 
-    # 获取 task 地址  
+    # 获取 task 地址
     if isinstance(req, GetTaskToTaskAddressesRequest):
         next_task_index = req.task_index
         next_task_addresses = req.all_task_addresses
@@ -571,7 +571,7 @@ class BasicDriverService(network.BasicService):
                 # Just use source address for service for fast probing.
                 self._task_addresses_for_driver[req.index] = \
                     self._filter_by_ip(req.task_addresses, client_address[0])
-                  
+
                 # Remove host hash earlier registered under this index.
                 if req.index in self._task_index_host_hash:
                     earlier_host_hash = self._task_index_host_hash[req.index]
@@ -590,7 +590,7 @@ class BasicDriverService(network.BasicService):
             finally:
                 self._wait_cond.notify_all()
                 self._wait_cond.release()
-                
+
             return network.AckResponse()
 ```
 
@@ -602,7 +602,7 @@ task.wait_for_initial_registration 会等待 self._initial_registration_complete
 
 ```python
 class BasicTaskService(network.BasicService):
-  
+
   def wait_for_initial_registration(self, timeout):
         self._wait_cond.acquire()
         try:
@@ -726,7 +726,7 @@ def _notify_and_register_task_addresses(driver, settings, notify=True):
     for index in driver.task_indices():
         in_thread(notify_and_register, (index,)) # 注册task，并且通知各个 task 开始下一步
 
-    # 再次确认下所有 task 都OK    
+    # 再次确认下所有 task 都OK
     driver.wait_for_task_to_task_address_updates(settings.start_timeout)
 ```
 
@@ -808,7 +808,7 @@ def wait_for_command_termination(self):
 ```python
 class BasicTaskService(network.BasicService):
     def _handle(self, req, client_address):
-      
+
         if isinstance(req, RunCommandRequest): # 运行命令请求
             self._wait_cond.acquire()
             try:
@@ -832,7 +832,7 @@ class BasicTaskService(network.BasicService):
             finally:
                 self._wait_cond.notify_all()
                 self._wait_cond.release()
-            return network.AckResponse()  
+            return network.AckResponse()
 ```
 
 逻辑如下：

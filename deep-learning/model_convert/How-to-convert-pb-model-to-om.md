@@ -31,7 +31,7 @@ atc --framework=3 --model=yolov3_coco.pb --output=yolov3 --soc_version=Ascend310
 
 - 图像的预处理操作比如 Crop、Resize、Normalize 等 是否应该加到计算图中？
 
->不建议放，会增加模型的复杂度。 
+>不建议放，会增加模型的复杂度。
 >
 >我们昇腾有提供 DVPP硬件的预处理和 AIPP 软件处理的能力.
 如果要使用DVPP就需要使用我们昇腾的ACL软件框架来处理
@@ -43,7 +43,7 @@ atc --framework=3 --model=yolov3_coco.pb --output=yolov3 --soc_version=Ascend310
 > PB 到 om 我们支持指定 outnode 截断转换
 
 - 模型转换过程中的 insert_op_conf 应该如何设置？
- 
+
  在第一次将转换成功 resnet50 的 om 模型交给华为进行推理测试时失败，华为工程师发给我一个  AIPP  图像预处理算子， 再次转换之后的模型推理成功。
 
 ```sh

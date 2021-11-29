@@ -83,7 +83,7 @@ if gpus:
 (mnist_images, mnist_labels), _ = \
     tf.keras.datasets.mnist.load_data(path='mnist-%d.npz' % hvd.rank())
 
-# 切分数据  
+# 切分数据
 dataset = tf.data.Dataset.from_tensor_slices(
     (tf.cast(mnist_images[..., tf.newaxis] / 255.0, tf.float32),
              tf.cast(mnist_labels, tf.int64))
@@ -319,7 +319,7 @@ void InitializeHorovodOnce(const int* ranks, int nranks) {
   if (!horovod_global.initialize_flag.test_and_set()) {
     horovod_global.control_operation = ParseControllerOpsFromEnv();
     horovod_global.cpu_operation = ParseCPUOpsFromEnv();
-    
+
 #if HAVE_MPI // 依据是否编译了MPI进行处理
     // Enable mpi is it's used either in cpu data transfer or controller
     if (horovod_global.cpu_operation == LibType::MPI ||
