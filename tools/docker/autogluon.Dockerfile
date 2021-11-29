@@ -14,7 +14,7 @@ RUN apt-get update && apt-get install -y ffmpeg libsm6 libxext6 ninja-build libg
     wget \
     unzip \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* 
+    && rm -rf /var/lib/apt/lists/*
 
 # change pip source
 RUN pip config set global.index-url https://mirrors.aliyun.com/pypi/simple/
@@ -55,4 +55,4 @@ RUN pip install numpy && \
 
 # Install tensorboard jypyterlab
 RUN pip install jupyterlab && \
-    pip install tensorboard && 
+    pip install tensorboard &&
