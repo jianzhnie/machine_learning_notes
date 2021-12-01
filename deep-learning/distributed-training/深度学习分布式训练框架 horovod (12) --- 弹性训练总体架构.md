@@ -192,7 +192,7 @@ def train(state):
 def on_state_reset():
     optimizer.lr.assign(lr * hvd.size())
 
-# 这里是新修改处，传入了一个 TensorFlowKerasState   
+# 这里是新修改处，传入了一个 TensorFlowKerasState
 state = hvd.elastic.TensorFlowKerasState(model, optimizer, batch=0, epoch=0)
 state.register_reset_callbacks([on_state_reset])
 train(state)
@@ -336,4 +336,3 @@ def run_fn(func, reset):
 5. 继续训练；
 
 至此，我们已经分析了horovod 弹性训练基本架构，下一篇我们分析最主要的部件：Driver。
-

@@ -38,7 +38,7 @@ Scala has some great natural language processing libraries as a part of ScalaNLP
 
 # Visualization
 
-## [Breeze-vis](https://github.com/scalanlp/breeze/tree/master/viz) 
+## [Breeze-vis](https://github.com/scalanlp/breeze/tree/master/viz)
 
 As the name suggests, Breeze-viz is the plotting library developed by Breeze for Scala. It is based on the prominent Java charting library JFreeChart and has a MATLAB-like syntax. Although Breeze-viz has much fewer opportunities than MATLAB, matplotlib in Python, or R, it is still very helpful in the process of developing and establishing new models.
 
@@ -58,7 +58,7 @@ Vegas provides declarative visualization that allows you to focus mainly on spec
 
 # Machine Learning
 
-## [Smile](https://haifengl.github.io/smile/) 
+## [Smile](https://haifengl.github.io/smile/)
 
 Statistical Machine Intelligence and Learning Engine, or shortly Smile, is a promising modern machine learning system in some ways similar to Python’s scikit-learn. It is developed in Java and offers an API for Scala too. The library will amaze you with fast and extensive applications, efficient memory usage and a large set of machine learning algorithms for Classification, Regression, Nearest Neighbor Search, Feature Selection, etc.
 
@@ -79,17 +79,17 @@ Built on top of Spark, MLlib library provides a vast variety of machine learning
 
 Each package has its pros and cons and, in practice, it often proves more effective to apply both.
 
-## [DeepLearning.scala](http://deeplearning.thoughtworks.school/) 
+## [DeepLearning.scala](http://deeplearning.thoughtworks.school/)
 
 DeepLearning.scala is an alternative machine learning toolkit that provides efficient solutions for deep learning. It utilizes mathematical formulas to create complex dynamic neural networks through a combination of object-oriented and functional programming. The library uses a wide range of types, as well as applicative type classes. The latter allows commencing multiple calculations simultaneously, which we consider crucial to have in a data scientist’s disposal. It’s worth mentioning that the library’s neural networks are programs and support all of Scala features.
 
-## [Summing Bird](https://github.com/twitter/summingbird) 
+## [Summing Bird](https://github.com/twitter/summingbird)
 
 Summingbird is a domain-specific data processing framework which allows integration of batch and online MapReduce computations as well as the hybrid batch/online processing mode. The main catalyzer for designing the language came from Twitter developers who were often dealing with writing the same code twice: first for batch processing, then once more for online processing.
 
 Summingbird consumes and generates two types of data: streams (infinite sequences of tuples), and snapshots regarded as the complete state of a dataset at some point in time. Finally, Summingbird provides platform implementations for Storm, Scalding, and an in-memory execution engine for testing purposes.
 
-## [PredictionIO](http://predictionio.incubator.apache.org/index.html) 
+## [PredictionIO](http://predictionio.incubator.apache.org/index.html)
 
 Of course, we can not ignore a machine learning server for constructing and deploying predictive engines called PredictionIO. It is built on Apache Spark, MLlib, and HBase and was even ranked on Github as the most popular Apache Spark-based machine learning product. It enables you to easily and efficiently build, evaluate and deploy engines, implement your own machine learning models, and incorporate them into your engine.
 
@@ -101,7 +101,7 @@ Developed by the Scala’s creator company, Akka is a concurrent framework for b
 
 The main difference, also considered as the most significant improvement, is the additional layer between the actors and the underlying system which only requires the actors to process messages, while the framework handles all other complications. All actors are hierarchically arranged, thus creating an Actor System which helps actors to interact with each other more efficiently and solve complex problems by dividing them into smaller tasks.
 
-## [Spray](http://spray.io/) 
+## [Spray](http://spray.io/)
 
 Now let’s take a look at Spray — a suite of Scala libraries for constructing REST/HTTP web services built on top of Akka. It assures asynchronous, non-blocking actor-based high-performance request processing, while the internal Scala DSL provides a defining web service behavior, as well as efficient and convenient testing capabilities.
 

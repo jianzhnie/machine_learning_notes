@@ -67,13 +67,13 @@ Eclipse IDE已经自动集成了Maven框架。
   <name>playersStats</name>
   <!-- FIXME change it to the project's website -->
   <url>http://www.example.com</url>
-  
+
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>14</maven.compiler.source>
     <maven.compiler.target>14</maven.compiler.target>
   </properties>
-  
+
   <dependencies>
     <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-assembly-plugin -->
 	<dependency>
@@ -94,7 +94,7 @@ Eclipse IDE已经自动集成了Maven框架。
       <version>3.0.0</version>
     </dependency>
   </dependencies>
-  
+
   <build>
 	<plugins>
   	  <plugin>
@@ -164,7 +164,7 @@ public static void main(String[] args) throws Exception {
 	.appName("Java Spark SQL basic example")
 	.config("spark.master", "local")
 	.getOrCreate();
-		
+
     Dataset<Row> df = spark.read()
         .option("header", "true")
 	.option("inferSchema", "true")
@@ -173,7 +173,7 @@ public static void main(String[] args) throws Exception {
     df.select("Player").show();
     df.select(col("Player"), col("GP")).show();
     df.filter(col("GP").gt(75)).show();
-    
+
     spark.stop();
 }
 ```

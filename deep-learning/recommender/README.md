@@ -133,13 +133,3 @@ Framework for CTR Prediction**](./paper/deepfm.pdf)
 
 [**搜索引擎点击模型综述**](./paper/搜索引擎点击模型综述.pdf)
 > 清华马少平团队的文章点击模型入门必看，搜索引擎点击模型综述
-
-
-
-
-
-
-
-
-
-

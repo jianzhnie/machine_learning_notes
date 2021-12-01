@@ -15,7 +15,7 @@
 ```dockerfile
 FROM ubuntu:16.04
 RUN apt-get update
-RUN apt-get install -y apt-utils libjpeg-dev \     
+RUN apt-get install -y apt-utils libjpeg-dev \
 python-pip
 RUN pip install --upgrade pip
 RUN easy_install -U setuptools
@@ -53,18 +53,18 @@ RUN apt-get update && apt-get install -y apt-utils \
 
 - 最终效果在go环境中能让后端镜像从**300M减少到7M**
 
-  
+
 
 ```dockerfile
 FROM golang:1.11.4-alpine3.8 AS build-env
- 
+
 ENV GO111MODULE=off
 ENV GO15VENDOREXPERIMENT=1
 ENV GITPATH=https://github.com/apulis/AIArtsBackend
 RUN mkdir -p /go/src/${GITPATH}
 COPY ./ /go/src/${GITPATH}
 RUN cd /go/src/${GITPATH} && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go install -v
- 
+
 FROM alpine:latest
 ENV apk –no-cache add ca-certificates
 COPY --from=build-env /go/bin/AIArtsBackend /root/AIArtsBackend
@@ -91,11 +91,11 @@ COPY --from=build-env /go/bin/AIArtsBackend /root/AIArtsBackend
 - 合理使用`RUN rm` 构建出来的镜像不要包含不需要的内容，删除掉日志、安装临时文件等。
 
 #### 其他建议
-  
+
 
 - 设置一些常用的国内加速镜像源。
 
-  ```RUN python3 -m pip install --upgrade pip && python3 -m pip config set global.index-url http://mirrors.aliyun.com/pypi/simple && python3 -m pip config set install.trusted-host mirrors.aliyun.com  
+  ```RUN python3 -m pip install --upgrade pip && python3 -m pip config set global.index-url http://mirrors.aliyun.com/pypi/simple && python3 -m pip config set install.trusted-host mirrors.aliyun.com
   ```
 
   pip源：`pip  install -i http://mirrors.aliyun.com/pypi/simple`
@@ -118,7 +118,7 @@ COPY --from=build-env /go/bin/AIArtsBackend /root/AIArtsBackend
     COPY ./packages  /packages
     RUN pip install /packages/*.whl && rm -rf /packages/
     ```
-    
+
   - 常用pip命令
 
     `pip install -i https://mirrors.ustc.edu.cn/pypi/web/simple  --default-timeout 600 --no-cache-dir   -r requirements.txt --user`

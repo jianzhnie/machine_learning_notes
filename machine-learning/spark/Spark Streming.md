@@ -95,7 +95,7 @@ Python
 如果是编写一个独立的Spark Streaming程序，而不是在pyspark中运行，则需要通过如下方式创建StreamingContext对象：
 
 ```python
-from pyspark import SparkContext, SparkConf 
+from pyspark import SparkContext, SparkConf
 from pyspark.streaming import Streaming, Context
 conf = SparkConf()
 conf.setAppName('TestDStream')
@@ -141,7 +141,7 @@ Spark is fast
 >>> words = lines.flatMap(lambda line: line.split(' '))
 >>> wordCounts = words.map(lambda x : (x,1)).reduceByKey(add)
 >>> wordCounts.pprint()
->>> ssc.start() 
+>>> ssc.start()
 >>>#实际上，当你输入这行回车后，Spark Streaming就开始进行循环监听，下面的ssc.awaitTermination()是无法输入到屏幕上的，但是，为了程序完整性，这里还是给出ssc.awaitTermination()
 >>> ssc.awaitTermination()
 ```

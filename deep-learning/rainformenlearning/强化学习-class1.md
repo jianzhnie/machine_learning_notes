@@ -2,7 +2,7 @@
 
 ### 1. 强化学习简介
 
-强化学习（reinforcementlearning, RL）是近年来机器学习和智能控制领域的主要方法之一。定义: Reinforcement learning is learning what to do ----how to map situations to actions --- so as to maximize a numerical reward signal.[1]  
+强化学习（reinforcementlearning, RL）是近年来机器学习和智能控制领域的主要方法之一。定义: Reinforcement learning is learning what to do ----how to map situations to actions --- so as to maximize a numerical reward signal.[1]
 
 也就是说强化学习关注的是智能体如何在环境中采取一系列行为，从而获得最大的累积回报。
 
@@ -102,22 +102,22 @@ AlphaStar 还使用了一种新的多智能体学习算法。该神经网路最�
 
 #### 开源框架
 
-- [deepmind/trfl/](https://github.com/deepmind/trfl/) 
-- [deepmind/open_spiel](https://github.com/deepmind/open_spiel) 
-- [google/dopamine](https://github.com/google/dopamine) 
-- [tensorflow/agents](https://github.com/tensorflow/agents) 
-- [keras-rl/keras-rl](https://github.com/keras-rl/keras-rl) 
-- [tensorforce/tensorforce](https://github.com/tensorforce/tensorforce) 
-- [facebookresearch/ReAgent](https://github.com/facebookresearch/ReAgent) 
-- [thu-ml/tianshou](https://github.com/thu-ml/tianshou) 
-- [astooke/rlpyt](https://github.com/astooke/rlpyt) 
-- [NervanaSystems/coach](https://github.com/NervanaSystems/coach) 
-- [PaddlePaddle/PARL](https://github.com/PaddlePaddle/PARL) 
+- [deepmind/trfl/](https://github.com/deepmind/trfl/)
+- [deepmind/open_spiel](https://github.com/deepmind/open_spiel)
+- [google/dopamine](https://github.com/google/dopamine)
+- [tensorflow/agents](https://github.com/tensorflow/agents)
+- [keras-rl/keras-rl](https://github.com/keras-rl/keras-rl)
+- [tensorforce/tensorforce](https://github.com/tensorforce/tensorforce)
+- [facebookresearch/ReAgent](https://github.com/facebookresearch/ReAgent)
+- [thu-ml/tianshou](https://github.com/thu-ml/tianshou)
+- [astooke/rlpyt](https://github.com/astooke/rlpyt)
+- [NervanaSystems/coach](https://github.com/NervanaSystems/coach)
+- [PaddlePaddle/PARL](https://github.com/PaddlePaddle/PARL)
 
 #### 开源模型
 
-- [dennybritz/reinforcement-learning](https://github.com/dennybritz/reinforcement-learning) 
-- [openai/baselines](https://github.com/openai/baselines) 
+- [dennybritz/reinforcement-learning](https://github.com/dennybritz/reinforcement-learning)
+- [openai/baselines](https://github.com/openai/baselines)
 
 #### 其他资源
 

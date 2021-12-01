@@ -60,7 +60,7 @@ In [1]: import featuretools as ft
 In [2]: es = ft.demo.load_mock_customer(return_entityset=True)
 
 In [3]: es
-Out[3]: 
+Out[3]:
 Entityset: transactions #实体集，数据集是关于客户事务的
   Entities:  #实体，即四张表，包含实体名称及其表的行和列
     transactions [Rows: 500, Columns: 5] #会话的事件列表
@@ -68,7 +68,7 @@ Entityset: transactions #实体集，数据集是关于客户事务的
     sessions [Rows: 35, Columns: 4] #会话及其关联属性，主键为session_id
     customers [Rows: 5, Columns: 4] #客户及其关联属性，主键为customer_id
   Relationships: #关系，一对多，子->父
-    transactions.product_id -> products.product_id 
+    transactions.product_id -> products.product_id
     transactions.session_id -> sessions.session_id
     sessions.customer_id -> customers.customer_id
     注：主键为能唯一地标识表中的每一行的一个列或者多列的组合，通过它可强制表的实体完整性。
@@ -102,11 +102,11 @@ In [4]: feature_matrix, feature_defs = ft.dfs(entityset=es,
    ...:                                       target_entity="customers",
    ...:                                       agg_primitives=["count"],
    ...:                                       trans_primitives=["month"])
-   ...: 
+   ...:
 In [5]: feature_matrix
-Out[5]: 
+Out[5]:
             zip_code  COUNT(sessions)  MONTH(join_date)  MONTH(date_of_birth)
-customer_id                                                                  
+customer_id
 5              60091                6                 7                     7
 4              60091                8                 4                     8
 1              60091                8                 4                     7

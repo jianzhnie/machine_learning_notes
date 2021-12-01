@@ -299,7 +299,7 @@ Scala는 매우 강력하며 여러가지 페러다임에 적용 가능한 언�
   ```
 
 - 함수 호출자는 반드시 함수의 정의를 따라야 합니다. 예를 들어, 함수가 괄호 없이 선언되었다면 괄호 없이 호출되어야 합니다. 이 것은 단지 문법적인 문제일 뿐만 아니라 `apply`를 호출 할 때에도 문제가 될 수 있습니다.
- 
+
   ```scala
   class Foo {
     def apply(args: String*): Int
@@ -585,7 +585,7 @@ class Child extends Parent {
 val (a, b) = (1, 2)
 ```
 
-그러나 생성자에서 이를 사용하지 말아야 합니다 (특히 `a` 와 `b` 가 `transient`의 어노테이션으로 표기되어 있는 경우). Scala 컴파일러는 여분의 Tuple2 필드를 하나 생성하게 되는데 이는 `transient`가 아래 예제에서 적용되지 않습니다.   
+그러나 생성자에서 이를 사용하지 말아야 합니다 (특히 `a` 와 `b` 가 `transient`의 어노테이션으로 표기되어 있는 경우). Scala 컴파일러는 여분의 Tuple2 필드를 하나 생성하게 되는데 이는 `transient`가 아래 예제에서 적용되지 않습니다.
 ```scala
 class MyClass {
   // This will NOT work because the compiler generates a non-transient Tuple2
@@ -646,7 +646,7 @@ stream1.join(stream2)
 
 ### <a name='type_inference'>타입 추론</a>
 
-Scala의 타입 추론 (특히 left-side 타입 추론) 과 함수 (closure) 추론은 코드를 더 간결하게 만들 수 있습니다. 아래와 같은 몇 가지 경우는 명시적인 타입이 주어져야 합니다: 
+Scala의 타입 추론 (특히 left-side 타입 추론) 과 함수 (closure) 추론은 코드를 더 간결하게 만들 수 있습니다. 아래와 같은 몇 가지 경우는 명시적인 타입이 주어져야 합니다:
 
 - __Public 함수는 명시적으로 타입이 주어져야 합니다__. 그렇지 않다면 컴파일러가 잘못된 타입을 추론 할 수 있습니다.
 - __Implicit 함수들은 명시적으로 타입이 주어져야 합니다__. 그렇지 않다면 Scala 컴파일러는 증분 컴파일에서 실패 할 수 있습니다.
@@ -689,7 +689,7 @@ __Return을 함수(closure)에 사용하지 않도록 합니다__. `return` 은 
 
 ### <a name='recursion'>재귀 용법 과 꼬리 재귀 용법</a>
 
-__재귀는 피하도록 합니다__. 단, 이 문제가 자연적으로 재귀로 해결되어야 하는 경우는 사용합니다(예를 들어, 그래프 순회 혹은 트리 순회). 
+__재귀는 피하도록 합니다__. 단, 이 문제가 자연적으로 재귀로 해결되어야 하는 경우는 사용합니다(예를 들어, 그래프 순회 혹은 트리 순회).
 
 꼬리 재귀 용법이 적용되어야 하는 함수에 있어서는, `@tailrec` 어노태이션을 사용합니다. 이는 컴파일러가 이 것이 꼬리 재귀 용법이 적용 되어야 한다는 것을 확인 할 수 있도록 합니다 (사실은, 함수(closure)의 사용과 functional transformation등 으로 많은 꼬리 재귀 용법이 사용 되지 않을 수 있습니다)).
 
@@ -763,9 +763,9 @@ __심볼 리터럴의 사용은 피하도록 합니다__. 심볼 리터럴 (예�
       // handle InterruptedException
   }
   ```
-  이것은 우리가 `NonLocalReturnControl`를 에러 처리 하지 않도록 해 줍니다([Return 예약어](#return) 항목에 설명되어 있는 대로). 
+  이것은 우리가 `NonLocalReturnControl`를 에러 처리 하지 않도록 해 줍니다([Return 예약어](#return) 항목에 설명되어 있는 대로).
 
-- API 안에서 `Try` 를 사용 하지 않습니다. 예를 들어 어떤 함수에서도 Try를 반환값으로 사용하지 않습니다. 정상적으로 실행되지 않는 경우 명시적으로 예외를 던지고, Java의 try/catch 문을 사용하여 핸들링 하는 것이 권장됩니다. 
+- API 안에서 `Try` 를 사용 하지 않습니다. 예를 들어 어떤 함수에서도 Try를 반환값으로 사용하지 않습니다. 정상적으로 실행되지 않는 경우 명시적으로 예외를 던지고, Java의 try/catch 문을 사용하여 핸들링 하는 것이 권장됩니다.
 
   배경: Scala는 `Try`, `Success` 그리고 `Failure`를 통해서 모나딕한 에러 핸들리을 지원합니다. 이는 로직의 체이닝을 가능하게 합니다. 그러나, 이 모나딕한 에러 핸들링은 종종 다중 레벨의 복잡성을 가하고, 코드의 가독성을 저하 시킨다는 것을 경험을 통해 알게 됐습니다. 더군다나, 종종 어느 부분에서 에러가 나오고, 예상치 못 한 예외가 나오는지 알기가 힘듭니다. 그 이유는 `Try` 안에서 이 에러와 예외가 인코딩 되지 않기 때문 입니다. 따라서, 우리는 에러 핸들링을 위해 `Try`의 사용을 권고하지 않습니다. 특히:
 
@@ -803,13 +803,13 @@ __심볼 리터럴의 사용은 피하도록 합니다__. 심볼 리터럴 (예�
   def myMethod2(input: String): Option[String] = Some(transform(input))
   ```
 - None을 사용하여 예외를 표현하지 않습니다. 대신, 명시적으로 예외를 던집니다.
-- `Option`에서의 값을 확신 할 수 있지 않는 이상, `Option`에서 `get`을 명시적으로 호출하지 않습니다.  
+- `Option`에서의 값을 확신 할 수 있지 않는 이상, `Option`에서 `get`을 명시적으로 호출하지 않습니다.
 
 ### <a name='chaining'>모나드 채이닝</a>
 
 Scala의 강력한 특징중 하나는 모나드 채이닝 입니다. 거의 모든 것(예를 들어 collections, Option, Futrue 혹은 Try) 이 모나드 채이닝을 지원하고 같이 맞물려서 동작 할 수 있습니다. 이 것은 놀라울 정도로 강력한 개념입니다. 하지만 이 채이닝은 함부로 남용되어서는 안됩니다. 특히:
 
-- 3개 이상의 (내부를 포함)모나드 채이닝은 피하도록 합니다. 
+- 3개 이상의 (내부를 포함)모나드 채이닝은 피하도록 합니다.
 - 만약 코드의 논리를 이해하는데 5초 이상이 걸린다면, 모나드 체이닝을 사용 하지 않고, 같은 성과를 이룰수 있는 방법을 생각해 볼 필요가 있습니다. 일반적으로 `flatMap` 혹은 `fold`가 이에 해당 됩니다.
 - `flatMap` 후에는 거의 항상 모나드 채이닝을 이어가지 않습니다 (왜냐하면 타입이 바뀌기 때문입니다).
 
@@ -936,7 +936,7 @@ class Foo {
 ### <a name='concurrency-isolation'>동시성 로직 분리</a>
 
 일반적으로, 동시성과 동기화 로직은 최대한 분리되고 독립적이어야 합니다. 이 것은 다음을 의미합니다:
- 
+
 - API레벨에서 유저에게 노출된 함수나 콜백함수에 이 동기화 변수들을 노출 하는 것을 피합니다.
 - 복잡한 모듈에서는 작은 내부 모듈을 만들어 동시성을 위한 변수들을 갖고 있도록 합니다.
 
@@ -1071,7 +1071,7 @@ def sample(ratio: Double): RDD[T] = sample(ratio, withReplacement = false)
 
 - 추상 varargs 함수는 Java에서 작동하지 않습니다. 이는 Scala의 버그 때문입니다([SI-1459](https://issues.scala-lang.org/browse/SI-1459), [SI-9013](https://issues.scala-lang.org/browse/SI-9013)).
 
-- varargs 함수들을 오버로딩할 때 조심하도록 합니다. varargs 함수를 다른 varargs 타입과 오버로딩 하는 것은 소스의 호환성을 보장하지 않습니다. 
+- varargs 함수들을 오버로딩할 때 조심하도록 합니다. varargs 함수를 다른 varargs 타입과 오버로딩 하는 것은 소스의 호환성을 보장하지 않습니다.
   ```scala
   class Database {
     @scala.annotation.varargs
@@ -1183,7 +1183,7 @@ class JavaFriendlyAPI {
 
 ### <a name='misc_currentTimeMillis_vs_nanoTime'>currentTimeMillis 보다는 nanoTime</a>
 
-*지속 시간*을 계산할 때 혹은 *타임아웃*을 확인 할 때에는, 심지어 millisecond 이하의 숫자들이 필요 없는 경우에도  `System.currentTimeMillis()`의 사용을 피하시고 `System.nanoTime()`을 사용 하시길 바랍니다.   
+*지속 시간*을 계산할 때 혹은 *타임아웃*을 확인 할 때에는, 심지어 millisecond 이하의 숫자들이 필요 없는 경우에도  `System.currentTimeMillis()`의 사용을 피하시고 `System.nanoTime()`을 사용 하시길 바랍니다.
 
 `System.currentTimeMillis()`는 현재 시간을 반환하고 현재 시스템의 클록을 뒤따라 바꿉니다. 따라서 이러한 네거티브 클록 조정은 긴 시간의 타임아웃을 초래할 수 있습니다(클록 시간 이전 값으로 잡을 때 까지). 이 것은 네트워크가 장 시간 중단 된 후에, ntpd가 다음 "step"으로 진행할 때 발생 될 수 있습니다. 가장 전형적인 예로는 시스템 부팅 동안 DHCP 시간이 평소보다 오래 소요될 때 입니다. 이는, 이해하거나 재현하기 힘든 에러를 초래 할수 있습니다. `System.nanoTime()`은 wall-clock에 상관 없이, 항상 일정하게 증가 합니다.
 

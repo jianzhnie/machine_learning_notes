@@ -174,11 +174,11 @@ def check_host_updates(self):
 
 因此我们可以回答文初的两个问题：
 
-- 这些异常是 每个 worker 自动发出的吗？ 
+- 这些异常是 每个 worker 自动发出的吗？
   - 是的自动抛出的。
   - 当运行 用户训练函数出错时候，会根据捕获的异常信息来进行分析，如果是 ring allreduce 相关，就转为抛出异常 HorovodInternalError(e)。
   - 当如果发现 host 有变化，就会产生一个 HostsUpdatedInterrupt 异常。
-- 是 worker 们一起抛出异常吗？ 
+- 是 worker 们一起抛出异常吗？
   - 是一起抛出。
   - 如果训练出错，则都会抛出异常
   - 当驱动进程通过节点发现脚本发现一个节点被标记为新增或者移除时，它将发送一个通知到 所有workers，在下一次 state.commit() 或者更轻量的 state.check_host_updates() 被调用时，会**一起**抛出一个 HostsUpdateInterrupt 异常。
@@ -225,8 +225,8 @@ def run(func):
                     'HorovodAllgather' in e.message or \
                     'HorovodBroadcast' in e.message:
                 raise HorovodInternalError(e)
-                
-    return run_fn(wrapper, _reset) 
+
+    return run_fn(wrapper, _reset)
 ```
 
 大概逻辑如图：
@@ -677,4 +677,3 @@ def _to_numpy(self, var):
 ![img](https://ask.qcloudimg.com/http-save/yehe-7731142/bf24ed3eb2bd427698afd7c00a23e2ac.png?imageView2/2/w/1620)
 
 至此，弹性训练部分分析结束。
-

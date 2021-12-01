@@ -65,7 +65,7 @@ from sklearn.ensemble import RandomForestClassifier, ExtraTreesClassifier, Gradi
 from sklearn.linear_model import LogisticRegression
 from pystacknet.pystacknet import StackNetClassifier
 
-models=[ 
+models=[
         ######## First level ########
         [RandomForestClassifier (n_estimators=100, criterion="entropy", max_depth=5, max_features=0.5, random_state=1),
          ExtraTreesClassifier (n_estimators=100, criterion="entropy", max_depth=5, max_features=0.5, random_state=1),
@@ -76,11 +76,11 @@ models=[
         [RandomForestClassifier (n_estimators=200, criterion="entropy", max_depth=5, max_features=0.5, random_state=1)]
         ]
 model=StackNetClassifier(models, metric="auc", folds=4,
-    restacking=False,use_retraining=True, use_proba=True, 
+    restacking=False,use_retraining=True, use_proba=True,
     random_state=12345,n_jobs=1, verbose=1)
 
 model.fit(x,y)
-preds=model.predict_proba(x_test) 
+preds=model.predict_proba(x_test)
 ```
 
 参考文献

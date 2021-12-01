@@ -1,7 +1,7 @@
 #! https://zhuanlan.zhihu.com/p/367182300
 # High Level Overview of Apache Spark
 
-Spark是用于大规模数据处理的集群计算框架。 Spark为统一计算引擎提供了3种语言（Java，Scala和Python）丰富的算法库。 
+Spark是用于大规模数据处理的集群计算框架。 Spark为统一计算引擎提供了3种语言（Java，Scala和Python）丰富的算法库。
 
 Unified：借助Spark，无需将多个API或系统中的应用程序组合在一起。 Spark为您提供了足够的内置API来完成工作。
 

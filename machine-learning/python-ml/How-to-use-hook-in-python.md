@@ -452,4 +452,3 @@ def train(self, data_loader, **kwargs):
 
 ### 需要注意的地方
 如果有一个hook需要在两个不同时机执行两个需求，如在before_train_epoch和after_train_epoch，但是恰巧这两个需求的优先级不同，这个时候建议写成两个hook，每个hook只负责做一件事，这也是编程中一般原则吧。
-

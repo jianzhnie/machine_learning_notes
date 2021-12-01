@@ -50,9 +50,9 @@ Python中有多个贝叶斯优化库，它们在目标函数的代理函数的�
 ```python
 def objective(hyperparameters):
     """Returns validation score from hyperparameters"""
-    
+
     model = Classifier(hyperparameters)
-    validation_loss = cross_validation(model, training_data)       
+    validation_loss = cross_validation(model, training_data)
     return validation_loss
 ```
 
@@ -71,18 +71,18 @@ train_set = lgb.Dataset(train_features, train_labels)
 
 def objective(params, n_folds = N_FOLDS):
     """Objective function for Gradient Boosting Machine Hyperparameter Tuning"""
-    
+
     # Perform n_fold cross validation with hyperparameters
     # Use early stopping and evalute based on ROC AUC
-    cv_results = lgb.cv(params, train_set, nfold = n_folds, num_boost_round = 10000, 
+    cv_results = lgb.cv(params, train_set, nfold = n_folds, num_boost_round = 10000,
                         early_stopping_rounds = 100, metrics = 'auc', seed = 50)
-  
+
     # Extract the best score
     best_score = max(cv_results['auc-mean'])
-    
+
     # Loss must be minimized
     loss = 1 - best_score
-    
+
     # Dictionary with information for evaluation
     return {'loss': loss, 'params': params, 'status': STATUS_OK}
 ```
@@ -104,12 +104,12 @@ import lgb# Default gradient boosting machine classifier
 model = lgb.LGBMClassifier()
 modelLGBMClassifier(boosting_type='gbdt', n_estimators=100,
                class_weight=None, colsample_bytree=1.0,
-               learning_rate=0.1, max_depth=-1,                      
+               learning_rate=0.1, max_depth=-1,
                min_child_samples=20,
-               min_child_weight=0.001, min_split_gain=0.0, 
-               n_jobs=-1, num_leaves=31, objective=None, 
-               random_state=None, reg_alpha=0.0, reg_lambda=0.0, 
-               silent=True, subsample=1.0, 
+               min_child_weight=0.001, min_split_gain=0.0,
+               n_jobs=-1, num_leaves=31, objective=None,
+               random_state=None, reg_alpha=0.0, reg_lambda=0.0,
+               silent=True, subsample=1.0,
                subsample_for_bin=200000, subsample_freq=1)
 ```
 
@@ -118,7 +118,7 @@ modelLGBMClassifier(boosting_type='gbdt', n_estimators=100,
 例如，让我们在`Hyperopt`中定义一个简单的域，即GBM中每棵树的叶数的离散均匀分布：
 
 ```python
-from hyperopt import hp 
+from hyperopt import hp
 # Discrete uniform distribution
 num_leaves = {'num_leaves': hp.quniform('num_leaves', 30, 150, 1)}
 ```
@@ -148,9 +148,9 @@ Now, let’s define the entire domain:
 # Define the search space
 space = {
     'class_weight': hp.choice('class_weight', [None, 'balanced']),
-    'boosting_type': 
-    hp.choice('boosting_type', 
-    [{'boosting_type': 'gbdt', 'subsample': hp.uniform('gdbt_subsample', 0.5, 1)}, 
+    'boosting_type':
+    hp.choice('boosting_type',
+    [{'boosting_type': 'gbdt', 'subsample': hp.uniform('gdbt_subsample', 0.5, 1)},
      {'boosting_type': 'dart', 'subsample': hp.uniform('dart_subsample', 0.5, 1)},
      {'boosting_type': 'goss'}]),
     'num_leaves': hp.quniform('num_leaves', 30, 150, 1),
@@ -175,9 +175,9 @@ space = {
 定义 boosting 类型时，有一点需要注意：
 
 ```python
-# boosting type domain 
-boosting_type = {'boosting_type': hp.choice('boosting_type', 
-            [{'boosting_type': 'gbdt', 'subsample': hp.uniform('subsample', 0.5, 1)}, 
+# boosting type domain
+boosting_type = {'boosting_type': hp.choice('boosting_type',
+            [{'boosting_type': 'gbdt', 'subsample': hp.uniform('subsample', 0.5, 1)},
               {'boosting_type': 'dart', 'subsample': hp.uniform('subsample', 0.5, 1)},
                 {'boosting_type': 'goss', 'subsample': 1.0}])}
 ```
@@ -262,11 +262,11 @@ from hyperopt import fmin
 MAX_EVALS = 500
 
 # Optimize
-best = fmin(fn = objective, space = space, algo = tpe.suggest, 
+best = fmin(fn = objective, space = space, algo = tpe.suggest,
             max_evals = MAX_EVALS, trials = bayes_trials)
 ```
 
-每次迭代时，算法都会从代理函数中选择新的超参数值，该代理函数是基于先前的结果构建的，并在目标函数中评估这些值。 
+每次迭代时，算法都会从代理函数中选择新的超参数值，该代理函数是基于先前的结果构建的，并在目标函数中评估这些值。
 
 #### Results
 

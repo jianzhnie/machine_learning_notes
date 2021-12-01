@@ -49,7 +49,7 @@ y = pd.Series(boston_dataset.target)
 X = df_train
 
 conf = deeptable.ModelConfig(
-    metrics=['RootMeanSquaredError'], 
+    metrics=['RootMeanSquaredError'],
     nets=['dnn_nets'],
     dnn_params={
         'hidden_units': ((256, 0.3, True), (256, 0.3, True)),

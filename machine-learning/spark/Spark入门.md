@@ -162,7 +162,7 @@ filterRDD.count()
 
 第1行代码从HDFS文件中读取数据创建一个RDD；
 
-第2、3行定义一个过滤函数; 
+第2、3行定义一个过滤函数;
 
 第4行代码对fileRDD进行转换操作得到一个新的RDD，即filterRDD；
 

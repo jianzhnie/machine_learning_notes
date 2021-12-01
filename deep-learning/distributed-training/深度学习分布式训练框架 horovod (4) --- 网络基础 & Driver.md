@@ -269,7 +269,7 @@ def find_port(server_factory):
     max_port = 65536
     num_ports = max_port - min_port
     start_port = random.randrange(0, num_ports)
-    
+
     for port_offset in range(num_ports):
         try:
             port = min_port + (start_port + port_offset) % num_ports
@@ -465,15 +465,15 @@ class BasicDriverService(network.BasicService):
 本变量是记录了所有 task 的地址，变量举例如下：
 
 ```python
-self._all_task_addresses = { 
-  1: { 
+self._all_task_addresses = {
+  1: {
     'lo' : [('1.1.1.1', 12345)],
 		'eth0' : [('10.10.10.01', 12345)]
 	},
-  0: { 
+  0: {
     'lo' : [('2.2.2.2', 54321)],
 		'eth0' : [('10.10.10.02', 54321)]
-	}  
+	}
 }
 ```
 
@@ -498,13 +498,13 @@ if isinstance(req, RegisterTaskRequest):
 变量举例如下：
 
 ```python
-self._task_addresses_for_driver = { 
-  1: { 
+self._task_addresses_for_driver = {
+  1: {
 		'eth0' : [('10.10.10.01', 12345)]
 	},
-  0: { 
+  0: {
 		'eth0' : [('10.10.10.02', 54321)]
-	} 
+	}
 }
 ```
 
@@ -544,13 +544,13 @@ tasks = [
 该变量举例如下：
 
 ```python
-self._task_addresses_for_tasks = { 
-  1: { 
+self._task_addresses_for_tasks = {
+  1: {
 		'eth0' : [('10.10.10.01', 12345)]
 	},
-  0: { 
+  0: {
 		'eth0' : [('10.10.10.02', 54321)]
-	} 
+	}
 }
 ```
 
@@ -560,7 +560,7 @@ self._task_addresses_for_tasks = {
 if isinstance(req, RegisterTaskToTaskAddressesRequest):
     self.register_task_to_task_addresses(req.index, req.task_addresses)
     return network.AckResponse()
-  
+
 def register_task_to_task_addresses(self, index, task_addresses):
     self._wait_cond.acquire()
     try:
@@ -568,7 +568,7 @@ def register_task_to_task_addresses(self, index, task_addresses):
         self._task_addresses_for_tasks[index] = task_addresses # 这里赋值
     finally:
         self._wait_cond.notify_all()
-        self._wait_cond.release()  
+        self._wait_cond.release()
 ```
 
 该变量被 task 用来获取 某个 task 的一套网络接口，比如：
@@ -583,13 +583,13 @@ nics = set(driver.task_addresses_for_tasks(0).keys())
 每一个 task 有一个对应的 host hash，该数值被 MPI 作为 host name 来操作。
 
 ```python
-self._task_index_host_hash = { 
-  1: { 
+self._task_index_host_hash = {
+  1: {
 		'ip-10-10-10-01-dfdsfdsfdsfdsf2'
 	},
-  0: { 
+  0: {
 		'ip-10-10-10-02-treterwrtqwer'
-	} 
+	}
 }
 ```
 
@@ -621,13 +621,13 @@ def task_index_host_hash(self, index):
 该变量举例如下：
 
 ```python
-self._task_host_hash_indices = { 
-  { 
+self._task_host_hash_indices = {
+  {
 		'ip-10-10-10-01-dfdsfdsfdsfdsf2' : [1]
 	},
-  { 
+  {
 		'ip-10-10-10-02-treterwrtqwer' : [0]
-	} 
+	}
 }
 ```
 
@@ -780,13 +780,13 @@ def _launch_task_servers(all_host_names, local_host_names, driver_addresses,
                                          identity_file=settings.ssh_identity_file)
 
         args_list.append([command])
-        
+
     # Each thread will use ssh command to launch the server on one task. If an
     # error occurs in one thread, entire process will be terminated. Otherwise,
     # threads will keep running and ssh session -- and the the task server --
     # will be bound to the thread. In case, the horovod process dies, all
     # the ssh sessions and all the task servers will die as well.
-    
+
     # 使用 execute_function_multithreaded 在每一个 host 上运行，启动 task 服务
     threads.execute_function_multithreaded(_exec_command,
                                            args_list,
@@ -808,7 +808,7 @@ def _launch_task_servers(all_host_names, local_host_names, driver_addresses,
 
 ```python
 def _task_fn(index, num_hosts, driver_addresses, settings):
-  
+
     task = task_service.HorovodRunTaskService(index, settings.key, settings.nics)
     try:
         driver = driver_service.HorovodRunDriverClient(

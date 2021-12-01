@@ -61,7 +61,7 @@ def gather_tree(step_ids, parent_ids, max_sequence_lengths, end_token, name=None
         `[max_time, batch_size, beam_width]`.
     '''
     # 具体定义省略
-    
+
     return result
 ```
 其中，输入参数共有两处变化：
@@ -79,7 +79,7 @@ with graph.as_default():
 
     sequence_length = graph.get_tensor_by_name('Select_69:0')
     max_sequence_length = tf.reduce_max(sequence_length, reduction_indices=[1], name='MaxSequenceLength')
-    end_token = tf.constant(0, name='EndToken') 
+    end_token = tf.constant(0, name='EndToken')
 
 sess = tf.Session(graph=graph)
 

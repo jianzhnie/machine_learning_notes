@@ -227,9 +227,9 @@ ND4J 在特定于平台架构的后端上运行。CPU 后端带有 *nd4j-native*
 
 ```python
 model = Sequential()
-model.add(Convolution2D(nb_filters, (kernel_size[0], kernel_size[1]))) #卷积层  
-model.add(Activation('relu')) #非线性变换  
-model.add(MaxPooling2D(pool_size=pool_size)) #池化层  
+model.add(Convolution2D(nb_filters, (kernel_size[0], kernel_size[1]))) #卷积层
+model.add(Activation('relu')) #非线性变换
+model.add(MaxPooling2D(pool_size=pool_size)) #池化层
 ```
 
 **Deeplearning4j 版本**

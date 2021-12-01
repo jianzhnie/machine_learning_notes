@@ -66,7 +66,7 @@ class TensorFlowKerasState(ObjectState):
             bcast_op = broadcast_variables(_global_variables(), root_rank=0)
             self._bcast_model = lambda: self.backend.get_session().run(bcast_op)
             bcast_object = broadcast_object_fn(session=self.backend.get_session())
-        
+
     def sync(self):
         self._bcast_model() #广播模型
         self._save_model()
@@ -274,7 +274,7 @@ def run_fn(func, reset):
         |                                         |
        sync                                       |
         |                                         |
-        |                                         |    
+        |                                         |
         v                                         |
 _broadcast_model(model)                           |
         +                                         |
@@ -445,7 +445,7 @@ class WorkerNotificationManager(object):
         # 初始化 WorkerNotificationManager
         notification_manager.init()
         # 把自己对应的 state 注册到 notification_manager
-        notification_manager.register_listener(state)        
+        notification_manager.register_listener(state)
 ```
 
 WorkerNotificationManager初始化代码如下，其逻辑是：
@@ -463,7 +463,7 @@ def init(self, rendezvous_addr=None, rendezvous_port=None,
         if self._service:
             return
 
-        # 从系统变量中得到 rendezvous 的各种信息，比如地址，端口，key 等等  
+        # 从系统变量中得到 rendezvous 的各种信息，比如地址，端口，key 等等
         rendezvous_addr = rendezvous_addr or os.environ.get(HOROVOD_GLOO_RENDEZVOUS_ADDR)
         rendezvous_port = rendezvous_port if rendezvous_port is not None else \
             int(os.environ.get(HOROVOD_GLOO_RENDEZVOUS_PORT))

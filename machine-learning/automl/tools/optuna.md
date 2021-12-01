@@ -108,7 +108,7 @@ fig.show()
 
 ### Hyperband Pruning
 
-剪枝 (Pruning) 对于优化需要计算的目标函数至关重要。它使你可以在早期阶段有效地发现和停止无意义的试验，以节省计算资源，从而在更短的时间内找到最佳的优化方案。这也是在深度学习，这个Optuna的主要应用场景下我们经常碰到的情况。 
+剪枝 (Pruning) 对于优化需要计算的目标函数至关重要。它使你可以在早期阶段有效地发现和停止无意义的试验，以节省计算资源，从而在更短的时间内找到最佳的优化方案。这也是在深度学习，这个Optuna的主要应用场景下我们经常碰到的情况。
 
 比如，你可能需要训练由数百万个参数组成的神经网络，它们通常需要数小时或数天的处理时间。 Hyperband 是一种剪枝算法，它是建立在之前的逐次减半算法（SuccessiveHalvingPruner）基础上。逐次减半可以显着减少每次试验所需时间，但是众所周知，它对配置方式很敏感，而 Hyperband 解决了这个问题。该问题有很多种解决办法，而 Optuna 选择了启发式算法以进一步降低对用户的配置方式要求，使无相关技术背景的用户也能很容易使用。它最初在1.1版中作为实验性特性被引入，不过现在在接口和性能方面都已稳定。实验表明，在通用基准测试中，它的表现远强于其他的 pruner, 包括中位数 pruner (MedianPruner) ( Optuna 中的默认 pruner)。这一点你可以从下文的基准测试结果中看出。
 
@@ -159,7 +159,7 @@ LightGBM是一个完善的、用于梯度增强的 Python 框架。 Optuna 提�
 
 #### MLflow
 
-MLflow 是一个流行的、用于管理机器学习流水线和生命周期的框架。 而 MLflow Tracking 是一个通过交互式 GUI 监视实验的特别有用的工具。而现在，由于 MLflowCallback 的存在，使用 MLflow Tracking 来跟踪 Optuna 中的 HPO 实验变得非常简单，只要向 Optuna 的优化过程中注册一个回调函数即可。 
+MLflow 是一个流行的、用于管理机器学习流水线和生命周期的框架。 而 MLflow Tracking 是一个通过交互式 GUI 监视实验的特别有用的工具。而现在，由于 MLflowCallback 的存在，使用 MLflow Tracking 来跟踪 Optuna 中的 HPO 实验变得非常简单，只要向 Optuna 的优化过程中注册一个回调函数即可。
 
 #### Redis
 
@@ -233,7 +233,7 @@ Out:
 First, create a shared study using `optuna create-study` command (or using [`optuna.create_study()`](https://optuna.readthedocs.io/en/stable/reference/generated/optuna.create_study.html#optuna.create_study) in a Python script).
 
 ```python
-$ optuna create-study --study-name "distributed-example" --storage "sqlite:///example.db"          
+$ optuna create-study --study-name "distributed-example" --storage "sqlite:///example.db"
 
 [I 2020-11-09 23:46:20,540] A new study created in RDB with name: di6:20,540] A new study created in RDB with name: distributed-example
 ```
@@ -669,4 +669,3 @@ if __name__ == "__main__":
 3）把要优化的变量定义成optuna的parameter（通过trial.suggest_xxx)；
 
 4）copy个main部分代码，开始搜超参；
-

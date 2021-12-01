@@ -271,7 +271,7 @@ Word2vec 是一种有效创建词嵌入的方法，它自2013年以来就一直�
 
 ### **负例采样**
 
-回想一下这个神经语言模型计算预测值的三个步骤： 
+回想一下这个神经语言模型计算预测值的三个步骤：
 
 ![img](https://jalammar.github.io/images/word2vec/language-model-expensive.png)
 

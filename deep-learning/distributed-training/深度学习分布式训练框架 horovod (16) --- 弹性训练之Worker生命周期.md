@@ -63,8 +63,8 @@ master（主节点）职责：
 
 worker（工作节点）职责：
 
--  负责汇报（其实是被动的，没有主动机制）当前worker（工作节点）的状态（就是训练完成情况）； 
--  负责在该worker（工作节点）负责的数据上执行训练。 
+-  负责汇报（其实是被动的，没有主动机制）当前worker（工作节点）的状态（就是训练完成情况）；
+-  负责在该worker（工作节点）负责的数据上执行训练。
 
 ### 1.3 组网机制
 
@@ -80,9 +80,9 @@ Driver 进程用于帮助 worker 调用 gloo 构造 AllReduce 通信环。
 
 构建过程如下：
 
--  Driver 进程创建带有 KVStore 的 RendezvousServer，即这个 RendezvousServer 运行在 Horovod 的 driver 进程里。 
--  Driver 进程拿到所有 worker 进程节点的 IP 地址和 GPU 卡数信息后，会将其写入RendezvousServer 的 KVStore 中。 
--  每个 worker 节点会通过调用 gloo 从而 请求 RendezvousServer 获取自己的邻居节点信息（ip，port...），从而构造通信域。 
+-  Driver 进程创建带有 KVStore 的 RendezvousServer，即这个 RendezvousServer 运行在 Horovod 的 driver 进程里。
+-  Driver 进程拿到所有 worker 进程节点的 IP 地址和 GPU 卡数信息后，会将其写入RendezvousServer 的 KVStore 中。
+-  每个 worker 节点会通过调用 gloo 从而 请求 RendezvousServer 获取自己的邻居节点信息（ip，port...），从而构造通信域。
 
 #### 1.3.2 弹性构建
 
@@ -167,7 +167,7 @@ res = driver.get_results()
 _create_elastic_worker_fn 分为两部分：
 
 - _slot_info_to_command_fn 会建立 slot_info_to_command，套路和之前文章中类似，就是把各种 horovod 环境变量和运行命令 run_command 糅合起来，得到一个可以在“某个 host and slot” 之上运行的命令文本；
-- 返回 create_worker。 
+- 返回 create_worker。
   - create_worker 是利用 exec_command 和 命令文本 构建的函数。
   - exec_command 我们在之前介绍过，就是提供了一种运行命令的能力，或者说是运行环境；
   - 所以 create_worker 就是提供一个在某个环境下运行某个命令的能力；
@@ -247,7 +247,7 @@ create_worker = exec_command({horovod_env} {env} {run_command})#得到在某个�
 以下逻辑都运行在 ElasticDriver 之中。
 
 - 首先，会把 上面生成的 create_worker 赋值给 self._create_worker_fn。
-- 其次，会调用 _activate_workers 启动多个 worker，其中包括： 
+- 其次，会调用 _activate_workers 启动多个 worker，其中包括：
   - 先使用 wait_for_available_slots 等待 min_np 数目的可用的 hosts。之前分析过此函数，就是 无限循环等待，如果 `avail_slots >= min_np and avail_hosts >= min_hosts` 才会返回。
   - 使用 _update_host_assignments 来得到 slots；
   - 使用 _start_worker_processes 来启动多个 worker；
@@ -350,7 +350,7 @@ def _update_host_assignments(self, current_hosts):
 
     self._host_assignments = host_assignments
     self._world_size = len(host_assignments_list)
-    
+
     self._rendezvous.init(host_assignments_list) # 重新构造 rendezvous
 
     # Rank assignments map from world rank to slot info
@@ -768,13 +768,13 @@ SUCCESS           FAILURE
 
 进入 hvd.init 有几个调用途径（按照下面1，2，3 顺序逻辑进行）：
 
-1. 依靠 
+1. 依靠
 
    ```
    WorkerStateRegistry . _barrier
    ```
 
-    : 作用是当所有 worker 完成之后，会进一步处理。有三个途径会触发这个barrier： 
+    : 作用是当所有 worker 完成之后，会进一步处理。有三个途径会触发这个barrier：
 
    - start 一个 worker，worker会 hvd.init，进而调用了 gloo in c++，进而 联系 rendezvous，rendezvous 通知 driver，进而在 WorkerStateRegistry 设置自己的状态是 READY，如果达到了 min_np，则会触发了 `_barrier`  （**途径 1**）；
    - 新发现一个host，从而导致触发一个 HostsUpdateInterrupt，worker 捕获这个异常之后，进而会 reset，reset 时候会调用 hvd.init，进而和上述一样，最终触发`_barrier`  （**途径 2**）；
@@ -918,15 +918,15 @@ def record_ready(self, host, slot):
 
 我们需要继续深化下，看看一个 worker 从开始运行到 READY 状态 之间都发生了什么。
 
-1.  Worker 开始调用 python train.py； 
-2.  在 train.py 之中，调用  hvd.init()，此方法会深入到 C++ 世界，从而生成了 GlooContext； 
-3.  GlooContext 之中，会从环境变量之中得到 Rendezvous Server 的ip, port，进而调用 init_store 生成一个 HTTPStore； 
-4.  调用 `init_store.get(hostname + ":" + std::to_string(local_rank))` 向 Rendezvous Server 发送请求，要求获得本worker 的 rank 对应的 各种配置（local_rank, cross_rank...，因为  Rendezvous Server  可能会重新初始化从而重新分配)； 
-5.  ElasticRendezvousHandler 是 响应函数，其中会 调用 driver.record_ready(host, local_rank) 从而在 WorkerStateRegistry 的 READY 字典中记录下来，worker 2 已经是 READY 了。 
-6.  会调用 driver.get_slot_info(host, local_rank) 从 driver 获得 slot info； 
-7.  此时，Worker 的状态就是 READY（其实 Worker 本身没有这个状态，只是 WorkerStateRegistry 有这个状态）； 
-8.  ElasticRendezvousHandler 会返回 slot info 到 worker  的 C++ 世界； 
-9.  在 worker  的 C++ 世界 之中继续执行，把 slot info  返回给 GlooContext，进行各种设置； 
+1.  Worker 开始调用 python train.py；
+2.  在 train.py 之中，调用  hvd.init()，此方法会深入到 C++ 世界，从而生成了 GlooContext；
+3.  GlooContext 之中，会从环境变量之中得到 Rendezvous Server 的ip, port，进而调用 init_store 生成一个 HTTPStore；
+4.  调用 `init_store.get(hostname + ":" + std::to_string(local_rank))` 向 Rendezvous Server 发送请求，要求获得本worker 的 rank 对应的 各种配置（local_rank, cross_rank...，因为  Rendezvous Server  可能会重新初始化从而重新分配)；
+5.  ElasticRendezvousHandler 是 响应函数，其中会 调用 driver.record_ready(host, local_rank) 从而在 WorkerStateRegistry 的 READY 字典中记录下来，worker 2 已经是 READY 了。
+6.  会调用 driver.get_slot_info(host, local_rank) 从 driver 获得 slot info；
+7.  此时，Worker 的状态就是 READY（其实 Worker 本身没有这个状态，只是 WorkerStateRegistry 有这个状态）；
+8.  ElasticRendezvousHandler 会返回 slot info 到 worker  的 C++ 世界；
+9.  在 worker  的 C++ 世界 之中继续执行，把 slot info  返回给 GlooContext，进行各种设置；
 
 具体逻辑图如下：
 
@@ -1040,7 +1040,7 @@ reset 函数中有复杂逻辑。
 
   原因是：大部分机器学习算法机制是需要当所有 worker（或者若干worker） 完成之后，才会进一步处理，所以需要等待
 
-  。 
+  。
 
   - 这里 barrier 的参数 parties 具体数值是 self.world_size()，就是说，只有等到barrier 内部计数达到  self.world_size() 时候，就会激发 self._action 函数。
   - 每个worker 结束时候，都会调用到 `_handle_worker_exit`，最终会 `self._barrier.wait()`。
@@ -1184,7 +1184,7 @@ def _on_workers_recorded(self):
 
     # Check that we have already reset the maximum number of allowed times
     if self._reset_limit is not None and self._reset_count >= self._reset_limit:
-      
+
 self._driver.stop(error_message=constants.RESET_LIMIT_EXCEEDED_MESSAGE.format(self._reset_limit))
         return
 
@@ -1323,4 +1323,3 @@ _handle_worker_exit                                             +          Host 
 ![img](https://ask.qcloudimg.com/http-save/yehe-7731142/53ecb4d63bbcb73a7832f3967bfda5af.png?imageView2/2/w/1620)
 
 至此，worker部分分析完毕，下一篇我们看看如何处理错误。
-

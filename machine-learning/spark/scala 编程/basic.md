@@ -186,4 +186,3 @@ res1: scala.collection.immutable.Map[String,String] = Map(King Uther -> Igraine,
 ```
 
 Note that since the collection is immutable, each edit operation returns a new collection( `res0`, `res1`) with the changes applied. The original collection `kingSpouses` remains unchanged.
-

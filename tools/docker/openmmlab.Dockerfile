@@ -34,7 +34,7 @@ RUN apt-get update && apt-get install -y --allow-downgrades --allow-change-held-
         librdmacm1 \
         libibverbs1 \
         ibverbs-providers
-        #/tmp/clean-layer.sh 
+        #/tmp/clean-layer.sh
 
 # for mmdetection
 RUN apt-get update && apt-get install -y ffmpeg libsm6 libxext6 git ninja-build libglib2.0-0 libxrender-dev  libxext6 \
@@ -43,8 +43,8 @@ RUN apt-get update && apt-get install -y ffmpeg libsm6 libxext6 git ninja-build 
     screen \
     nodejs \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* 
-    #/tmp/clean-layer.sh 
+    && rm -rf /var/lib/apt/lists/*
+    #/tmp/clean-layer.sh
 
 # Install python and pip
 RUN ln -s /usr/bin/python${PYTHON_VERSION} /usr/bin/python
@@ -59,7 +59,7 @@ RUN pip config set global.index-url https://mirrors.aliyun.com/pypi/simple/
 RUN pip install --upgrade pip
 RUN pip install future typing packaging
 
-# install pytorch 
+# install pytorch
 RUN PYTAGS=$(python -c "from packaging import tags; tag = list(tags.sys_tags())[0]; print(f'{tag.interpreter}-{tag.abi}')") && \
     pip install https://download.pytorch.org/whl/cu102/torch-${PYTORCH_VERSION}-${PYTAGS}-linux_x86_64.whl \
         https://download.pytorch.org/whl/cu102/torchvision-${TORCHVISION_VERSION}-${PYTAGS}-linux_x86_64.whl

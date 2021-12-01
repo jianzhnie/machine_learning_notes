@@ -26,7 +26,7 @@ LIMIT 100
 class MyTransformer(AbstractTransformer):
     def transform(self, input_map, spark_session, step_name):
         res = {}
-        df = input_map['sample'] # 计算得到一个dataframe 
+        df = input_map['sample'] # 计算得到一个dataframe
         df1 = df.select(df['Name'], df['Age'], df['Sex'] , df['Survived'])
         res[step_name] = df1
         return res
@@ -52,7 +52,7 @@ from pyspark.ml.feature import StringIndexer
 class Str2Index(AbstractTransformer):
     def transform(self, input_map, spark_session, step_name):
         res = {}
-        df = input_map['sample'] # 计算得到一个dataframe 
+        df = input_map['sample'] # 计算得到一个dataframe
         indexer = StringIndexer(inputCol="Embarked", outputCol="categoryIndex")
         indexed = indexer.fit(df).transform(df)
         res[step_name] = indexed
@@ -72,16 +72,16 @@ SELECT *
 - 7. 特征工程 OneHot transformer
 
   - step name: onehot
-    - inputcols: 
+    - inputcols:
       - categoryIndex
     - outputcosl:
       - str2onehot
 
-- 8. data_spit  
+- 8. data_spit
 - 9. 分类模型
 
   - step name:  rf
-    - inputcols: 
+    - inputcols:
       - str2onehot
       - Age
       - Sex
@@ -89,7 +89,7 @@ SELECT *
 - 10. AutoML
 
   - step name:  rf
-    - ​	inputcols: 
+    - ​	inputcols:
       - str2onehot
       - Age
       - Sex

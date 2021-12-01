@@ -354,7 +354,7 @@ Schema.Builder 	addColumnTime(java.lang.String columnName, java.util.TimeZone ti
 Join.Builder 	setJoinColumns(java.lang.String... joinColumnNames)
 Join.Builder 	setJoinColumnsLeft(java.lang.String... joinColumnNames)
 Join.Builder 	setJoinColumnsRight(java.lang.String... joinColumnNames)
-Join.Builder 	setSchemas(Schema left, Schema right) 
+Join.Builder 	setSchemas(Schema left, Schema right)
 ```
 
 `Schema`（对应有`SequenceSchema`）类的以下静态方法可尝试推断模式：

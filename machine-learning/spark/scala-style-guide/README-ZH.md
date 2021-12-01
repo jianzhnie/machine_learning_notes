@@ -80,7 +80,7 @@ Scala 是一种强大到令人难以置信的多范式编程语言。我们总�
 
 1. [测试](#testing)
     - [异常拦截](#testing-intercepting)
-    
+
 1. [其它](#misc)
     - [优先使用 nanoTime 而非 currentTimeMillis](#misc_currentTimeMillis_vs_nanoTime)
     - [优先使用 URI 而非 URL](#misc_uri_url)
@@ -130,7 +130,7 @@ Scala 是一种强大到令人难以置信的多范式编程语言。我们总�
   }
   ```
 
-- 从 `Enumeration` 类继承的枚举类或对象应遵循类或对象的相关约定，比如：命名应使用 PascalCase 风格。枚举值的命名则应采用大写字母的形式，并在单词之间使用下划线 `_` 进行分隔。例如： 
+- 从 `Enumeration` 类继承的枚举类或对象应遵循类或对象的相关约定，比如：命名应使用 PascalCase 风格。枚举值的命名则应采用大写字母的形式，并在单词之间使用下划线 `_` 进行分隔。例如：
   ```scala
     private object ParseState extends Enumeration {
     type ParseState = Value

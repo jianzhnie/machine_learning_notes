@@ -191,4 +191,3 @@ int maxLength = lineLengths.reduce（（a，b）-> Math.max（a，b））;
 
 
 请注意，第3步和第4步是RDD动作，因此它们将结果返回到我们的Driver程序，在本例中为Java int。还要记住，Spark是懒惰的，并且拒绝执行任何工作，直到看到一个动作为止，在这种情况下，它直到第3步才开始任何实际的工作。
-
