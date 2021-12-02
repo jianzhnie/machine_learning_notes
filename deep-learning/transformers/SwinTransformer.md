@@ -13,7 +13,7 @@
 - 其中`Patch Merging`模块主要在每个Stage一开始降低图片分辨率。
 - 而Block具体结构如右图所示，主要是`LayerNorm`，`MLP`，`Window Attention` 和 `Shifted Window Attention`组成 (为了方便讲解，我会省略掉一些参数)
 
-
+![图片](https://mmbiz.qpic.cn/mmbiz_png/SdQCib1UzF3u2f12fF7pDCjIQXdzicZAAfgne2N6mhaia2HHibfbNjCLx68baKVX0FmHI95BkSHKL1TCnWdzS91e6Q/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
 
 其中有几个地方处理方法与ViT不同：
 
@@ -28,7 +28,7 @@
 
 具体做法是对原始图片裁成一个个 `patch_size * patch_size`的窗口大小，然后进行嵌入。
 
-这里可以通过二维卷积层，**将stride，kernelsize设置为patch_size大小**。设定输出通道来确定嵌入向量的大小。最后将H,W维度展开，并移动到第一维度
+这里可以通过二维卷积层，**将stride，kernel_size设置为 patch_size大小**。设定输出通道来确定嵌入向量的大小。最后将H,W维度展开，并移动到第一维度
 
 ```python
 import torch
@@ -159,13 +159,9 @@ print(a[1::2])
 
 > [start :: step] 从start开始，每隔step取值。
 
-
-
 下面是一个示意图（输入张量N=1, H=W=8, C=1，不包含最后的全连接层调整） 
 
 ![img](SwinTransformer.assets/v2-f9c4e3d69da7508562358f9c3f683c63_b.png)
-
-
 
 >  个人感觉这像是PixelShuffle的反操作
 
@@ -322,8 +318,6 @@ class WindowAttention(nn.Module):
         return x
 ```
 
-
-
 下面我把涉及到相关位置编码的逻辑给单独拿出来，这部分比较绕
 
 首先QK计算出来的Attention张量形状为`(numWindows*B, num_heads, window_size*window_size, window_size*window_size)`。
@@ -460,8 +454,6 @@ self.register_buffer("relative_position_index", relative_position_index)
 在实际代码里，我们是**通过对特征图移位，并给Attention设置mask来间接实现的**。能在**保持原有的window个数下**，最后的计算结果等价。 
 
 ![img](SwinTransformer.assets/v2-84b7dd5ba83bf0c686a133dec758d974_b.jpg)
-
-
 
 ## **特征图移位操作**
 
