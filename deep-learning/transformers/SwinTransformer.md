@@ -34,34 +34,54 @@
 import torch
 import torch.nn as nn
 
-
 class PatchEmbed(nn.Module):
-    def __init__(self, img_size=224, patch_size=4, in_chans=3, embed_dim=96, norm_layer=None):
+    """2D Image to Patch Embedding."""
+
+    def __init__(self,
+                 img_size=224,
+                 patch_size=4,
+                 in_chans=3,
+                 embed_dim=96,
+                 norm_layer=None,
+                 flatten=True):
         super().__init__()
-        img_size = to_2tuple(img_size) # -> (img_size, img_size)
-        patch_size = to_2tuple(patch_size) # -> (patch_size, patch_size)
-        patches_resolution = [img_size[0] // patch_size[0], img_size[1] // patch_size[1]]
+
+        img_size = to_2tuple(img_size)
+        patch_size = to_2tuple(patch_size)
+
         self.img_size = img_size
         self.patch_size = patch_size
-        self.patches_resolution = patches_resolution
-        self.num_patches = patches_resolution[0] * patches_resolution[1]
+        self.grid_size = (img_size[0] // patch_size[0],
+                          img_size[1] // patch_size[1])
 
-        self.in_chans = in_chans
-        self.embed_dim = embed_dim
+        self.num_pathchs = self.grid_size[0] * self.grid_size[1]
+        self.flatten = flatten
 
-        self.proj = nn.Conv2d(in_chans, embed_dim, kernel_size=patch_size, stride=patch_size)
-        if norm_layer is not None:
-            self.norm = norm_layer(embed_dim)
-        else:
-            self.norm = None
+        self.proj = nn.Conv2d(
+            in_channels=in_chans,
+            out_channels=embed_dim,
+            kernel_size=patch_size,
+            stride=patch_size)
+        self.norm = norm_layer(embed_dim) if norm_layer else nn.Identity()
 
     def forward(self, x):
-        # 假设采取默认参数
-        x = self.proj(x) # 出来的是(N, 96, 224/4, 224/4) 
-        x = torch.flatten(x, 2) # 把HW维展开，(N, 96, 56*56)
-        x = torch.transpose(x, 1, 2)  # 把通道维放到最后 (N, 56*56, 96)
-        if self.norm is not None:
-            x = self.norm(x)
+        B, C, H, W = x.shape
+
+        assert H == self.img_size[
+            0], f"Input image height ({H}) doesn't match model ({self.img_size[0]})."
+
+        assert W == self.img_size[
+            1], f"Input image width ({W}) doesn't match model ({self.img_size[1]})."
+
+        x = self.proj(x)  # trandsform image to patchs
+        # 输入 torch.Size([1, 3, 224, 224]) 
+        # 出来的是(N, 96, 224/4, 224/4) 
+        if self.flatten:
+            x = x.flatten(2).transpose(1, 2)  # BCHW -> BNC
+        # 把HW维展开，(N, 96, 56*56)
+        # 把通道维放到最后 (N, 56*56, 96)
+        x = self.norm(x)
+
         return x
 ```
 
@@ -74,10 +94,18 @@ class PatchEmbed(nn.Module):
 
 每次降采样是两倍，因此**在行方向和列方向上，间隔2选取元素**。
 
-然后拼接在一起作为一整个[张量](https://www.zhihu.com/search?q=张量&search_source=Entity&hybrid_search_source=Entity&hybrid_search_extra={"sourceType"%3A"article"%2C"sourceId"%3A"367111046"})，最后展开。**此时通道维度会变成原先的4倍**（因为H,W各缩小2倍），此时再通过一个**全连接层再调整通道维度为原来的两倍*?
+然后拼接在一起作为一整个[张量](https://www.zhihu.com/search?q=张量&search_source=Entity&hybrid_search_source=Entity&hybrid_search_extra={"sourceType"%3A"article"%2C"sourceId"%3A"367111046"})，最后展开。**此时通道维度会变成原先的4倍**（因为H,W各缩小2倍），此时再通过一个全连接层再调整通道维度为原来的两倍
 
-```text
+```python
 class PatchMerging(nn.Module):
+    r""" Patch Merging Layer.
+
+    Args:
+        input_resolution (tuple[int]): Resolution of input feature.
+        dim (int): Number of input channels.
+        norm_layer (nn.Module, optional): Normalization layer.  Default: nn.LayerNorm
+    """
+
     def __init__(self, input_resolution, dim, norm_layer=nn.LayerNorm):
         super().__init__()
         self.input_resolution = input_resolution
@@ -91,8 +119,8 @@ class PatchMerging(nn.Module):
         """
         H, W = self.input_resolution
         B, L, C = x.shape
-        assert L == H * W, "input feature has wrong size"
-        assert H % 2 == 0 and W % 2 == 0, f"x size ({H}*{W}) are not even."
+        _assert(L == H * W, 'input feature has wrong size')
+        _assert(H % 2 == 0 and W % 2 == 0, f'x size ({H}*{W}) are not even.')
 
         x = x.view(B, H, W, C)
 
@@ -109,6 +137,30 @@ class PatchMerging(nn.Module):
         return x
 ```
 
+```python
+import numpy as np
+a = np.array(range(10))
+[0 1 2 3 4 5 6 7 8 9]
+```
+
+```python
+print(a[0::2])
+[0 2 4 6 8]
+```
+
+```python
+print(a[1::2])
+[1 3 5 7 9]
+```
+
+> `a[0::2] `表示取a的从第0个值开始，step = 2, 取第0， 2，4, 6, 8的值。
+
+> `a[:, 1::2]`表示取a的从第1个值开始，step = 2, 取第1， 3，5, 7, 9的值。
+
+> [start :: step] 从start开始，每隔step取值。
+
+
+
 下面是一个示意图（输入张量N=1, H=W=8, C=1，不包含最后的全连接层调整） 
 
 ![img](SwinTransformer.assets/v2-f9c4e3d69da7508562358f9c3f683c63_b.png)
@@ -121,28 +173,51 @@ class PatchMerging(nn.Module):
 
 `window partition`函数是用于对张量划分窗口，指定窗口大小。将原本的张量从 `N H W C`, 划分成 `num_windows*B, window_size, window_size, C`，其中 `num_windows = H*W / window_size`，即窗口的个数。而`window reverse`函数则是对应的[逆过程](https://www.zhihu.com/search?q=逆过程&search_source=Entity&hybrid_search_source=Entity&hybrid_search_extra={"sourceType"%3A"article"%2C"sourceId"%3A"367111046"})。这两个函数会在后面的`Window Attention`用到。
 
-```text
-def window_partition(x, window_size):
+```python
+def window_partition(x, window_size: int):
+    """
+    Args:
+        x: (B, H, W, C)
+        window_size (int): window size
+
+    Returns:
+        windows: (num_windows*B, window_size, window_size, C)
+    """
     B, H, W, C = x.shape
-    x = x.view(B, H // window_size, window_size, W // window_size, window_size, C)
-    windows = x.permute(0, 1, 3, 2, 4, 5).contiguous().view(-1, window_size, window_size, C)
+    x = x.view(B, H // window_size, window_size, W // window_size, window_size,
+               C)
+    windows = x.permute(0, 1, 3, 2, 4,
+                        5).contiguous().view(-1, window_size, window_size, C)
     return windows
 
 
-def window_reverse(windows, window_size, H, W):
+def window_reverse(windows, window_size: int, H: int, W: int):
+    """
+    Args:
+        windows: (num_windows*B, window_size, window_size, C)
+        window_size (int): Window size
+        H (int): Height of image
+        W (int): Width of image
+
+    Returns:
+        x: (B, H, W, C)
+    """
     B = int(windows.shape[0] / (H * W / window_size / window_size))
-    x = windows.view(B, H // window_size, W // window_size, window_size, window_size, -1)
+    x = windows.view(B, H // window_size, W // window_size, window_size,
+                     window_size, -1)
     x = x.permute(0, 1, 3, 2, 4, 5).contiguous().view(B, H, W, -1)
     return x
 ```
+
+step1:   `B H W C`, 划分成 `num_windows*B, window_size, window_size, C`
+
+step2:   `num_windows*B, window_size, window_size, C`  ===>  `B H W C`,
 
 ## **Window Attention**
 
 这是这篇文章的关键。传统的Transformer都是**基于全局来计算注意力的**，因此计算复杂度十分高。而Swin Transformer则将**注意力的计算限制在每个窗口内**，进而减少了计算量。
 
 我们先简单看下公式
-
-![[公式]](SwinTransformer.assets/equation)
 
 主要区别是在原始计算Attention的公式中的Q,K时**加入了相对位置编码**。后续实验有证明相对位置编码的加入提升了模型性能。
 
@@ -156,24 +231,48 @@ class WindowAttention(nn.Module):
         window_size (tuple[int]): The height and width of the window.
         num_heads (int): Number of attention heads.
         qkv_bias (bool, optional):  If True, add a learnable bias to query, key, value. Default: True
-        qk_scale (float | None, optional): Override default qk scale of head_dim ** -0.5 if set
         attn_drop (float, optional): Dropout ratio of attention weight. Default: 0.0
         proj_drop (float, optional): Dropout ratio of output. Default: 0.0
     """
 
-    def __init__(self, dim, window_size, num_heads, qkv_bias=True, qk_scale=None, attn_drop=0., proj_drop=0.):
+    def __init__(self,
+                 dim,
+                 window_size,
+                 num_heads,
+                 qkv_bias=True,
+                 attn_drop=0.,
+                 proj_drop=0.):
 
         super().__init__()
         self.dim = dim
         self.window_size = window_size  # Wh, Ww
-        self.num_heads = num_heads # nH
-        head_dim = dim // num_heads # 每个注意力头对应的通道数
-        self.scale = qk_scale or head_dim ** -0.5
+        self.num_heads = num_heads
+        head_dim = dim // num_heads
+        self.scale = head_dim**-0.5
 
         # define a parameter table of relative position bias
         self.relative_position_bias_table = nn.Parameter(
-            torch.zeros((2 * window_size[0] - 1) * (2 * window_size[1] - 1), num_heads))  # 设置一个形状为（2*(Wh-1) * 2*(Ww-1), nH）的可学习变量，用于后续的位置编码
-  
+            torch.zeros((2 * window_size[0] - 1) * (2 * window_size[1] - 1),
+                        num_heads))  # 2*Wh-1 * 2*Ww-1, nH
+
+        # get pair-wise relative position index for each token inside the window
+        coords_h = torch.arange(self.window_size[0])
+        coords_w = torch.arange(self.window_size[1])
+        coords = torch.stack(torch.meshgrid([coords_h, coords_w]))  # 2, Wh, Ww
+        coords_flatten = torch.flatten(coords, 1)  # 2, Wh*Ww
+        relative_coords = coords_flatten[:, :,
+                                         None] - coords_flatten[:,
+                                                                None, :]  # 2, Wh*Ww, Wh*Ww
+        relative_coords = relative_coords.permute(
+            1, 2, 0).contiguous()  # Wh*Ww, Wh*Ww, 2
+        relative_coords[:, :,
+                        0] += self.window_size[0] - 1  # shift to start from 0
+        relative_coords[:, :, 1] += self.window_size[1] - 1
+        relative_coords[:, :, 0] *= 2 * self.window_size[1] - 1
+        relative_position_index = relative_coords.sum(-1)  # Wh*Ww, Wh*Ww
+        self.register_buffer('relative_position_index',
+                             relative_position_index)
+
         self.qkv = nn.Linear(dim, dim * 3, bias=qkv_bias)
         self.attn_drop = nn.Dropout(attn_drop)
         self.proj = nn.Linear(dim, dim)
@@ -181,8 +280,49 @@ class WindowAttention(nn.Module):
 
         trunc_normal_(self.relative_position_bias_table, std=.02)
         self.softmax = nn.Softmax(dim=-1)
-     # 相关位置编码...
+
+    def forward(self, x, mask: Optional[torch.Tensor] = None):
+        """
+        Args:
+            x: input features with shape of (num_windows*B, N, C)
+            mask: (0/-inf) mask with shape of (num_windows, Wh*Ww, Wh*Ww) or None
+        """
+        B_, N, C = x.shape
+        qkv = self.qkv(x).reshape(B_, N, 3, self.num_heads,
+                                  C // self.num_heads).permute(2, 0, 3, 1, 4)
+        q, k, v = qkv.unbind(
+            0)  # make torchscript happy (cannot use tensor as tuple)
+
+        q = q * self.scale
+        attn = (q @ k.transpose(-2, -1))
+
+        relative_position_bias = self.relative_position_bias_table[
+            self.relative_position_index.view(-1)].view(
+                self.window_size[0] * self.window_size[1],
+                self.window_size[0] * self.window_size[1],
+                -1)  # Wh*Ww,Wh*Ww,nH
+        relative_position_bias = relative_position_bias.permute(
+            2, 0, 1).contiguous()  # nH, Wh*Ww, Wh*Ww
+        attn = attn + relative_position_bias.unsqueeze(0)
+
+        if mask is not None:
+            nW = mask.shape[0]
+            attn = attn.view(B_ // nW, nW, self.num_heads, N,
+                             N) + mask.unsqueeze(1).unsqueeze(0)
+            attn = attn.view(-1, self.num_heads, N, N)
+            attn = self.softmax(attn)
+        else:
+            attn = self.softmax(attn)
+
+        attn = self.attn_drop(attn)
+
+        x = (attn @ v).transpose(1, 2).reshape(B_, N, C)
+        x = self.proj(x)
+        x = self.proj_drop(x)
+        return x
 ```
+
+
 
 下面我把涉及到相关位置编码的逻辑给单独拿出来，这部分比较绕
 
@@ -227,7 +367,7 @@ relative_coords = relative_coords_first - relative_coords_second # 最终得到 
 
 因为采取的是相减，所以得到的索引是从负数开始的，**我们加上偏移量，让其从0开始**。
 
-```text
+```python
 relative_coords = relative_coords.permute(1, 2, 0).contiguous() # Wh*Ww, Wh*Ww, 2
 relative_coords[:, :, 0] += self.window_size[0] - 1
 relative_coords[:, :, 1] += self.window_size[1] - 1
@@ -239,7 +379,7 @@ relative_coords[:, :, 1] += self.window_size[1] - 1
 
  所以最后我们对其中做了个乘法操作，以进行区分
 
-```text
+```python
 relative_coords[:, :, 0] *= 2 * self.window_size[1] - 1
 ```
 
@@ -249,35 +389,44 @@ relative_coords[:, :, 0] *= 2 * self.window_size[1] - 1
 
  然后再最后一维上进行求和，展开成一个一维坐标，并注册为一个不参与网络学习的变量
 
-```text
+```python
 relative_position_index = relative_coords.sum(-1)  # Wh*Ww, Wh*Ww
 self.register_buffer("relative_position_index", relative_position_index)
 ```
 
 接着我们看前向代码
 
-```text
-    def forward(self, x, mask=None):
+```python
+    def forward(self, x, mask: Optional[torch.Tensor] = None):
         """
         Args:
             x: input features with shape of (num_windows*B, N, C)
             mask: (0/-inf) mask with shape of (num_windows, Wh*Ww, Wh*Ww) or None
         """
         B_, N, C = x.shape
-        
-        qkv = self.qkv(x).reshape(B_, N, 3, self.num_heads, C // self.num_heads).permute(2, 0, 3, 1, 4)
-        q, k, v = qkv[0], qkv[1], qkv[2]  # make torchscript happy (cannot use tensor as tuple)
+        qkv = self.qkv(x).reshape(B_, N, 3, self.num_heads,
+                                  C // self.num_heads).permute(2, 0, 3, 1, 4)
+        q, k, v = qkv.unbind(
+            0)  # make torchscript happy (cannot use tensor as tuple)
 
         q = q * self.scale
         attn = (q @ k.transpose(-2, -1))
 
-        relative_position_bias = self.relative_position_bias_table[self.relative_position_index.view(-1)].view(
-            self.window_size[0] * self.window_size[1], self.window_size[0] * self.window_size[1], -1)  # Wh*Ww,Wh*Ww,nH
-        relative_position_bias = relative_position_bias.permute(2, 0, 1).contiguous()  # nH, Wh*Ww, Wh*Ww
-        attn = attn + relative_position_bias.unsqueeze(0) # (1, num_heads, windowsize, windowsize)
+        relative_position_bias = self.relative_position_bias_table[
+            self.relative_position_index.view(-1)].view(
+                self.window_size[0] * self.window_size[1],
+                self.window_size[0] * self.window_size[1],
+                -1)  # Wh*Ww,Wh*Ww,nH
+        relative_position_bias = relative_position_bias.permute(
+            2, 0, 1).contiguous()  # nH, Wh*Ww, Wh*Ww
+        attn = attn + relative_position_bias.unsqueeze(0)
 
-        if mask is not None: # 下文会分析到
-            ...
+        if mask is not None:
+            nW = mask.shape[0]
+            attn = attn.view(B_ // nW, nW, self.num_heads, N,
+                             N) + mask.unsqueeze(1).unsqueeze(0)
+            attn = attn.view(-1, self.num_heads, N, N)
+            attn = self.softmax(attn)
         else:
             attn = self.softmax(attn)
 
@@ -290,15 +439,15 @@ self.register_buffer("relative_position_index", relative_position_index)
 ```
 
 - 首先输入张量形状为 `numWindows*B, window_size * window_size, C`（后续会解释）
-   
+  
 - 然后经过`self.qkv`这个全连接层后，进行reshape，调整轴的顺序，得到形状为`3, numWindows*B, num_heads, window_size*window_size, c//num_heads`，并分配给`q,k,v`。
-   
+  
 - 根据公式，我们对`q`乘以一个`scale`缩放系数，然后与`k`（为了满足矩阵乘要求，需要将最后两个维度调换）进行相乘。得到形状为`(numWindows*B, num_heads, window_size*window_size, window_size*window_size)`的`attn`张量
-   
+  
 - 之前我们针对位置编码设置了个形状为`(2*window_size-1*2*window_size-1, numHeads)`的可学习变量。我们用计算得到的相对编码位置索引`self.relative_position_index`选取，得到形状为`(window_size*window_size, window_size*window_size, numHeads)`的编码，加到`attn`张量上
-   
+  
 - 暂不考虑mask的情况，剩下就是跟transformer一样的softmax，dropout，与`V`[矩阵](https://www.zhihu.com/search?q=矩阵&search_source=Entity&hybrid_search_source=Entity&hybrid_search_extra={"sourceType"%3A"article"%2C"sourceId"%3A"367111046"})乘，再经过一层全连接层和dropout
-   
+  
 
 ## **Shifted Window Attention**
 
@@ -343,32 +492,38 @@ self.register_buffer("relative_position_index", relative_position_index)
 
 相关代码如下：
 
-```text
+```python
         if self.shift_size > 0:
             # calculate attention mask for SW-MSA
             H, W = self.input_resolution
             img_mask = torch.zeros((1, H, W, 1))  # 1 H W 1
             h_slices = (slice(0, -self.window_size),
-                        slice(-self.window_size, -self.shift_size),
-                        slice(-self.shift_size, None))
+                        slice(-self.window_size,
+                              -self.shift_size), slice(-self.shift_size, None))
             w_slices = (slice(0, -self.window_size),
-                        slice(-self.window_size, -self.shift_size),
-                        slice(-self.shift_size, None))
+                        slice(-self.window_size,
+                              -self.shift_size), slice(-self.shift_size, None))
             cnt = 0
             for h in h_slices:
                 for w in w_slices:
                     img_mask[:, h, w, :] = cnt
                     cnt += 1
 
-            mask_windows = window_partition(img_mask, self.window_size)  # nW, window_size, window_size, 1
-            mask_windows = mask_windows.view(-1, self.window_size * self.window_size)
+            mask_windows = window_partition(
+                img_mask, self.window_size)  # nW, window_size, window_size, 1
+            mask_windows = mask_windows.view(
+                -1, self.window_size * self.window_size)
             attn_mask = mask_windows.unsqueeze(1) - mask_windows.unsqueeze(2)
-            attn_mask = attn_mask.masked_fill(attn_mask != 0, float(-100.0)).masked_fill(attn_mask == 0, float(0.0))
+            attn_mask = attn_mask.masked_fill(attn_mask != 0,
+                                              float(-100.0)).masked_fill(
+                                                  attn_mask == 0, float(0.0))
+        else:
+            attn_mask = None
 ```
 
 以上图的设置，我们用这段代码会得到这样的一个mask
 
-```text
+```python
 tensor([[[[[   0.,    0.,    0.,    0.],
            [   0.,    0.,    0.,    0.],
            [   0.,    0.,    0.,    0.],
@@ -395,11 +550,14 @@ tensor([[[[[   0.,    0.,    0.,    0.],
 
 在之前的window attention模块的前向代码里，包含这么一段
 
-```text
+```python
         if mask is not None:
             nW = mask.shape[0]
-            attn = attn.view(B_ // nW, nW, self.num_heads, N, N) + mask.unsqueeze(1).unsqueeze(0)
+            attn = attn.view(B_ // nW, nW, self.num_heads, N,
+                             N) + mask.unsqueeze(1).unsqueeze(0)
             attn = attn.view(-1, self.num_heads, N, N)
+            attn = self.softmax(attn)
+        else:
             attn = self.softmax(attn)
 ```
 
@@ -415,11 +573,103 @@ tensor([[[[[   0.,    0.,    0.,    0.],
 
 我们看下Block的前向代码
 
-```text
+```python
+class SwinTransformerBlock(nn.Module):
+    r""" Swin Transformer Block.
+
+    Args:
+        dim (int): Number of input channels.
+        input_resolution (tuple[int]): Input resulotion.
+        num_heads (int): Number of attention heads.
+        window_size (int): Window size.
+        shift_size (int): Shift size for SW-MSA.
+        mlp_ratio (float): Ratio of mlp hidden dim to embedding dim.
+        qkv_bias (bool, optional): If True, add a learnable bias to query, key, value. Default: True
+        drop (float, optional): Dropout rate. Default: 0.0
+        attn_drop (float, optional): Attention dropout rate. Default: 0.0
+        drop_path (float, optional): Stochastic depth rate. Default: 0.0
+        act_layer (nn.Module, optional): Activation layer. Default: nn.GELU
+        norm_layer (nn.Module, optional): Normalization layer.  Default: nn.LayerNorm
+    """
+
+    def __init__(self,
+                 dim,
+                 input_resolution,
+                 num_heads,
+                 window_size=7,
+                 shift_size=0,
+                 mlp_ratio=4.,
+                 qkv_bias=True,
+                 drop=0.,
+                 attn_drop=0.,
+                 drop_path=0.,
+                 act_layer=nn.GELU,
+                 norm_layer=nn.LayerNorm):
+        super().__init__()
+        self.dim = dim
+        self.input_resolution = input_resolution
+        self.num_heads = num_heads
+        self.window_size = window_size
+        self.shift_size = shift_size
+        self.mlp_ratio = mlp_ratio
+        if min(self.input_resolution) <= self.window_size:
+            # if window size is larger than input resolution, we don't partition windows
+            self.shift_size = 0
+            self.window_size = min(self.input_resolution)
+        assert 0 <= self.shift_size < self.window_size, 'shift_size must in 0-window_size'
+
+        self.norm1 = norm_layer(dim)
+        self.attn = WindowAttention(
+            dim,
+            window_size=to_2tuple(self.window_size),
+            num_heads=num_heads,
+            qkv_bias=qkv_bias,
+            attn_drop=attn_drop,
+            proj_drop=drop)
+
+        self.drop_path = DropPath(
+            drop_path) if drop_path > 0. else nn.Identity()
+        self.norm2 = norm_layer(dim)
+        mlp_hidden_dim = int(dim * mlp_ratio)
+        self.mlp = Mlp(
+            in_features=dim,
+            hidden_features=mlp_hidden_dim,
+            act_layer=act_layer,
+            drop=drop)
+
+        if self.shift_size > 0:
+            # calculate attention mask for SW-MSA
+            H, W = self.input_resolution
+            img_mask = torch.zeros((1, H, W, 1))  # 1 H W 1
+            h_slices = (slice(0, -self.window_size),
+                        slice(-self.window_size,
+                              -self.shift_size), slice(-self.shift_size, None))
+            w_slices = (slice(0, -self.window_size),
+                        slice(-self.window_size,
+                              -self.shift_size), slice(-self.shift_size, None))
+            cnt = 0
+            for h in h_slices:
+                for w in w_slices:
+                    img_mask[:, h, w, :] = cnt
+                    cnt += 1
+
+            mask_windows = window_partition(
+                img_mask, self.window_size)  # nW, window_size, window_size, 1
+            mask_windows = mask_windows.view(
+                -1, self.window_size * self.window_size)
+            attn_mask = mask_windows.unsqueeze(1) - mask_windows.unsqueeze(2)
+            attn_mask = attn_mask.masked_fill(attn_mask != 0,
+                                              float(-100.0)).masked_fill(
+                                                  attn_mask == 0, float(0.0))
+        else:
+            attn_mask = None
+
+        self.register_buffer('attn_mask', attn_mask)
+
     def forward(self, x):
         H, W = self.input_resolution
         B, L, C = x.shape
-        assert L == H * W, "input feature has wrong size"
+        _assert(L == H * W, 'input feature has wrong size')
 
         shortcut = x
         x = self.norm1(x)
@@ -427,24 +677,33 @@ tensor([[[[[   0.,    0.,    0.,    0.],
 
         # cyclic shift
         if self.shift_size > 0:
-            shifted_x = torch.roll(x, shifts=(-self.shift_size, -self.shift_size), dims=(1, 2))
+            shifted_x = torch.roll(
+                x, shifts=(-self.shift_size, -self.shift_size), dims=(1, 2))
         else:
             shifted_x = x
 
         # partition windows
-        x_windows = window_partition(shifted_x, self.window_size)  # nW*B, window_size, window_size, C
-        x_windows = x_windows.view(-1, self.window_size * self.window_size, C)  # nW*B, window_size*window_size, C
+        x_windows = window_partition(
+            shifted_x, self.window_size)  # nW*B, window_size, window_size, C
+        x_windows = x_windows.view(-1, self.window_size * self.window_size,
+                                   C)  # nW*B, window_size*window_size, C
 
         # W-MSA/SW-MSA
-        attn_windows = self.attn(x_windows, mask=self.attn_mask)  # nW*B, window_size*window_size, C
+        attn_windows = self.attn(
+            x_windows, mask=self.attn_mask)  # nW*B, window_size*window_size, C
 
         # merge windows
-        attn_windows = attn_windows.view(-1, self.window_size, self.window_size, C)
-        shifted_x = window_reverse(attn_windows, self.window_size, H, W)  # B H' W' C
+        attn_windows = attn_windows.view(-1, self.window_size,
+                                         self.window_size, C)
+        shifted_x = window_reverse(attn_windows, self.window_size, H,
+                                   W)  # B H' W' C
 
         # reverse cyclic shift
         if self.shift_size > 0:
-            x = torch.roll(shifted_x, shifts=(self.shift_size, self.shift_size), dims=(1, 2))
+            x = torch.roll(
+                shifted_x,
+                shifts=(self.shift_size, self.shift_size),
+                dims=(1, 2))
         else:
             x = shifted_x
         x = x.view(B, H * W, C)
@@ -474,7 +733,3 @@ tensor([[[[[   0.,    0.,    0.,    0.],
 ![img](SwinTransformer.assets/v2-bf00e048de979decd68ebc7c5372cb27_b.jpg)
 
  在ImageNet22K数据集上，准确率能达到惊人的86.4%。另外在检测，分割等任务上表现也很优异，感兴趣的可以翻看论文最后的实验部分。
-
-## **总结**
-
-这篇文章创新点很棒，引入window这一个概念，将CNN的局部性引入，还能控制模型整体计算量。在Shift Window Attention部分，用一个mask和移位操作，很巧妙的实现计算等价。作者的代码也写得十分赏心悦目，推荐阅读！
