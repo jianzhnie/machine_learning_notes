@@ -24,7 +24,7 @@ import seaborn
 
 class EncoderDecoder(nn.Module):
     """
-    A standard Encoder-Decoder architecture. Base for this and many 
+    A standard Encoder-Decoder architecture. Base for this and many
     other models.
     """
     def __init__(self, encoder, decoder, src_embed, tgt_embed, generator):
@@ -34,19 +34,19 @@ class EncoderDecoder(nn.Module):
         self.src_embed = src_embed
         self.tgt_embed = tgt_embed
         self.generator = generator
-        
+
     def forward(self, src, tgt, src_mask, tgt_mask):
         "Take in and process masked src and target sequences."
         return self.decode(self.encode(src, src_mask), src_mask,
                             tgt, tgt_mask)
-    
+
     def encode(self, src, src_mask):
         return self.encoder(self.src_embed(src), src_mask)
-    
+
     def decode(self, memory, src_mask, tgt, tgt_mask):
         """这里的memory指的是什么？指的是encoder的输出，即作为decoder第二个sublayer的K,V"""
         return self.decoder(self.tgt_embed(tgt), memory, src_mask, tgt_mask)
-  
+
 class Generator(nn.Module):
     "Define standard linear + softmax generation step."
     def __init__(self, d_model, vocab):
@@ -73,14 +73,14 @@ encoder由N=6个相同的层组成。
 def clones(module, N):
     "Produce N identical layers."
     return nn.ModuleList([copy.deepcopy(module) for _ in range(N)])
-  
+
 class Encoder(nn.Module):
     "Core encoder is a stack of N layers"
     def __init__(self, layer, N):
         super(Encoder, self).__init__()
         self.layers = clones(layer, N)
         self.norm = LayerNorm(layer.size)
-        
+
     def forward(self, x, mask):
         "Pass the input (and mask) through each layer in turn."
         for layer in self.layers:
@@ -152,7 +152,7 @@ class Decoder(nn.Module):
         super(Decoder, self).__init__()
         self.layers = clones(layer, N)
         self.norm = LayerNorm(layer.size)
-        
+
     def forward(self, x, memory, src_mask, tgt_mask):
         for layer in self.layers:
             x = layer(x, memory, src_mask, tgt_mask)
@@ -171,7 +171,7 @@ class DecoderLayer(nn.Module):
         self.src_attn = src_attn
         self.feed_forward = feed_forward
         self.sublayer = clones(SublayerConnection(size, dropout), 3)
- 
+
     def forward(self, x, memory, src_mask, tgt_mask):
         "Follow Figure 1 (right) for connections."
         m = memory
@@ -264,24 +264,24 @@ class MultiHeadedAttention(nn.Module):
         self.linears = clones(nn.Linear(d_model, d_model), 4)
         self.attn = None
         self.dropout = nn.Dropout(p=dropout)
-        
+
     def forward(self, query, key, value, mask=None):
         "Implements Figure 2"
         if mask is not None:
             # Same mask applied to all h heads.
             mask = mask.unsqueeze(1)
         nbatches = query.size(0)
-        
-        # 1) Do all the linear projections in batch from d_model => h x d_k 
+
+        # 1) Do all the linear projections in batch from d_model => h x d_k
         query, key, value = \
             [l(x).view(nbatches, -1, self.h, self.d_k).transpose(1, 2)
              for l, x in zip(self.linears, (query, key, value))]
-        
-        # 2) Apply attention on all the projected vectors in batch. 
-        x, self.attn = attention(query, key, value, mask=mask, 
+
+        # 2) Apply attention on all the projected vectors in batch.
+        x, self.attn = attention(query, key, value, mask=mask,
                                  dropout=self.dropout)
-        
-        # 3) "Concat" using a view and apply a final linear. 
+
+        # 3) "Concat" using a view and apply a final linear.
         x = x.transpose(1, 2).contiguous() \
              .view(nbatches, -1, self.h * self.d_k)
         return self.linears[-1](x)
