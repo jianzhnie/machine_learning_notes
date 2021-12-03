@@ -2,9 +2,27 @@
 
 # Swin Transformer
 
+## **从CNNs迈向Transformer**
+
+自从AlexNet在ImageNet上取得重大突破后，CNNs便主导着各个视觉领域的研究，从架构规模、卷积结构等方向持续演进，在深度学习的发展历史中大放异彩，作为基础网络为各式各样的视觉任务提供了强有力的特征抽取和表达，极大地促进了整个视觉领域的繁荣发展。
+
+另一方面在自然语言处理领域也诞生了以Transformer为代表的序列模型架构，利用attention机制为数据的长程依赖性建模大幅度提升了语言模型的性能。在自然语言领域取得的巨大成功让科学家们开始探索Transformer在计算机视觉领域应用的可能性，最近的研究展示了广阔的应用前景。
+
+**拓展Transformer的实用性、使其成为通用的视觉架构是本研究的努力方向**。Transformer在视觉领域的应用挑战相比于自然语言处理主要体现在两方面，其一是图像领域的实体尺度变化剧烈在目标检测任务中尤其如此，而现有transformer架构固定的token尺度无法适应如此大范围变化的目标尺寸；其二是图像的像素分辨率远远高于文本中的单词，像语义分割这样涉及像素级稠密预测的视觉任务，Transformer中自注意力机制会带来非常庞大的计算(像素数的平方复杂度)。
+
+为了克服这些问题，**研究人员提出了一种新的视觉Transformer架构Swin Transformer，在线性计算复杂度的基础上构建了图像的层级特征图**。下图展示了Swin Transformer架构以及与ViT的基本区别。其中Swin Transformer通过小图像Patch和逐层进行邻域合并的方式构建层级特征表达，这样的架构使得模型可以实现与U-Net和FPN等架构类似的稠密预测任务。而这一高效模型的线性计算复杂度则由图中非重叠窗口内的局域自注意力机制实现，由于每层窗口中的Patch固定，所以与图像大小具有线性复杂度关系。而ViT中的特征图大小是固定的，且需要进行(对图像大小)二次复杂度的计算。
+
+![图片](https://mmbiz.qpic.cn/mmbiz_png/ibaXaPIy7jV17m7Dic4fkibia8HzoIEXtdLj8ciaTQibicZbpibibibc7x6PSaVKia901yLKyca0r8ibZmrajTBIF31cBC2icibA/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+
+**Swin Transformer最为关键的设计在于连续自注意力层间，特征图上的窗划分口实现了半个窗宽的移动**。这使得前一层的窗口间可以实现交互和联系，大幅度提升了模型的表达能力。同时在同一窗口内的查询都拥有相同的key序列，使得硬件内存更容易实现大大提升了模型运行的速度，降低延时。
+
+**这一架构在多种视觉任务上都实现了最先进的性能**，也再一次展示了CV和NLP领域的相互促进，和视觉与-文本信号的融合建模的广阔前景，并为统一框架的提出打下了坚实的基础。下面就让我们一起来分析Swin Transformer的详细结构与实现。
+
 ## **整体架构**
 
 我们先看下Swin Transformer的整体架构
+
+**Swin Transformer**
 
 整个模型采取[层次化](https://www.zhihu.com/search?q=层次化&search_source=Entity&hybrid_search_source=Entity&hybrid_search_extra={"sourceType"%3A"article"%2C"sourceId"%3A"367111046"})的设计，一共包含4个Stage，每个stage都会缩小输入[特征图](https://www.zhihu.com/search?q=特征图&search_source=Entity&hybrid_search_source=Entity&hybrid_search_extra={"sourceType"%3A"article"%2C"sourceId"%3A"367111046"})的分辨率，像CNN一样逐层扩大感受野。
 
@@ -14,6 +32,14 @@
 - 而Block具体结构如右图所示，主要是`LayerNorm`，`MLP`，`Window Attention` 和 `Shifted Window Attention`组成 (为了方便讲解，我会省略掉一些参数)
 
 ![图片](https://mmbiz.qpic.cn/mmbiz_png/SdQCib1UzF3u2f12fF7pDCjIQXdzicZAAfgne2N6mhaia2HHibfbNjCLx68baKVX0FmHI95BkSHKL1TCnWdzS91e6Q/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+
+**Swin Transformer以原始图像Patch像素作为输入，通过编码后得到像素的特征而后逐级传递最终获取图像的特征表达**。在本研究中使用了4x4的Patch作为输入，每个Patch作为一个token，输入的维度为W/4 x H/4 x 48，而后通过一次线性变换得到了W/4 x H/4 x C的特征表达。通过本文提出的Swin Transformer block单元对输入特征进行计算。后续的层一方面将相邻的 2 x 2 Patch 特征进行衔接融合得到 4C 维度的特征，并输入 2C 的融合特征，而另一方面，在水平方向上图像分辨率也变成了 W/8 x H/8，最终生成了 W/8 x H/8 x 4C 的特征。以此类推，随着block的叠加，特征的维度依次变成了W/16 x H/16 x 8C 和 W/32 x H/32 x 16C，与 VGG和ResNet等典型卷积模型的特征图分辨率一致，使其可便捷的成为相关模型的基础架构。
+
+**Swin Transformer中最重要的模块是基于移动窗口构建的注意力模块**，其内部结构如下图所示，包含了一个基于移动窗口的多头自注意力模块(shifted windows multi-head self attention, SW-MSA)和基于窗口的多头自注意力模块(W-MSA)，其他的归一化层和两层的MLP与原来保持一致，并使用了GELU激活函数。
+
+![图片](https://mmbiz.qpic.cn/mmbiz_png/ibaXaPIy7jV17m7Dic4fkibia8HzoIEXtdLjFuCibm6EicmDibWc0BJD3Zd839epU8lELPgsoNe1YIgVd1yTOM3K85XEQ/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+
+基于移动窗口的W-MSA和基于窗口的SW-MSA模块前后相连，实现不同窗格内特征的传递与交互。基于移动窗口的自注意力模块是本研究的关键所在。
 
 其中有几个地方处理方法与ViT不同：
 
@@ -210,6 +236,14 @@ step1:   `B H W C`, 划分成 `num_windows*B, window_size, window_size, C`
 step2:   `num_windows*B, window_size, window_size, C`  ===>  `B H W C`,
 
 ## **Window Attention**
+
+标准的全局自注意机制需要计算每一个token和其他所有token的相关性，全局计算带来了与token数量二次方的复杂度。这一机制的计算量对于具有大量像素的稠密视觉预测任务十分庞大，很多时候巨大的计算量对于目前的硬件来说不易实现。为了高效的实现这一模型，研究人员提出仅仅在局域窗口内进行自注意力计算，而窗口则来自于对图像的非重叠均匀划分。假设每个窗口中包含M x M个Patch，整张图像共包含h x w个Patch，那么标准的和基于窗口的全局注意力模块的计算复杂度如下：
+
+![图片](https://mmbiz.qpic.cn/mmbiz_jpg/ibaXaPIy7jV0ZKqEsY2jb0ibicToet1INDDGQK9TzsWia4IWLwjKvpY9DpgDfia9ia8lHTViaCD6nvBrSH7HygPwupnbQ/640?wx_fmt=jpeg&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+
+可以看到标准的全局注意力计算方式与Patch数量的二次关系带来了庞大的计算量，而基于窗格的方式由于M固定则仅仅成线性关系，使得高效计算成为可能。
+
+但这种基于窗格的方式缺乏窗格间的交互，限制了模型的表达能力。为了实现窗格间的交互，研究人员提出了一种在连续特征层间移动窗口的方式来实现。这种机制中，第一个特征图窗格按照正常的方式将8x8的特征图分割成4x4窗格(M=4)。而后在下一层中将窗格整体移动(M/2,M/2)，以此来实现窗格间的交互。
 
 这是这篇文章的关键。传统的Transformer都是**基于全局来计算注意力的**，因此计算复杂度十分高。而Swin Transformer则将**注意力的计算限制在每个窗口内**，进而减少了计算量。
 
@@ -725,3 +759,68 @@ class SwinTransformerBlock(nn.Module):
 ![img](SwinTransformer.assets/v2-bf00e048de979decd68ebc7c5372cb27_b.jpg)
 
  在ImageNet22K数据集上，准确率能达到惊人的86.4%。另外在检测，分割等任务上表现也很优异，感兴趣的可以翻看论文最后的实验部分。
+
+
+
+## 作者胡瀚回答
+
+### Q1 论文试图解决什么问题？
+
+论文试图提出一种新的基于Transformer的视觉骨干网络（几乎所有计算机视觉任务均需要的基本图像特征提取步骤），希望这一骨干网络能真正超越此前主流的卷积神经网络，成为视觉骨干网络的新主流，从而能和自然语言处理（Transformer是该领域主流骨干网络）有统一的建模。
+
+### Q2 这是否是一个新的问题？
+
+不是一个新问题。无需卷积，基于Transformer中自注意模块搭建的视觉骨干网络两年前即有研究（以同期的Swin原作者团队做的Local Relation Networks和Transformer原作者团队所做的SASA为相关先驱工作），但是这些工作由于硬件实现不太友好，没有得到主流的关注。最近谷歌的ViT模型，在图像分类上取得了很好的效果，而且运行速度较快，但是不适合于其他密集识别任务。
+
+###  Q3 这篇文章要验证一个什么科学假设？
+
+1、Transformer有可能取代传统的卷积网络，成为计算机视觉的新骨干网络；2、由于图像和文本特点的不同，将层次性、局部性和平移不变性等先验引入Transformer网络结构设计能帮助在视觉任务中取得更好的性能。
+
+Q4 有哪些相关研究？如何归类？谁是这一课题在领域内值得关注的研究员？
+
+1、此前主流的视觉骨干网络是基于卷积的网络，由于其基本性，它们的进展很大程度推动了视觉整体的发展。经典的骨干网络包括：AlexNet, GoogleNet, VGGNet, ResNet, DenseNet等等；
+
+2、基于自注意模块（Transformer的基本单元）的视觉骨干网络。先驱的工作包括本文原作者团队做的Local Relation Networks（ICCV19）和Transformer原作者团队所做的SASA (NeurIPS2019)；
+
+3、将注意力模块应用于各种视觉问题，与卷积形成互补。本文原作者团队做了一系列相关工作，广泛应用于图像分类、物体检测、语义分割等重要的视觉问题。其它较有影响力的工作包括Facebook何恺明团队的NL-Net以及Facebook的DETR检测器；
+
+4、基于Transfomer整体网络结构的视觉骨干网络。先驱工作是谷歌的ViT网络，利用海量数据在图像分类上取得了很好的性能。此后Facebook的DeiT在中等规模数据上证明了ViT网络的有效性。
+
+###  Q5 论文中提到的解决方案之关键是什么？
+
+解决方案：将层次性、局部性和平移不变性等先验引入Transformer网络结构设计。 核心创新：移位窗口（shifted window）设计：
+
+ 1）自注意的计算在局部的非重叠窗口内进行。这一设计有两方面的好处，一是复杂度从此前的和图像大小的平方关系变成了线性关系，也使得层次化的整体结构设计、局部先验的引入成为可能，
+
+二是因为采用非重叠窗口，自注意计算时不同query会共享同样的key集合，从而对硬件友好，更实用。 
+
+2）在前后两层的Transformer模块中，非重叠窗口的配置相比前一层做了半个窗口的移位，这样使得上一层中不同窗口的信息进行了交换。 相比于卷积网络以及先驱的自注意骨干网络（Local Relation Net和SASA）中常见的滑动窗（Sliding window）设计，这一新的设计牺牲了部分平移不变性，但是实验发现平移不变性的部分丢失不会降低准确率，甚至以为正则效应效果更好。同时，这一设计对硬件更友好，从而更实用而有希望成为主流。
+
+Q6 论文中的实验是如何设计的？
+
+在三个最典型的视觉任务：图像分类、检测和分割中，替换以前的骨干网络，考察在相同计算代价和复杂度情况下，性能是否有增益。设计了三个层次的实验：1、系统级和state-of-the-art比较；2、骨干网络级比较。骨干网络是否对于各种主流框架都有用？3、消融实验验证核心设计的有效性。
+
+###  Q7 用于定量评估的数据集是什么？代码有没有开源？
+
+三个任务分别采用最主流的评测集ImageNet-1K，COCO和ADE20K。代码进行了开源， https://github.com/microsoft/Swin-Transformer(4.5k star) https://github.com/SwinTransformer(总和1.8k star)。(截至2021.9.28)
+
+###  Q8 论文中的实验及结果有没有很好地支持需要验证的科学假设？
+
+论文设计了三个层次的实验来验证有效性：
+
+1、系统级和state-of-the-art比较。在COCO物体检测和ADE20K语义分割评测集上，分别比此前最好的方法显著高出2.7个点（mAP）和3.5个点（mIoU）；
+
+2、骨干网络级比较。主要做了物体检测的实验，在4种主流物体检测器和不同模型大小情况下，只替换骨干网络，比相同复杂度的CNN网络高出3.5-4.5个点。ADE20K语义分割上，相比于此前的骨干网络，也普遍有3-5个点的提升；
+
+3、核心设计有效性的验证，包括移位窗口设计，相对位置先验项的重要性，与滑动窗口和其它稀疏自注意算法的比较。分别在三个任务上验证了有效性。
+
+###  Q9 这篇论文到底有什么贡献？
+
+1、认知贡献。此前谷歌的ViT引起了一些关注，但学界和业界普遍认为Transformer骨干网络还有很远的路要走才能替代卷积网络成为主流。这一工作通过证明Transformer可以在重要的物体检测（区域级别识别任务）和语义分割（像素级别识别任务）评测集上相比此前所有的卷积网络方法取得显著提升，来让学界和业界意识到Transformer模型将会取代卷积网络，成为视觉骨干网络的新主流。 
+
+2、工程贡献。这一工作中的诸多设计有望长期成为视觉领域的默认做法，包括移位窗口的设计，相对位置偏置项，和此前完全不一样的训练recipe等等。
+
+###  Q10 下一步呢？有什么工作可以继续深入？
+
+移位窗口的设计对NLP是否同样适用？ Transformer能否scale up？ Transformer如何使CV和NLP有机结合起来？ Transformer能将视觉推向一个什么样的高度？
+
