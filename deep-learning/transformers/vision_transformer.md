@@ -47,7 +47,7 @@ transformer 原论文中是默认采用固定的 positional embedding，但ViT�
 
 ```python
 # 这里多1是为了后面要说的class token，embed_dim即patch embed_dim
-self.pos_embed = nn.Parameter(torch.zeros(1, num_patches + 1, embed_dim)) 
+self.pos_embed = nn.Parameter(torch.zeros(1, num_patches + 1, embed_dim))
 
 # patch emded + pos_embed
 x = x + self.pos_embed
@@ -149,7 +149,7 @@ if __name__ == '__main__':
 
 假设 输入是 B * N *C = 32 * 196 * 768,  head 的个数为 8,
 
-- 24 行,   输入  32 * 196 * 768 
+- 24 行,   输入  32 * 196 * 768
 - 25 行,   32 * 196 * 768  ==>  32 * 196 * (768  * 3 )  ==>  32  * 196 * 3 * 8 * 96  ==>  3 *32  * 8 * 196   *96
 - 27 行,   q,k ,v 的shape 都是  32  * 8 * 196   *96
 - 30 行,   矩阵乘法,  q * k/sqrt(d) :   32  * 8 * 196   * 196
@@ -229,7 +229,7 @@ ViT模型的超参数主要包括以下，这些超参数直接影响模型参�
 
 
 
-类似BERT，ViT共定义了3中不同大小的模型：Base，Large和Huge，其对应的模型参数不同，如下所示。如ViT-L/16指的是采用Large结构，输入的patch size为16x16。 
+类似BERT，ViT共定义了3中不同大小的模型：Base，Large和Huge，其对应的模型参数不同，如下所示。如ViT-L/16指的是采用Large结构，输入的patch size为16x16。
 
 ![img](https://pic1.zhimg.com/v2-bf9b9ae81389a370f890b0e742de7938_b.jpg)
 
@@ -246,4 +246,3 @@ ViT并不像CNN那样具有inductive bias，论文中发现如果如果直接在
 
 
 ![img](https://pic3.zhimg.com/v2-5486d37ee0306362fe5baa5188635656_b.jpg)
-

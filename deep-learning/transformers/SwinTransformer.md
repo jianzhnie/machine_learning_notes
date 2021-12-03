@@ -1,4 +1,4 @@
- 
+
 
 # Swin Transformer
 
@@ -100,8 +100,8 @@ class PatchEmbed(nn.Module):
             1], f"Input image width ({W}) doesn't match model ({self.img_size[1]})."
 
         x = self.proj(x)  # trandsform image to patchs
-        # 输入 torch.Size([1, 3, 224, 224]) 
-        # 出来的是(N, 96, 224/4, 224/4) 
+        # 输入 torch.Size([1, 3, 224, 224])
+        # 出来的是(N, 96, 224/4, 224/4)
         if self.flatten:
             x = x.flatten(2).transpose(1, 2)  # BCHW -> BNC
         # 把HW维展开，(N, 96, 56*56)
@@ -116,7 +116,7 @@ class PatchEmbed(nn.Module):
 该模块的作用是在每个Stage开始前做降采样，用于缩小分辨率，调整通道数 进而形成层次化的设计，同时也能节省一定运算量。
 
 >  在CNN中，则是在每个Stage开始前用`stride=2`的卷积/[池化层](https://www.zhihu.com/search?q=池化层&search_source=Entity&hybrid_search_source=Entity&hybrid_search_extra={"sourceType"%3A"article"%2C"sourceId"%3A"367111046"})来降低分辨率。
->  
+>
 
 每次降采样是两倍，因此**在行方向和列方向上，间隔2选取元素**。
 
@@ -185,7 +185,7 @@ print(a[1::2])
 
 > [start :: step] 从start开始，每隔step取值。
 
-下面是一个示意图（输入张量N=1, H=W=8, C=1，不包含最后的全连接层调整） 
+下面是一个示意图（输入张量N=1, H=W=8, C=1，不包含最后的全连接层调整）
 
 ![img](SwinTransformer.assets/v2-f9c4e3d69da7508562358f9c3f683c63_b.png)
 
@@ -356,7 +356,7 @@ class WindowAttention(nn.Module):
 
 首先QK计算出来的Attention张量形状为`(numWindows*B, num_heads, window_size*window_size, window_size*window_size)`。
 
-而对于Attention张量来说，**以不同元素为原点，其他元素的坐标也是不同的**，以`window_size=2`为例，其相对位置编码如下图所示 
+而对于Attention张量来说，**以不同元素为原点，其他元素的坐标也是不同的**，以`window_size=2`为例，其相对位置编码如下图所示
 
 ![img](SwinTransformer.assets/v2-c7140d26adf8a4c9d8b2609488ce71ee_b.jpg)
 
@@ -368,7 +368,7 @@ coords_w = torch.arange(self.window_size[1])
 coords = torch.meshgrid([coords_h, coords_w]) # -> 2*(wh, ww)
 """
   (tensor([[0, 0],
-           [1, 1]]), 
+           [1, 1]]),
    tensor([[0, 1],
            [0, 1]]))
 """
@@ -401,7 +401,7 @@ relative_coords[:, :, 0] += self.window_size[0] - 1
 relative_coords[:, :, 1] += self.window_size[1] - 1
 ```
 
-后续我们需要将其展开成一维偏移量。而对于(1，2）和（2，1）这两个[坐标](https://www.zhihu.com/search?q=坐标&search_source=Entity&hybrid_search_source=Entity&hybrid_search_extra={"sourceType"%3A"article"%2C"sourceId"%3A"367111046"})。在二维上是不同的，**但是通过将x,y坐标相加转换为一维偏移的时候，他的偏移量是相等的**。 
+后续我们需要将其展开成一维偏移量。而对于(1，2）和（2，1）这两个[坐标](https://www.zhihu.com/search?q=坐标&search_source=Entity&hybrid_search_source=Entity&hybrid_search_extra={"sourceType"%3A"article"%2C"sourceId"%3A"367111046"})。在二维上是不同的，**但是通过将x,y坐标相加转换为一维偏移的时候，他的偏移量是相等的**。
 
 ![img](SwinTransformer.assets/v2-5b1f589ca71a4bc406a266296025b4b4_b.jpg)
 
@@ -467,50 +467,50 @@ self.register_buffer("relative_position_index", relative_position_index)
 ```
 
 - 首先输入张量形状为 `numWindows*B, window_size * window_size, C`（后续会解释）
-  
+
 - 然后经过`self.qkv`这个全连接层后，进行reshape，调整轴的顺序，得到形状为`3, numWindows*B, num_heads, window_size*window_size, c//num_heads`，并分配给`q,k,v`。
-  
+
 - 根据公式，我们对`q`乘以一个`scale`缩放系数，然后与`k`（为了满足矩阵乘要求，需要将最后两个维度调换）进行相乘。得到形状为`(numWindows*B, num_heads, window_size*window_size, window_size*window_size)`的`attn`张量
-  
+
 - 之前我们针对位置编码设置了个形状为`(2*window_size-1*2*window_size-1, numHeads)`的可学习变量。我们用计算得到的相对编码位置索引`self.relative_position_index`选取，得到形状为`(window_size*window_size, window_size*window_size, numHeads)`的编码，加到`attn`张量上
-  
+
 - 暂不考虑mask的情况，剩下就是跟transformer一样的softmax，dropout，与`V`[矩阵](https://www.zhihu.com/search?q=矩阵&search_source=Entity&hybrid_search_source=Entity&hybrid_search_extra={"sourceType"%3A"article"%2C"sourceId"%3A"367111046"})乘，再经过一层全连接层和dropout
-  
+
 
 ## **Shifted Window Attention**
 
-前面的Window Attention是在每个窗口下计算注意力的，为了更好的和其他window进行信息交互，Swin Transformer还引入了shifted window操作。 
+前面的Window Attention是在每个窗口下计算注意力的，为了更好的和其他window进行信息交互，Swin Transformer还引入了shifted window操作。
 
 ![img](SwinTransformer.assets/v2-07a98325a29db1da6521e4ddaaed3c88_b.jpg)
 
  左边是没有重叠的Window Attention，而右边则是将窗口进行移位的Shift Window Attention。可以看到移位后的窗口包含了原本相邻窗口的元素。但这也引入了一个新问题，即**window的个数翻倍了**，由原本四个窗口变成了9个窗口。
 
-在实际代码里，我们是**通过对特征图移位，并给Attention设置mask来间接实现的**。能在**保持原有的window个数下**，最后的计算结果等价。 
+在实际代码里，我们是**通过对特征图移位，并给Attention设置mask来间接实现的**。能在**保持原有的window个数下**，最后的计算结果等价。
 
 ![img](SwinTransformer.assets/v2-84b7dd5ba83bf0c686a133dec758d974_b.jpg)
 
 ## **特征图移位操作**
 
-代码里对特征图移位是通过`torch.roll`来实现的，下面是示意图 
+代码里对特征图移位是通过`torch.roll`来实现的，下面是示意图
 
 ![img](SwinTransformer.assets/v2-7b594ca54a3cfac5370d8fef2be6f768_b.jpg)
 
 
 
 >  如果需要`reverse cyclic shift`的话只需把参数`shifts`设置为对应的正数值。
->  
+>
 
 ## **Attention Mask**
 
 我认为这是Swin Transformer的精华，通过设置合理的mask，让`Shifted Window Attention`在与`Window Attention`相同的窗口个数下，达到等价的计算结果。
 
-首先我们对Shift Window后的每个窗口都给上index，并且做一个`roll`操作（window_size=2, shift_size=-1） 
+首先我们对Shift Window后的每个窗口都给上index，并且做一个`roll`操作（window_size=2, shift_size=-1）
 
 ![img](SwinTransformer.assets/v2-d80364e0b73c60bcd8a60bbd91cfbaeb_b.jpg)
 
  我们希望在计算Attention的时候，**让具有相同index QK进行计算，而忽略不同index QK计算结果**。
 
-最后正确的结果如下图所示 
+最后正确的结果如下图所示
 
 ![img](SwinTransformer.assets/v2-e72bf67b5cbcc27e2d2640bcd3522d0e_b.jpg)
 

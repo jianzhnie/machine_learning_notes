@@ -17,6 +17,3 @@ We recommend using Horovod Spark Estimators if you:
 - Are using a standard gradient descent optimization process as your training loop.
 
 If for whatever reason the Estimator API does not meet your needs, the Run API offers more fine-grained control.
-
-
-
