@@ -22,13 +22,13 @@
 
 ### 计算机视觉 - self-supervised (TODO)
 
-| 阅读 | 年份 | 名字       | 简介 | 笔记整理 |                                                         引用 |
-| ---- | ---- | ---------- | ---- | -------- | -----------------------------------------------------------: |
-| ✅    | 2017 | [SimCLR]() |      |          | 26029 ([link](https://www.semanticscholar.org/paper/Attention-is-All-you-Need-Vaswani-Shazeer/204e3073870fae3d05bcbc2f6a8e263d9b72e776)) |
-|      | 2018 | [Moco]()   |      |          | 2752 ([link](https://www.semanticscholar.org/paper/Improving-Language-Understanding-by-Generative-Radford-Narasimhan/cd18800a0fe0b668a1cc19f2ec95b5003d0a5035)) |
-|      | 2018 | [SimCLR]() |      |          | 25340 ([link](https://www.semanticscholar.org/paper/BERT%3A-Pre-training-of-Deep-Bidirectional-for-Devlin-Chang/df2b0e26d0599ce3e70df8a9da02e51594e0e992)) |
-|      | 2019 | [SimCLR]() |      |          | 4534 ([link](https://www.semanticscholar.org/paper/Language-Models-are-Unsupervised-Multitask-Learners-Radford-Wu/9405cc0d6169988371b2755e573cc28650d14dfe)) |
-|      | 2020 | [SimCLR]() |      |          | 2548 ([link](https://www.semanticscholar.org/paper/Language-Models-are-Few-Shot-Learners-Brown-Mann/6b85b63579a916f705a8e10a49bd8d849d91b1fc)) |
+| 阅读 | 年份 | 名字       | 简介 | 笔记整理 | 引用 |
+| ---- | ---- | ---------- | ---- | -------- | ---: |
+| ✅    | 2017 | [SimCLR]() |      |          |      |
+|      | 2018 | [Moco]()   |      |          |      |
+|      | 2018 | [BYOL]()   |      |          |      |
+|      |      | [MoCov2]() |      |          |      |
+|      | 2020 | [MoCov3]() |      |          |      |
 
 ### 计算机视觉 - Transformer
 
