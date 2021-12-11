@@ -1,4 +1,6 @@
-# Exploring SimCLR: A Simple Framework for Contrastive Learning of Visual Representations
+# SimCLR
+
+# A Simple Framework for Contrastive Learning of Visual Representations
 
 ![img](https://sthalles.github.io/assets/contrastive-self-supervised/cover.png)
 
