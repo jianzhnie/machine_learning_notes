@@ -1,10 +1,6 @@
 # Exploring SimCLR: A Simple Framework for Contrastive Learning of Visual Representations
 
-[ [`machine-learning` ](https://sthalles.github.io/tag/machine-learning) [`deep-learning` ](https://sthalles.github.io/tag/deep-learning) [`representation-learning` ](https://sthalles.github.io/tag/representation-learning) [`pytorch` ](https://sthalles.github.io/tag/pytorch) [`torchvision` ](https://sthalles.github.io/tag/torchvision) [`unsupervised-learning` ](https://sthalles.github.io/tag/unsupervised-learning) [`contrastive-loss` ](https://sthalles.github.io/tag/contrastive-loss) [`simclr` ](https://sthalles.github.io/tag/simclr) [`self-supervised` ](https://sthalles.github.io/tag/self-supervised) [`self-supervised-learning` ](https://sthalles.github.io/tag/self-supervised-learning) ]![img](https://sthalles.github.io/assets/contrastive-self-supervised/cover.png)
-
-Feb 23, 2020
-
-[ ](https://twitter.com/intent/tweet?text=Exploring SimCLR: A Simple Framework for Contrastive Learning of Visual Representations&url=https://sthalles.github.io/simple-self-supervised-learning/&via=jekyllrb&related=jekyllrb)[ ](https://facebook.com/sharer.php?u=https://sthalles.github.io/simple-self-supervised-learning/)[ ](https://plus.google.com/share?url=https://sthalles.github.io/simple-self-supervised-learning/
+![img](https://sthalles.github.io/assets/contrastive-self-supervised/cover.png)
 
 ## Introduction
 
@@ -14,7 +10,7 @@ This is particularly interesting when annotated training data is scarce. In situ
 
 > *If training for a new task, models initialized with pre-trained weights tend to learn faster and be more accurate then training from scratch using random initialization.*
 
-However, as one might guess, there is a bottleneck in this process. Most of the current transfer learning methods rely on models trained on supervised corpora. ***But the problem is that annotating data is not cheap.\***
+However, as one might guess, there is a bottleneck in this process. Most of the current transfer learning methods rely on models trained on supervised corpora. **But the problem is that annotating data is not cheap.**
 
 If we look around, data, in an unsupervised way, is abundant. Thus, it makes sense to use unlabeled data to learn representations that could be used as a proxy to achieve better supervised models. ***In fact, that is a long-standing problem, and current research on unsupervised representation learning is finally catching up with supervised methods.\***
 
