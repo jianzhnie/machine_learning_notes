@@ -6,7 +6,7 @@ This changed when **Chen et. al** proposed a new framework in their research pap
 
 In this article, I will explain the key ideas of the framework proposed in the research paper using diagrams.
 
-## The Nostalgic Intuition[Permalink](https://amitness.com/2020/03/illustrated-simclr/#the-nostalgic-intuition)
+## The Nostalgic Intuition
 
 As a kid, I remember we had to solve such puzzles in our textbook.
 
@@ -66,7 +66,7 @@ Let’s explore the various components of the SimCLR framework with an example. 
 
 ![Corpus of millions of images](https://amitness.com/images/simclr-raw-data.png)
 
-### **1. Self-supervised Formulation** [Data Augmentation][Permalink](https://amitness.com/2020/03/illustrated-simclr/#1-self-supervised-formulation-data-augmentation)
+### **1. Self-supervised Formulation** [Data Augmentation]
 
 First, we generate batches of size N from the raw images. Let’s take a batch of size N = 2 for simplicity. In the paper, they use a large batch size of 8192.
 
@@ -80,7 +80,7 @@ For each image in this batch, a random transformation function is applied to get
 
 ![Augmenting images in a batch for SimCLR](https://amitness.com/images/simclr-batch-data-preparation.png)
 
-### 2. Getting Representations [Base Encoder][Permalink](https://amitness.com/2020/03/illustrated-simclr/#2-getting-representations-base-encoder)
+### 2. Getting Representations [Base Encoder]
 
 Each augmented image in a pair is passed through an encoder to get image representations. The encoder used is generic and replaceable with other architectures. The two encoders shown below have shared weights and we get vectors hihi and hjhj.
 
@@ -90,13 +90,12 @@ In the paper, the authors used [ResNet-50](https://arxiv.org/abs/1512.03385) arc
 
 ![ResNet-50 as encoder in SimCLR](https://amitness.com/images/simclr-paper-encoder.png)
 
-### 3. Projection Head[Permalink](https://amitness.com/2020/03/illustrated-simclr/#3-projection-head)
-
+### 3. Projection Head
 The representations hihi and hjhj of the two augmented images are then passed through a series of non-linear **Dense -> Relu -> Dense** layers to apply non-linear transformation and project it into a representation zizi and zjzj. This is denoted by g(.)g(.) in the paper and called projection head.
 
 ![Projection Head Component of SimCLR](https://amitness.com/images/simclr-projection-head-component.png)
 
-### 4. Tuning Model: [Bringing similar closer][Permalink](https://amitness.com/2020/03/illustrated-simclr/#4-tuning-model-bringing-similar-closer)
+### 4. Tuning Model: [Bringing similar closer]
 
 Thus, for each augmented image in the batch, we get embedding vectors zz for it.
 
@@ -104,7 +103,7 @@ Thus, for each augmented image in the batch, we get embedding vectors zz for it.
 
 From these embedding, we calculate the loss in following steps:
 
-#### a. Calculation of Cosine Similarity[Permalink](https://amitness.com/2020/03/illustrated-simclr/#a-calculation-of-cosine-similarity)
+#### a. Calculation of Cosine Similarity
 
 Now, the similarity between two augmented versions of an image is calculated using cosine similarity. For two augmented images xixi and xjxj, the cosine similarity is calculated on its projected representations zizi and zjzj.
 
@@ -121,7 +120,7 @@ The pairwise cosine similarity between each augmented image in a batch is calcul
 
 ![Pairwise cosine similarity between 4 images](https://amitness.com/images/simclr-pairwise-similarity.png)
 
-#### b. Loss Calculation[Permalink](https://amitness.com/2020/03/illustrated-simclr/#b-loss-calculation)
+#### b. Loss Calculation
 
 SimCLR uses a contrastive loss called “**NT-Xent loss**” (**Normalized Temperature-Scaled Cross-Entropy Loss**). Let see intuitively how it works.
 
@@ -155,13 +154,13 @@ L=12NN∑k=1[l(2k−1,2k)+l(2k,2k−1)]L=12N∑k=1N[l(2k−1,2k)+l(2k,2k−1)]
 
 Based on the loss, the encoder and projection head representations improves over time and the representations obtained place similar images closer in the space.
 
-## Downstream Tasks[Permalink](https://amitness.com/2020/03/illustrated-simclr/#downstream-tasks)
+## Downstream Tasks
 
 Once the SimCLR model is trained on the contrastive learning task, it can be used for transfer learning. For this, the representations from the encoder are used instead of representations obtained from the projection head. These representations can be used for downstream tasks like ImageNet Classification.
 
 ![Using SimCLR for downstream tasks](https://amitness.com/images/simclr-downstream.png)
 
-## Objective Results[Permalink](https://amitness.com/2020/03/illustrated-simclr/#objective-results)
+## Objective Results
 
 SimCLR outperformed previous self-supervised methods on ImageNet. The below image shows the top-1 accuracy of linear classifiers trained on representations learned with different self-supervised methods on ImageNet. The gray cross is supervised ResNet50 and SimCLR is shown in bold.
 
@@ -172,17 +171,17 @@ Source: [SimCLR paper](https://arxiv.org/abs/2002.05709)
 - On ImageNet [ILSVRC-2012](http://image-net.org/challenges/LSVRC/2012/), it achieves 76.5% top-1 accuracy which is 7% improvement over previous SOTA self-supervised method [Contrastive Predictive Coding](https://arxiv.org/abs/1905.09272) and on-par with supervised ResNet50.
 - When trained on 1% of labels, it achieves 85.8% top-5 accuracy outperforming AlexNet with 100x fewer labels
 
-## SimCLR Code[Permalink](https://amitness.com/2020/03/illustrated-simclr/#simclr-code)
+## SimCLR Code
 
 The official implementation of SimCLR in Tensorflow by the paper authors is available on [GitHub](https://github.com/google-research/simclr). They also provide [pretrained models](https://github.com/google-research/simclr#pre-trained-models-for-simclrv1) for 1x, 2x, and 3x variants of the ResNet50 architectures using Tensorflow Hub.
 
 There are various unofficial SimCLR PyTorch implementations available that have been tested on small datasets like [CIFAR-10](https://github.com/leftthomas/SimCLR) and [STL-10](https://github.com/Spijkervet/SimCLR).
 
-## Conclusion[Permalink](https://amitness.com/2020/03/illustrated-simclr/#conclusion)
+## Conclusion
 
 Thus, SimCLR provides a strong framework for doing further research in this direction and improve the state of self-supervised learning for Computer Vision.
 
-## Citation Info (BibTex)[Permalink](https://amitness.com/2020/03/illustrated-simclr/#citation-info-bibtex)
+## Citation Info (BibTex)
 
 If you found this blog post useful, please consider citing it as:
 
@@ -195,7 +194,7 @@ If you found this blog post useful, please consider citing it as:
 }
 ```
 
-## References[Permalink](https://amitness.com/2020/03/illustrated-simclr/#references)
+## References
 
 - [“A Simple Framework for Contrastive Learning of Visual Representations”](https://arxiv.org/abs/2002.05709)
 - [“On Calibration of Modern Neural Networks”](https://arxiv.org/pdf/1706.04599.pdf)
