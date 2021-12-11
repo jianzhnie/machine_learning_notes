@@ -42,7 +42,7 @@ Let’s now understand the various approaches researchers have proposed to explo
 
 ## A. Self-Supervised Learning from Image
 
-### Pattern 1: Reconstruction
+### Pattern 1: Reconstruction（重建）
 
 #### 1. **Image Colorization**（图像着色）
 
