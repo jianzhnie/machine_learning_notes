@@ -40,13 +40,13 @@ The core of contrastive learning is the Noise Contrastive Estimator (NCE) loss.
 
 ![Contrastive loss](https://sthalles.github.io/assets/contrastive-self-supervised/contrastive-loss.png)
 
-In the equation above, you can think of x+x+ as a data point similar to the input xx. In other words, the observations xx and x+x+ are correlated and the pair (x,x+)(x,x+) represents a positive example. Usually, x+x+ is the result of some transformation on xx. This can be a geometric transform aimed to change the size, shape or orientation of xx, or any type of data augmentation technique. Some examples include *rotation, sheer, resize, cutout and more*.
+In the equation above, you can think of $$x^+$$as a data point similar to the input $$x$$. In other words, the observations $$x $$ and $$x^+$$ are correlated and the pair $$(x,x^+)$$ represents a positive example. Usually, $$x^+$$ is the result of some transformation on $$x$$. This can be a geometric transform aimed to change the size, shape or orientation of $$x$$, or any type of data augmentation technique. Some examples include *rotation, sheer, resize, cutout and more*.
 
-On the other hand, x−x− are examples dissimilar to xx. The pair (x,x−)(x,x−) form a negative example and they are meant to be uncorrelated. Here, the NCE loss will enforce them to be different from the positive pairs. ***Note that for each positive pair (x,x+)(x,x+) we have a set of K negatives\***. Indeed, empirical results have shown that a large number of negatives is required to obtain good representations.
+On the other hand, $$x^-$$ are examples dissimilar to $$x $$ . The pair$$(x,x^-)$$form a negative example and they are meant to be uncorrelated. Here, the NCE loss will enforce them to be different from the positive pairs. ***Note that for each positive pair $$(x,x^+)$$we have a set of K negatives\***. Indeed, empirical results have shown that a large number of negatives is required to obtain good representations.
 
-The sim(.)sim(.) function is a similarity (distance) metric. It is responsible for minimizing the difference between the positives while maximizing the difference between positive and negatives. Often, sim(.)sim(.) is defined in terms of dot products or cosine similarities.
+The $$sim(.) $$function is a similarity (distance) metric. It is responsible for minimizing the difference between the positives while maximizing the difference between positive and negatives. Often, $$sim(.)$$ is defined in terms of dot products or cosine similarities.
 
-Lastly, g(.)g(.) is a convolution neural network encoder. Specifically, recent contrastive learning architectures use siamese networks to learn embeddings for positive and negative examples. These embeddings are then passed as input to the contrastive loss.
+Lastly, $$g(.)$$ is a convolution neural network encoder. Specifically, recent contrastive learning architectures use siamese networks to learn embeddings for positive and negative examples. These embeddings are then passed as input to the contrastive loss.
 
 In simple terms, we can think of the contrastive task as trying to identify the positive example among a bunch of negatives.
 
@@ -60,12 +60,16 @@ In simple terms, we can think of the contrastive task as trying to identify the 
 
 To understand SimCLR, let’s explore how it builds on the core components of the contrastive learning framework.
 
-Given an input image, we create 2 correlated copies of it, by applying 2 separate data augmentation operators. The transformations include (1) *random crop and resize*, (2) *random color distortions*, and (3) *random Gaussian blur*.
+Given an input image, we create 2 correlated copies of it, by applying 2 separate data augmentation operators. The transformations include
+
+ (1) *random crop and resize*, 
+
+(2) *random color distortions*,
+
+ (3) *random Gaussian blur*.
 
 ```python
 color_jitter = transforms.ColorJitter(0.8 * s, 0.8 * s, 0.8 * s, 0.2 * s)
-
-
 data_augment = transforms.Compose([transforms.RandomResizedCrop(96),
                                    transforms.RandomHorizontalFlip(),
                                    transforms.RandomApply([color_jitter], p=0.8),
@@ -74,11 +78,11 @@ data_augment = transforms.Compose([transforms.RandomResizedCrop(96),
                                    transforms.ToTensor()])
 ```
 
-The order of the operations is kept fixed, but since each operation has its own uncertainty, it makes the resulting views visually different. ***Note that since we apply 2 distinct augmentation functions on the same image, if we sample 5 images, we end up with 2×5=102×5=10 augmented observations in the batch\***. See the visual concept below.
+The order of the operations is kept fixed, but since each operation has its own uncertainty, it makes the resulting views visually different. ***Note that since we apply 2 distinct augmentation functions on the same image, if we sample 5 images, we end up with 2×5=10 augmented observations in the batch\***. See the visual concept below.
 
 ![Positive pairs](https://sthalles.github.io/assets/contrastive-self-supervised/positives-pairs.png)
 
-To maximize the number of negatives, the idea is to pair each image (indexed ii) in the batch with all other images (indexed jj). Note that we avoid pairing an observation ii with itself, and with its augmented version. As a result, for each image in the batch, we get 2×(N−1)2×(N−1) negative pairs — *where N is the batch size*.
+To maximize the number of negatives, the idea is to pair each image (indexed ii) in the batch with all other images (indexed jj). Note that we avoid pairing an observation ii with itself, and with its augmented version. As a result, for each image in the batch, we get 2×(N−1) negative pairs — *where N is the batch size*.
 
 ![Negative pairs](https://sthalles.github.io/assets/contrastive-self-supervised/negative-pairs.png)
 
@@ -90,11 +94,11 @@ In fact, in the original implementation, SimCLR is trained with batch sizes as l
 
 ![Negative pairs](https://sthalles.github.io/assets/contrastive-self-supervised/negative-pairs-2.png)
 
-SimCLR uses [ResNet-50](https://sthalles.github.io/simple-self-supervised-learning/#4) as the main ConvNet backbone. The ResNet receives an augmented image of shape **(224,224,3)** and outputs a 2048-dimensional embedding vector hh. Then, a projection head g(.)g(.) is applied to the embedding vector hh which produces a final representation z=g(h)z=g(h). The projection head g(.)g(.) is a Multilayer Perceptron (MLP) with 2 dense layers. Both layers have 2048 units and the hidden layer has a non-linearity (ReLU) activation function.
+SimCLR uses [ResNet-50](https://sthalles.github.io/simple-self-supervised-learning/#4) as the main ConvNet backbone. The ResNet receives an augmented image of shape **(224,224,3)** and outputs a 2048-dimensional embedding vector $$h$$. Then, a projection head  $$ g(.)$$ is applied to the embedding vector $$h$$   which produces a final representation $$z=g(h)$$. The projection head $$g(.)$$ is a Multilayer Perceptron (MLP) with 2 dense layers. Both layers have 2048 units and the hidden layer has a non-linearity (ReLU) activation function.
 
-For the similarity function, the authors use the cosine similarity. It measures the cosine of the angle between 2 non-zero vectors in a d-dimensional space. If the angle between 2 vectors is 0 degrees, the cosine similarity is 1. Otherwise, it outputs a number smaller than 1 all the way down to -1. Note that the contrastive learning loss operates on the latent space mapped by the projection head g(.)g(.) — *the zz embedding vectors*.
+For the similarity function, the authors use the cosine similarity. It measures the cosine of the angle between 2 non-zero vectors in a d-dimensional space. If the angle between 2 vectors is 0 degrees, the cosine similarity is 1. Otherwise, it outputs a number smaller than 1 all the way down to -1. Note that the contrastive learning loss operates on the latent space mapped by the projection head $$ g(.)$$ — *the $$ z$$ embedding vectors*.
 
-Once the system is trained, we can through away the projection head g(.)g(.) and use the representations hh (straight from the ResNet) to learn new downstream tasks.
+Once the system is trained, we can through away the projection head $$g(.)$$ and use the representations $$h$$  (straight from the ResNet) to learn new downstream tasks.
 
 ![Negative pairs](https://sthalles.github.io/assets/contrastive-self-supervised/simclr-framework.png)
 
@@ -104,7 +108,7 @@ Once the components of the contrastive learning objective are in place, training
 
 To train the model, I used the [STL-10 dataset](http://ai.stanford.edu/~acoates/stl10/). It contains 10 different classes with a reasonable small number of observations per class. Most importantly, it contains a larger unsupervised set with 100000 unlabeled images – *that is the bulk of images used for training*.
 
-For this implementation, I used a ResNet-18 as the ConvNet backbone. It receives images of shape **(96,96,3)**, regular STL-10 dimensions, and outputs vector representations of size 512. The projection head g(.)g(.) has 2 fully-connected layers. Each layer has 512 units and produces the final 64-dimensional feature representation zz.
+For this implementation, I used a ResNet-18 as the ConvNet backbone. It receives images of shape **(96,96,3)**, regular STL-10 dimensions, and outputs vector representations of size 512. The projection head $$g(.)$$ has 2 fully-connected layers. Each layer has 512 units and produces the final 64-dimensional feature representation zz.
 
 To train SimCLR, I took the ***train + unlabeled\*** portions of the dataset – *that gives a total of 105000 images*.
 
@@ -128,5 +132,3 @@ The original SimCLR paper also provides other interesting results. These include
 - The benefits of normalized embeddings for training contrastive learning-based models;
 
 I encourage you to have a look at the paper for more details.
-
-**Thanks for reading!**
