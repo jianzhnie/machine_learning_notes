@@ -1,4 +1,4 @@
-# [The Illustrated SimCLR Framework](https://amitness.com/2020/03/illustrated-simclr/)
+# The Illustrated SimCLR Framework
 
 In recent years, [numerous self-supervised learning methods](https://amitness.com/2020/02/illustrated-self-supervised-learning/) have been proposed for learning image representations, each getting better than the previous. But, their performance was still below the supervised counterparts.
 
@@ -22,11 +22,11 @@ It turns out that we can through a technique called **Contrastive Learning**. It
 
 ![Contrastive Learning Block](https://amitness.com/images/simclr-contrastive-learning.png)
 
-## Problem Formulation for Machines[Permalink](https://amitness.com/2020/03/illustrated-simclr/#problem-formulation-for-machines)
+## Problem Formulation for Machines
 
 To model the above exercise for a machine instead of a child, we see that we require 3 things:
 
-### 1. Examples of similar and dissimilar images[Permalink](https://amitness.com/2020/03/illustrated-simclr/#1-examples-of-similar-and-dissimilar-images)
+### 1. Examples of similar and dissimilar images
 
 We would require example pairs of images that are similar and images that are different for training a model.
 
@@ -38,37 +38,37 @@ The supervised school of thought would require a human to manually annotate such
 
 ![Self-supervised Approach to Labeling Images](https://amitness.com/images/contrastive-self-supervised-approach.png)
 
-### 2. Ability to know what an image represents[Permalink](https://amitness.com/2020/03/illustrated-simclr/#2-ability-to-know-what-an-image-represents)
+### 2. Ability to know what an image represents
 
 We need some mechanism to get representations that allow the machine to understand an image.
 
 ![Converting Image to Representations](https://amitness.com/images/image-representation.png)
 
-### 3. Ability to quantify if two images are similar[Permalink](https://amitness.com/2020/03/illustrated-simclr/#3-ability-to-quantify-if-two-images-are-similar)
+### 3. Ability to quantify if two images are similar
 
 We need some mechanism to compute the similarity of two images.
 
 ![Computing Similarity between Images](https://amitness.com/images/image-similarity.png)
 
-## The SimCLR Framework Approach[Permalink](https://amitness.com/2020/03/illustrated-simclr/#the-simclr-framework-approach)
+## The SimCLR Framework Approach
 
 The paper proposes a framework called “**SimCLR**” for modeling the above problem in a self-supervised manner. It blends the concept of *Contrastive Learning* with a few novel ideas to learn visual representations without human supervision.
 
-## SimCLR Framework[Permalink](https://amitness.com/2020/03/illustrated-simclr/#simclr-framework)
+## SimCLR Framework
 
-The idea of SimCLR framework is very simple. An image is taken and random transformations are applied to it to get a pair of two augmented images xixi and xjxj. Each image in that pair is passed through an encoder to get representations. Then a non-linear fully connected layer is applied to get representations z. The task is to maximize the similarity between these two representations zizi and zjzj for the same image.
+The idea of SimCLR framework is very simple. An image is taken and random transformations are applied to it to get a pair of two augmented images $$x_{i}$$  and  $$x_{j}$$. Each image in that pair is passed through an encoder to get representations. Then a non-linear fully connected layer is applied to get representations $$z$$. The task is to maximize the similarity between these two representations $$z_{i }$$ and $$z_{j} $$ for the same image.
 
 ![General Architecture of the SimCLR Framework](https://amitness.com/images/simclr-general-architecture.png)
 
-## Step by Step Example[Permalink](https://amitness.com/2020/03/illustrated-simclr/#step-by-step-example)
+## Step by Step Example
 
-Let’s explore the various components of the SimCLR framework with an example. Suppose we have a training corpus of millions of unlabeled images.
+Let’s explore the various components of the `SimCLR` framework with an example. Suppose we have a training corpus of millions of unlabeled images.
 
 ![Corpus of millions of images](https://amitness.com/images/simclr-raw-data.png)
 
-### **1. Self-supervised Formulation** [Data Augmentation]
+### **1. Self-supervised Formulation** [Data Augmentation]()
 
-First, we generate batches of size N from the raw images. Let’s take a batch of size N = 2 for simplicity. In the paper, they use a large batch size of 8192.
+First, we generate batches of size N from the raw images. Let’s take a batch of size N = 2 for simplicity. In the paper, they use a large batch size of  8192.
 
 ![A single batch of images](https://amitness.com/images/simclr-single-batch.png)
 
@@ -76,13 +76,13 @@ The paper defines a random transformation function T that takes an image and app
 
 ![Random Augmentation on Image](https://amitness.com/images/simclr-random-transformation-function.gif)
 
-For each image in this batch, a random transformation function is applied to get a pair of 2 images. Thus, for a batch size of 2, we get 2*N = 2*2 = 4 total images.
+For each image in this batch, a random transformation function is applied to get a pair of 2 images. Thus, for a batch size of 2, we get $$2*N = 2*  2 = 4 $$ total images.
 
 ![Augmenting images in a batch for SimCLR](https://amitness.com/images/simclr-batch-data-preparation.png)
 
-### 2. Getting Representations [Base Encoder]
+### 2. Getting Representations [Base Encoder]()
 
-Each augmented image in a pair is passed through an encoder to get image representations. The encoder used is generic and replaceable with other architectures. The two encoders shown below have shared weights and we get vectors hihi and hjhj.
+Each augmented image in a pair is passed through an encoder to get image representations. The encoder used is generic and replaceable with other architectures. The two encoders shown below have shared weights and we get vectors $$ h_{i}$$and $$h_{j}$$.
 
 ![Encoder part of SimCLR](https://amitness.com/images/simclr-encoder-part.png)
 
@@ -91,13 +91,13 @@ In the paper, the authors used [ResNet-50](https://arxiv.org/abs/1512.03385) arc
 ![ResNet-50 as encoder in SimCLR](https://amitness.com/images/simclr-paper-encoder.png)
 
 ### 3. Projection Head
-The representations hihi and hjhj of the two augmented images are then passed through a series of non-linear **Dense -> Relu -> Dense** layers to apply non-linear transformation and project it into a representation zizi and zjzj. This is denoted by g(.)g(.) in the paper and called projection head.
+The representations $$ h_{i}$$ and $$h_{j}$$ of the two augmented images are then passed through a series of non-linear $$Dense -> Relu -> Dense $$   layers to apply non-linear transformation and project it into a representation $$z_{i}$$  and $$z_j$$  by $$g(.)$$ in the paper and called projection head.
 
 ![Projection Head Component of SimCLR](https://amitness.com/images/simclr-projection-head-component.png)
 
-### 4. Tuning Model: [Bringing similar closer]
+### 4. Tuning Model: [Bringing similar closer]()
 
-Thus, for each augmented image in the batch, we get embedding vectors zz for it.
+Thus, for each augmented image in the batch, we get embedding vectors $$z$$ for it.
 
 ![Projecting image to embedding vectors](https://amitness.com/images/simclr-projection-vectors.png)
 
@@ -105,16 +105,19 @@ From these embedding, we calculate the loss in following steps:
 
 #### a. Calculation of Cosine Similarity
 
-Now, the similarity between two augmented versions of an image is calculated using cosine similarity. For two augmented images xixi and xjxj, the cosine similarity is calculated on its projected representations zizi and zjzj.
+Now, the similarity between two augmented versions of an image is calculated using cosine similarity. For two augmented images $$x_{i}$$  and  $$x_{j}$$. the cosine similarity is calculated on its projected representations  $$z_{i}$$  and $$z_j$$  .
 
 ![Cosine similarity between image embeddings](https://amitness.com/images/simclr-cosine-similarity.png)
 
-si,j=zTizj(τ||zi||||zj||)si,j=ziTzj(τ||zi||||zj||)
+$$
+s_{i,j} = \frac{ \color{#ff7070}{z_{i}^{T}z_{j}} }{(\tau ||\color{#ff7070}{z_{i}}|| ||\color{#ff7070}{z_{j}}||)}
+$$
+
 
 where
 
 - ττ is the adjustable temperature parameter. It can scale the inputs and widen the range `[-1, 1]` of cosine similarity
-- ∥zi∥‖zi‖ is the norm of the vector.
+- $$∥z_i∥$$ is the norm of the vector.
 
 The pairwise cosine similarity between each augmented image in a batch is calculated using the above formula. As shown in the figure, in an ideal case, the similarities between augmented images of cats will be high while the similarity between cat and elephant images will be lower.
 
@@ -138,8 +141,9 @@ This softmax calculation is equivalent to getting the probability of the second 
 
 Then, the loss is calculated for a pair by taking the negative of the log of the above calculation. This formulation is the Noise Contrastive Estimation(NCE) Loss.
 
-l(i,j)=−logexp(si,j)∑2Nk=1l[k!=i]exp(si,k)l(i,j)=−logexp(si,j)∑k=12Nl[k!=i]exp(si,k)
-
+$$
+l(i, j) = -log\frac{exp(s_{i, j})}{ \sum_{k=1}^{2N} l_{[k!= i]} exp(s_{i, k})}
+$$
 ![Calculation of Loss from softmax](https://amitness.com/images/simclr-softmax-loss.png)
 
 We calculate the loss for the same pair a second time as well where the positions of the images are interchanged.
@@ -148,8 +152,9 @@ We calculate the loss for the same pair a second time as well where the position
 
 Finally, we compute loss over all the pairs in the batch of size N=2 and take an average.
 
-L=12NN∑k=1[l(2k−1,2k)+l(2k,2k−1)]L=12N∑k=1N[l(2k−1,2k)+l(2k,2k−1)]
-
+$$
+L = \frac{1}{ 2\color{#2196f3}{N} } \sum_{k=1}^{N} [l(2k-1, 2k) + l(2k, 2k-1)]
+$$
 ![Total loss in SimCLR](https://amitness.com/images/simclr-total-loss.png)
 
 Based on the loss, the encoder and projection head representations improves over time and the representations obtained place similar images closer in the space.
@@ -181,18 +186,6 @@ There are various unofficial SimCLR PyTorch implementations available that have 
 
 Thus, SimCLR provides a strong framework for doing further research in this direction and improve the state of self-supervised learning for Computer Vision.
 
-## Citation Info (BibTex)
-
-If you found this blog post useful, please consider citing it as:
-
-```
-@misc{chaudhary2020simclr,
-  title   = {The Illustrated SimCLR Framework},
-  author  = {Amit Chaudhary},
-  year    = 2020,
-  note    = {\url{https://amitness.com/2020/03/illustrated-simclr}}
-}
-```
 
 ## References
 
