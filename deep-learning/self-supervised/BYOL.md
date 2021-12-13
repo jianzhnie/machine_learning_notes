@@ -34,7 +34,7 @@ z`_ϵ bar , is the L2 normalized z`_ϵ and q_θ(z_θ) bar is L2 normalized q_θ(
 
 For Image augmentations, the following set of augmentations are used. First, a random crop is selected from the image and resized to 224x224. Then random horizontal flip is applied, followed by random color distortion and random grayscale conversion. Random color distortion consists of a random sequence of brightness, contrast, saturation, hue adjustments. The following code snippet implements the BYOL augmentation pipeline in PyTorch..
 
-```
+```python
 from torchvision import transforms as tfmsbyol_tfms = tfms.Compose([
     tfms.RandomResizedCrop(size=512, scale=(0.3, 1)),
     tfms.RandomHorizontalFlip(),
@@ -47,6 +47,89 @@ from torchvision import transforms as tfmsbyol_tfms = tfms.Compose([
 ```
 
 In the actual BYOL implementations, Resnet50 is used as an encoder network. For the projection MLP, the 2048 dimensional feature vector is projected onto 4096-dimensional vector space first with Batch norm followed by ReLU non-linear activation and then it is reduced to the 256-dimensional feature vector. The same architecture is used for the predictor network. Below PyTorch snippet implements the Resnet50 based BYOL network, but it could also be used in conjunction with any arbitrary encoder network such as VGG, InceptionNet, etc. without any significant change.
+
+```python
+import torch
+from torch import nn
+import torch.nn.functional as F
+import copy
+from torchvision import models
+
+class BYOL(nn.Module):
+  def __init__(self, backbone: nn.Module, target_momentum=0.996):
+    super().__init__()
+    self.online_network = backbone
+    self.target_network = copy.deepcopy(backbone)
+
+    # Projection Head
+    self.online_projector = ProjectorHead()
+    self.target_projector = ProjectorHead()
+
+    # Predictor Head
+    self.predictor = MLPHead(self.online_projector.out_channels, 4096, 256)
+
+    self.m = target_momentum
+
+    def initialize_target_network(self):
+        for param_q, param_k in zip(self.online_network.parameters(), self.target_network.parameters()):
+            param_k.data.copy_(param_q.data)
+            param_k.requires_grad = False
+
+        for param_q, param_k in zip(self.online_projector.parameters(), self.target_projector.parameters()):
+            param_k.data.copy_(param_q.data)
+            param_k.requires_grad = False
+
+    @torch.no_grad()
+    def update_target_network(self):
+        for param_q, param_k in zip(self.online_network.parameters(), self.target_network.parameters()):
+            param_k.data = self.m * param_k.data + (1 - self.m) * param_q.data
+
+        for param_q, param_k in zip(self.online_projector.parameters(), self.target_projector.parameters()):
+            param_k.data = self.m * param_k.data + (1 - self.m) * param_q.data
+
+    @staticmethod
+    def regression_loss(x: torch.Tensor, y: torch.Tensor) -> torch.Tensor:
+        x_norm = F.normalize(x, dim=1)  #L2-normalize
+        y_norm = F.normalize(y, dim=1)  #L2-normalize
+        loss = 2 - 2 * (x_norm * y_norm).sum(dim=-1)  #dot product
+        return loss.mean()
+
+      
+class ProjectorHead(nn.Module):
+    def __init__(self):
+        super().__init__()
+        num_features = 2048
+        self.projection = MLPHead(num_features, 4096, 256)
+        self.out_channels = 256
+        self.avg_pool = nn.AdaptiveAvgPool2d((1, 1))
+
+    def forward(self, x):
+        x_pooled = self.avg_pool(x)
+        h = x_pooled.view(x_pooled.shape[0], x_pooled.shape[1])   # removing the last dimension
+        return self.projection(h)
+
+
+class MLPHead(nn.Module):
+    def __init__(self, in_channels: int, hidden_size: int, out_size: int):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Linear(in_channels, hidden_size),
+            nn.BatchNorm1d(hidden_size),
+            nn.ReLU(inplace=True),
+            nn.Linear(hidden_size, out_size)
+        )
+
+    def forward(self, x):
+        return self.net(x)
+
+
+base = models.resnet50(pretrained=False)
+extract_layers = {'layer4': 'feat5'}
+backbone = models._utils.IntermediateLayerGetter(base, extract_layers)
+byol = BYOL(backbone['feat5'])
+```
+
+
 
 <iframe src="https://towardsdatascience.com/media/471734f412abd9238cd5ae825b649e8e" allowfullscreen="" frameborder="0" height="1771" width="680" title="BYOL imeplementation" class="ei ev er fa v" scrolling="auto" style="box-sizing: inherit; width: 680px; position: absolute; left: 0px; top: 0px; height: 1770.99px;"></iframe>
 
