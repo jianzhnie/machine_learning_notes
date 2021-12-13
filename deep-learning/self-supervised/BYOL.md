@@ -28,3 +28,30 @@ contrastive loss
 
 z`_ϵ bar , is the L2 normalized z`_ϵ and q_θ(z_θ) bar is L2 normalized q_θ(z_θ).
 
+
+
+**Implementation Details**
+
+For Image augmentations, the following set of augmentations are used. First, a random crop is selected from the image and resized to 224x224. Then random horizontal flip is applied, followed by random color distortion and random grayscale conversion. Random color distortion consists of a random sequence of brightness, contrast, saturation, hue adjustments. The following code snippet implements the BYOL augmentation pipeline in PyTorch..
+
+```
+from torchvision import transforms as tfmsbyol_tfms = tfms.Compose([
+    tfms.RandomResizedCrop(size=512, scale=(0.3, 1)),
+    tfms.RandomHorizontalFlip(),
+    tfms.ToPILImage(),
+    tfms.RandomApply([
+            tfms.ColorJitter(0.4, 0.4, 0.4, 0.1)
+    ], p=0.8),
+   tfms.RandomGrayscale(p=0.2),
+   tfms.ToTensor()])
+```
+
+In the actual BYOL implementations, Resnet50 is used as an encoder network. For the projection MLP, the 2048 dimensional feature vector is projected onto 4096-dimensional vector space first with Batch norm followed by ReLU non-linear activation and then it is reduced to the 256-dimensional feature vector. The same architecture is used for the predictor network. Below PyTorch snippet implements the Resnet50 based BYOL network, but it could also be used in conjunction with any arbitrary encoder network such as VGG, InceptionNet, etc. without any significant change.
+
+<iframe src="https://towardsdatascience.com/media/471734f412abd9238cd5ae825b649e8e" allowfullscreen="" frameborder="0" height="1771" width="680" title="BYOL imeplementation" class="ei ev er fa v" scrolling="auto" style="box-sizing: inherit; width: 680px; position: absolute; left: 0px; top: 0px; height: 1770.99px;"></iframe>
+
+**Why BYOL works the way it works**
+
+Another interesting fact is, although a collapsed solution exists for the task curated for BYOL, the model avoids it safely and the actual reason for it is unknown. Collapsed solution means, the model might get away by learning a constant vector for any view of any image and gets to zero loss, but it does not happen.
+
+The authors of the original paper[1], conjecture that it might be due to the complex network(Deep Resnet with skip connections) used in the backbone, the model never gets to the straightforward collapsed solution. But in another recent paper SimSiam[2] Chen, Xineli and He, found out it is not the complex network architecture but the “stop-gradient” operation that makes the model to avoid the collapsed representations. “stop-gradient” means that the network never gets to update the weights of the target network directly through gradients and hence never gets to the collapsed solution. They also show that there isn’t any need for a momentum target network to avoid collapsed representation but it certainly gives better representations for downstream tasks if used.
