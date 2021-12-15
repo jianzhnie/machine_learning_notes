@@ -16,7 +16,7 @@ Please select either to add or to update a category. Tick of with: [] -> [x]
 
 **Category details:**
 
-<!--- 
+<!---
 Please state the category details that should be added or changed.
 -->
 

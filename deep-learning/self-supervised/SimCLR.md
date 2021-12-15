@@ -28,7 +28,7 @@ As a simple example, let’s consider the task of breast cancer detection. Curre
 
 To have an idea, most supervised datasets for breast cancer detection, like the [CAMELYON dataset](https://camelyon17.grand-challenge.org/), do not compare in size and variability with common Computer Vision supervised datasets. On the other hand, we have a massive number of non-annotated slide images of breast cancer. Thus, if we could learn good representations from the unsupervised (much larger corpora) it would certainly help to learn more specific downstream tasks that have limited annotated data.
 
-Fortunately, visual unsupervised representation learning has shown great promise. More specifically, visual representations learned using contrastive based techniques are now reaching the same level of those learned via supervised methods – *in some self-supervised benchmarks*. 
+Fortunately, visual unsupervised representation learning has shown great promise. More specifically, visual representations learned using contrastive based techniques are now reaching the same level of those learned via supervised methods – *in some self-supervised benchmarks*.
 
 Let’s explore how unsupervised contrastive learning works and have a closer look at one major work on the area.
 
@@ -62,7 +62,7 @@ To understand SimCLR, let’s explore how it builds on the core components of th
 
 Given an input image, we create 2 correlated copies of it, by applying 2 separate data augmentation operators. The transformations include
 
- (1) *random crop and resize*, 
+ (1) *random crop and resize*,
 
 (2) *random color distortions*,
 

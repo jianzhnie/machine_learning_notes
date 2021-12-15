@@ -193,4 +193,3 @@ Thus, SimCLR provides a strong framework for doing further research in this dire
 - [“On Calibration of Modern Neural Networks”](https://arxiv.org/pdf/1706.04599.pdf)
 - [“Distilling the Knowledge in a Neural Network”](https://arxiv.org/pdf/1503.02531.pdf)
 - [“SimCLR Slides, Google Brain Team”](https://docs.google.com/presentation/d/1ccddJFD_j3p3h0TCqSV9ajSi2y1yOfh0-lJoK29ircs/edit#slide=id.g8c1b8d6efd_0_1)
-

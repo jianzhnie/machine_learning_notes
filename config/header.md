@@ -27,4 +27,3 @@ This curated list contains {project_count} awesome open-source projects with a t
 </p>
 
 ---
-

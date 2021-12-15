@@ -34,4 +34,3 @@ _Projects that were recently added to this best-of list._
 
 - <b><a href="https://github.com/fraunhoferportugal/tsfel">TSFEL</a></b> (🥉20 ·  ⭐ 310 · ➕) - An intuitive library to extract features from time series. <code><a href="http://bit.ly/3aKzpTv">BSD-3</a></code>
 - <b><a href="https://github.com/whylabs/whylogs">whylogs</a></b> (🥉18 ·  ⭐ 610 · ➕) - Open standard for end-to-end data and ML monitoring for any scale.. <code><a href="http://bit.ly/3nYMfla">Apache-2</a></code>
-

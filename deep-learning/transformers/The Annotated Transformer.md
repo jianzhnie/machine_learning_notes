@@ -26,7 +26,7 @@ Note this is merely a starting point for researchers and interested developers. 
 # Prelims
 
 ```
-# !pip install http://download.pytorch.org/whl/cu80/torch-0.3.0.post4-cp36-cp36m-linux_x86_64.whl numpy matplotlib spacy torchtext seaborn 
+# !pip install http://download.pytorch.org/whl/cu80/torch-0.3.0.post4-cp36-cp36m-linux_x86_64.whl numpy matplotlib spacy torchtext seaborn
 import numpy as np
 import torch
 import torch.nn as nn
@@ -92,7 +92,7 @@ Most competitive neural sequence transduction models have an encoder-decoder str
 ```
 class EncoderDecoder(nn.Module):
     """
-    A standard Encoder-Decoder architecture. Base for this and many 
+    A standard Encoder-Decoder architecture. Base for this and many
     other models.
     """
     def __init__(self, encoder, decoder, src_embed, tgt_embed, generator):
@@ -102,15 +102,15 @@ class EncoderDecoder(nn.Module):
         self.src_embed = src_embed
         self.tgt_embed = tgt_embed
         self.generator = generator
-        
+
     def forward(self, src, tgt, src_mask, tgt_mask):
         "Take in and process masked src and target sequences."
         return self.decode(self.encode(src, src_mask), src_mask,
                             tgt, tgt_mask)
-    
+
     def encode(self, src, src_mask):
         return self.encoder(self.src_embed(src), src_mask)
-    
+
     def decode(self, memory, src_mask, tgt, tgt_mask):
         return self.decoder(self.tgt_embed(tgt), memory, src_mask, tgt_mask)
 class Generator(nn.Module):
@@ -147,7 +147,7 @@ class Encoder(nn.Module):
         super(Encoder, self).__init__()
         self.layers = clones(layer, N)
         self.norm = LayerNorm(layer.size)
-        
+
     def forward(self, x, mask):
         "Pass the input (and mask) through each layer in turn."
         for layer in self.layers:
@@ -221,7 +221,7 @@ class Decoder(nn.Module):
         super(Decoder, self).__init__()
         self.layers = clones(layer, N)
         self.norm = LayerNorm(layer.size)
-        
+
     def forward(self, x, memory, src_mask, tgt_mask):
         for layer in self.layers:
             x = layer(x, memory, src_mask, tgt_mask)
@@ -240,7 +240,7 @@ class DecoderLayer(nn.Module):
         self.src_attn = src_attn
         self.feed_forward = feed_forward
         self.sublayer = clones(SublayerConnection(size, dropout), 3)
- 
+
     def forward(self, x, memory, src_mask, tgt_mask):
         "Follow Figure 1 (right) for connections."
         m = memory
@@ -325,24 +325,24 @@ class MultiHeadedAttention(nn.Module):
         self.linears = clones(nn.Linear(d_model, d_model), 4)
         self.attn = None
         self.dropout = nn.Dropout(p=dropout)
-        
+
     def forward(self, query, key, value, mask=None):
         "Implements Figure 2"
         if mask is not None:
             # Same mask applied to all h heads.
             mask = mask.unsqueeze(1)
         nbatches = query.size(0)
-        
-        # 1) Do all the linear projections in batch from d_model => h x d_k 
+
+        # 1) Do all the linear projections in batch from d_model => h x d_k
         query, key, value = \
             [l(x).view(nbatches, -1, self.h, self.d_k).transpose(1, 2)
              for l, x in zip(self.linears, (query, key, value))]
-        
-        # 2) Apply attention on all the projected vectors in batch. 
-        x, self.attn = attention(query, key, value, mask=mask, 
+
+        # 2) Apply attention on all the projected vectors in batch.
+        x, self.attn = attention(query, key, value, mask=mask,
                                  dropout=self.dropout)
-        
-        # 3) "Concat" using a view and apply a final linear. 
+
+        # 3) "Concat" using a view and apply a final linear.
         x = x.transpose(1, 2).contiguous() \
              .view(nbatches, -1, self.h * self.d_k)
         return self.linears[-1](x)
@@ -408,7 +408,7 @@ class PositionalEncoding(nn.Module):
     def __init__(self, d_model, dropout, max_len=5000):
         super(PositionalEncoding, self).__init__()
         self.dropout = nn.Dropout(p=dropout)
-        
+
         # Compute the positional encodings once in log space.
         pe = torch.zeros(max_len, d_model)
         position = torch.arange(0, max_len).unsqueeze(1)
@@ -418,9 +418,9 @@ class PositionalEncoding(nn.Module):
         pe[:, 1::2] = torch.cos(position * div_term)
         pe = pe.unsqueeze(0)
         self.register_buffer('pe', pe)
-        
+
     def forward(self, x):
-        x = x + Variable(self.pe[:, :x.size(1)], 
+        x = x + Variable(self.pe[:, :x.size(1)],
                          requires_grad=False)
         return self.dropout(x)
 ```
@@ -445,7 +445,7 @@ We also experimented with using learned positional embeddings [(cite)](https://a
 > Here we define a function that takes in hyperparameters and produces a full model.
 
 ```
-def make_model(src_vocab, tgt_vocab, N=6, 
+def make_model(src_vocab, tgt_vocab, N=6,
                d_model=512, d_ff=2048, h=8, dropout=0.1):
     "Helper: Construct a model from hyperparameters."
     c = copy.deepcopy
@@ -454,13 +454,13 @@ def make_model(src_vocab, tgt_vocab, N=6,
     position = PositionalEncoding(d_model, dropout)
     model = EncoderDecoder(
         Encoder(EncoderLayer(d_model, c(attn), c(ff), dropout), N),
-        Decoder(DecoderLayer(d_model, c(attn), c(attn), 
+        Decoder(DecoderLayer(d_model, c(attn), c(attn),
                              c(ff), dropout), N),
         nn.Sequential(Embeddings(d_model, src_vocab), c(position)),
         nn.Sequential(Embeddings(d_model, tgt_vocab), c(position)),
         Generator(d_model, tgt_vocab))
-    
-    # This was important from their code. 
+
+    # This was important from their code.
     # Initialize parameters with Glorot / fan_avg.
     for p in model.parameters():
         if p.dim() > 1:
@@ -491,7 +491,7 @@ class Batch:
             self.trg_mask = \
                 self.make_std_mask(self.trg, pad)
             self.ntokens = (self.trg_y != pad).data.sum()
-    
+
     @staticmethod
     def make_std_mask(tgt, pad):
         "Create a mask to hide padding and future words."
@@ -513,7 +513,7 @@ def run_epoch(data_iter, model, loss_compute):
     total_loss = 0
     tokens = 0
     for i, batch in enumerate(data_iter):
-        out = model.forward(batch.src, batch.trg, 
+        out = model.forward(batch.src, batch.trg,
                             batch.src_mask, batch.trg_mask)
         loss = loss_compute(out, batch.trg_y, batch.ntokens)
         total_loss += loss
@@ -571,7 +571,7 @@ class NoamOpt:
         self.factor = factor
         self.model_size = model_size
         self._rate = 0
-        
+
     def step(self):
         "Update parameters and rate"
         self._step += 1
@@ -580,7 +580,7 @@ class NoamOpt:
             p['lr'] = rate
         self._rate = rate
         self.optimizer.step()
-        
+
     def rate(self, step = None):
         "Implement `lrate` above"
         if step is None:
@@ -588,7 +588,7 @@ class NoamOpt:
         return self.factor * \
             (self.model_size ** (-0.5) *
             min(step ** (-0.5), step * self.warmup ** (-1.5)))
-        
+
 def get_std_opt(model):
     return NoamOpt(model.src_embed[0].d_model, 2, 4000,
             torch.optim.Adam(model.parameters(), lr=0, betas=(0.9, 0.98), eps=1e-9))
@@ -598,7 +598,7 @@ def get_std_opt(model):
 
 ```
 # Three settings of the lrate hyperparameters.
-opts = [NoamOpt(512, 1, 4000, None), 
+opts = [NoamOpt(512, 1, 4000, None),
         NoamOpt(512, 1, 8000, None),
         NoamOpt(256, 1, 4000, None)]
 plt.plot(np.arange(1, 20000), [[opt.rate(i) for opt in opts] for i in range(1, 20000)])
@@ -627,7 +627,7 @@ class LabelSmoothing(nn.Module):
         self.smoothing = smoothing
         self.size = size
         self.true_dist = None
-        
+
     def forward(self, x, target):
         assert x.size(1) == self.size
         true_dist = x.data.clone()
@@ -647,9 +647,9 @@ class LabelSmoothing(nn.Module):
 # Example of label smoothing.
 crit = LabelSmoothing(5, 0, 0.4)
 predict = torch.FloatTensor([[0, 0.2, 0.7, 0.1, 0],
-                             [0, 0.2, 0.7, 0.1, 0], 
+                             [0, 0.2, 0.7, 0.1, 0],
                              [0, 0.2, 0.7, 0.1, 0]])
-v = crit(Variable(predict.log()), 
+v = crit(Variable(predict.log()),
          Variable(torch.LongTensor([2, 1, 0])))
 
 # Show the target distributions expected by the system.
@@ -702,10 +702,10 @@ class SimpleLossCompute:
         self.generator = generator
         self.criterion = criterion
         self.opt = opt
-        
+
     def __call__(self, x, y, norm):
         x = self.generator(x)
-        loss = self.criterion(x.contiguous().view(-1, x.size(-1)), 
+        loss = self.criterion(x.contiguous().view(-1, x.size(-1)),
                               y.contiguous().view(-1)) / norm
         loss.backward()
         if self.opt is not None:
@@ -726,10 +726,10 @@ model_opt = NoamOpt(model.src_embed[0].d_model, 1, 400,
 
 for epoch in range(10):
     model.train()
-    run_epoch(data_gen(V, 30, 20), model, 
+    run_epoch(data_gen(V, 30, 20), model,
               SimpleLossCompute(model.generator, criterion, model_opt))
     model.eval()
-    print(run_epoch(data_gen(V, 30, 5), model, 
+    print(run_epoch(data_gen(V, 30, 5), model,
                     SimpleLossCompute(model.generator, criterion, None)))
 Epoch Step: 1 Loss: 3.023465 Tokens per Sec: 403.074173
 Epoch Step: 1 Loss: 1.920030 Tokens per Sec: 641.689380
@@ -770,14 +770,14 @@ def greedy_decode(model, src, src_mask, max_len, start_symbol):
     memory = model.encode(src, src_mask)
     ys = torch.ones(1, 1).fill_(start_symbol).type_as(src.data)
     for i in range(max_len-1):
-        out = model.decode(memory, src_mask, 
-                           Variable(ys), 
+        out = model.decode(memory, src_mask,
+                           Variable(ys),
                            Variable(subsequent_mask(ys.size(1))
                                     .type_as(src.data)))
         prob = model.generator(out[:, -1])
         _, next_word = torch.max(prob, dim = 1)
         next_word = next_word.data[0]
-        ys = torch.cat([ys, 
+        ys = torch.cat([ys,
                         torch.ones(1, 1).type_as(src.data).fill_(next_word)], dim=1)
     return ys
 
@@ -822,13 +822,13 @@ if True:
     EOS_WORD = '</s>'
     BLANK_WORD = "<blank>"
     SRC = data.Field(tokenize=tokenize_de, pad_token=BLANK_WORD)
-    TGT = data.Field(tokenize=tokenize_en, init_token = BOS_WORD, 
+    TGT = data.Field(tokenize=tokenize_en, init_token = BOS_WORD,
                      eos_token = EOS_WORD, pad_token=BLANK_WORD)
 
     MAX_LEN = 100
     train, val, test = datasets.IWSLT.splits(
-        exts=('.de', '.en'), fields=(SRC, TGT), 
-        filter_pred=lambda x: len(vars(x)['src']) <= MAX_LEN and 
+        exts=('.de', '.en'), fields=(SRC, TGT),
+        filter_pred=lambda x: len(vars(x)['src']) <= MAX_LEN and
             len(vars(x)['trg']) <= MAX_LEN)
     MIN_FREQ = 2
     SRC.build_vocab(train.src, min_freq=MIN_FREQ)
@@ -851,7 +851,7 @@ class MyIterator(data.Iterator):
                     for b in random_shuffler(list(p_batch)):
                         yield b
             self.batches = pool(self.data(), self.random_shuffler)
-            
+
         else:
             self.batches = []
             for b in data.batch(self.data(), self.batch_size,
@@ -881,39 +881,39 @@ class MultiGPULossCompute:
     def __init__(self, generator, criterion, devices, opt=None, chunk_size=5):
         # Send out to different gpus.
         self.generator = generator
-        self.criterion = nn.parallel.replicate(criterion, 
+        self.criterion = nn.parallel.replicate(criterion,
                                                devices=devices)
         self.opt = opt
         self.devices = devices
         self.chunk_size = chunk_size
-        
+
     def __call__(self, out, targets, normalize):
         total = 0.0
-        generator = nn.parallel.replicate(self.generator, 
+        generator = nn.parallel.replicate(self.generator,
                                                 devices=self.devices)
-        out_scatter = nn.parallel.scatter(out, 
+        out_scatter = nn.parallel.scatter(out,
                                           target_gpus=self.devices)
         out_grad = [[] for _ in out_scatter]
-        targets = nn.parallel.scatter(targets, 
+        targets = nn.parallel.scatter(targets,
                                       target_gpus=self.devices)
 
         # Divide generating into chunks.
         chunk_size = self.chunk_size
         for i in range(0, out_scatter[0].size(1), chunk_size):
             # Predict distributions
-            out_column = [[Variable(o[:, i:i+chunk_size].data, 
-                                    requires_grad=self.opt is not None)] 
+            out_column = [[Variable(o[:, i:i+chunk_size].data,
+                                    requires_grad=self.opt is not None)]
                            for o in out_scatter]
             gen = nn.parallel.parallel_apply(generator, out_column)
 
-            # Compute loss. 
-            y = [(g.contiguous().view(-1, g.size(-1)), 
-                  t[:, i:i+chunk_size].contiguous().view(-1)) 
+            # Compute loss.
+            y = [(g.contiguous().view(-1, g.size(-1)),
+                  t[:, i:i+chunk_size].contiguous().view(-1))
                  for g, t in zip(gen, targets)]
             loss = nn.parallel.parallel_apply(self.criterion, y)
 
             # Sum and normalize loss
-            l = nn.parallel.gather(loss, 
+            l = nn.parallel.gather(loss,
                                    target_device=self.devices[0])
             l = l.sum()[0] / normalize
             total += l.data[0]
@@ -924,11 +924,11 @@ class MultiGPULossCompute:
                 for j, l in enumerate(loss):
                     out_grad[j].append(out_column[j][0].grad.data.clone())
 
-        # Backprop all loss through transformer.            
+        # Backprop all loss through transformer.
         if self.opt is not None:
             out_grad = [Variable(torch.cat(og, dim=1)) for og in out_grad]
             o1 = out
-            o2 = nn.parallel.gather(out_grad, 
+            o2 = nn.parallel.gather(out_grad,
                                     target_device=self.devices[0])
             o1.backward(gradient=o2)
             self.opt.step()
@@ -969,14 +969,14 @@ if False:
             torch.optim.Adam(model.parameters(), lr=0, betas=(0.9, 0.98), eps=1e-9))
     for epoch in range(10):
         model_par.train()
-        run_epoch((rebatch(pad_idx, b) for b in train_iter), 
-                  model_par, 
-                  MultiGPULossCompute(model.generator, criterion, 
+        run_epoch((rebatch(pad_idx, b) for b in train_iter),
+                  model_par,
+                  MultiGPULossCompute(model.generator, criterion,
                                       devices=devices, opt=model_opt))
         model_par.eval()
-        loss = run_epoch((rebatch(pad_idx, b) for b in valid_iter), 
-                          model_par, 
-                          MultiGPULossCompute(model.generator, criterion, 
+        loss = run_epoch((rebatch(pad_idx, b) for b in valid_iter),
+                          model_par,
+                          MultiGPULossCompute(model.generator, criterion,
                           devices=devices, opt=None))
         print(loss)
 else:
@@ -989,7 +989,7 @@ else:
 for i, batch in enumerate(valid_iter):
     src = batch.src.transpose(0, 1)[:1]
     src_mask = (src != SRC.vocab.stoi["<blank>"]).unsqueeze(-2)
-    out = greedy_decode(model, src, src_mask, 
+    out = greedy_decode(model, src, src_mask,
                         max_len=60, start_symbol=TGT.vocab.stoi["<s>"])
     print("Translation:", end="\t")
     for i in range(1, out.size(1)):
@@ -1004,8 +1004,8 @@ for i, batch in enumerate(valid_iter):
         print(sym, end =" ")
     print()
     break
-Translation:	<unk> <unk> . In my language , that means , thank you very much . 
-Gold:	<unk> <unk> . It means in my language , thank you very much . 
+Translation:	<unk> <unk> . In my language , that means , thank you very much .
+Gold:	<unk> <unk> . It means in my language , thank you very much .
 ```
 
 # Additional Components: BPE, Search, Averaging
@@ -1059,7 +1059,7 @@ sent = "▁The ▁log ▁file ▁can ▁be ▁sent ▁secret ly ▁with ▁email
 src = torch.LongTensor([[SRC.stoi[w] for w in sent]])
 src = Variable(src)
 src_mask = (src != SRC.stoi["<blank>"]).unsqueeze(-2)
-out = greedy_decode(model, src, src_mask, 
+out = greedy_decode(model, src, src_mask,
                     max_len=60, start_symbol=TGT.stoi["<s>"])
 print("Translation:", end="\t")
 trans = "<s> "
@@ -1068,7 +1068,7 @@ for i in range(1, out.size(1)):
     if sym == "</s>": break
     trans += sym + " "
 print(trans)
-Translation:	<s> ▁Die ▁Protokoll datei ▁kann ▁ heimlich ▁per ▁E - Mail ▁oder ▁FTP ▁an ▁einen ▁bestimmte n ▁Empfänger ▁gesendet ▁werden . 
+Translation:	<s> ▁Die ▁Protokoll datei ▁kann ▁ heimlich ▁per ▁E - Mail ▁oder ▁FTP ▁an ▁einen ▁bestimmte n ▁Empfänger ▁gesendet ▁werden .
 ```
 
 ## Attention Visualization
@@ -1078,29 +1078,29 @@ Translation:	<s> ▁Die ▁Protokoll datei ▁kann ▁ heimlich ▁per ▁E - Ma
 ```
 tgt_sent = trans.split()
 def draw(data, x, y, ax):
-    seaborn.heatmap(data, 
-                    xticklabels=x, square=True, yticklabels=y, vmin=0.0, vmax=1.0, 
+    seaborn.heatmap(data,
+                    xticklabels=x, square=True, yticklabels=y, vmin=0.0, vmax=1.0,
                     cbar=False, ax=ax)
-    
+
 for layer in range(1, 6, 2):
     fig, axs = plt.subplots(1,4, figsize=(20, 10))
     print("Encoder Layer", layer+1)
     for h in range(4):
-        draw(model.encoder.layers[layer].self_attn.attn[0, h].data, 
+        draw(model.encoder.layers[layer].self_attn.attn[0, h].data,
             sent, sent if h ==0 else [], ax=axs[h])
     plt.show()
-    
+
 for layer in range(1, 6, 2):
     fig, axs = plt.subplots(1,4, figsize=(20, 10))
     print("Decoder Self Layer", layer+1)
     for h in range(4):
-        draw(model.decoder.layers[layer].self_attn.attn[0, h].data[:len(tgt_sent), :len(tgt_sent)], 
+        draw(model.decoder.layers[layer].self_attn.attn[0, h].data[:len(tgt_sent), :len(tgt_sent)],
             tgt_sent, tgt_sent if h ==0 else [], ax=axs[h])
     plt.show()
     print("Decoder Src Layer", layer+1)
     fig, axs = plt.subplots(1,4, figsize=(20, 10))
     for h in range(4):
-        draw(model.decoder.layers[layer].self_attn.attn[0, h].data[:len(tgt_sent), :len(sent)], 
+        draw(model.decoder.layers[layer].self_attn.attn[0, h].data[:len(tgt_sent), :len(sent)],
             sent, tgt_sent if h ==0 else [], ax=axs[h])
     plt.show()
 Encoder Layer 2

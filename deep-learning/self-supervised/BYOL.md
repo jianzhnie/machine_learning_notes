@@ -94,7 +94,7 @@ class BYOL(nn.Module):
         loss = 2 - 2 * (x_norm * y_norm).sum(dim=-1)  #dot product
         return loss.mean()
 
-      
+
 class ProjectorHead(nn.Module):
     def __init__(self):
         super().__init__()

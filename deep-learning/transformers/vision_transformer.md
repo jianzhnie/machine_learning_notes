@@ -38,7 +38,7 @@ class PatchEmbed(nn.Module):
 
 除了patch embeddings，模型还需要另外一个特殊的 position embedding。transformer和 CNN 不同，需要position embedding来编码tokens的位置信息，这主要是因为self-attention是permutation-invariant，即打乱sequence里的tokens的顺序并不会改变结果。如果不给模型提供patch的位置信息，那么模型就需要通过patchs的语义来学习拼图，这就额外增加了学习成本。ViT论文中对比了几种不同的position embedding方案(如下），最后发现如果不提供positional embedding效果会差，但其它各种类型的positional embedding效果都接近，这主要是因为ViT的输入是相对较大的patchs而不是pixels，所以学习位置信息相对容易很多。
 
-- 无positional embedding
+- 无 positional embedding
 - 1-D positional embedding：把2-D的patchs看成1-D序列
 - 2-D positional embedding：考虑patchs的2-D位置（x, y）
 - Relative positional embeddings：patchs的相对位置

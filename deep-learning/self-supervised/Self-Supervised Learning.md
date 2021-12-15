@@ -217,4 +217,4 @@ To solve this pre-text task, [Misra et al.](https://arxiv.org/pdf/1711.09082.pdf
 
 ## References
 
-- “[Self-Supervised Visual Feature Learning with Deep Neural Networks: A Survey.](https://arxiv.org/abs/1902.06162)” Jing, et al. 
+- “[Self-Supervised Visual Feature Learning with Deep Neural Networks: A Survey.](https://arxiv.org/abs/1902.06162)” Jing, et al.
