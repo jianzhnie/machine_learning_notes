@@ -424,9 +424,12 @@ $$
 
 Compared to the [memory bank](https://lilianweng.github.io/lil-log/2021/05/31/contrastive-representation-learning.html#instance-discrimination-with-memoy-bank), a queue-based dictionary in MoCo enables us to reuse representations of immediately preceding mini-batches of data.
 
-The MoCo dictionary is not differentiable as a queue, so we cannot rely on back-propagation to update the key encoder $f_k$. One naive way might be to use the same encoder for both $f_q$ and $f_k$. Differently, MoCo proposed to use a momentum-based update with a momentum coefficient $m∈[0,1)$. Say, the parameters of $f_q$ and $f_k$ are labeled as θqθq and θkθk, respectively.
+The MoCo dictionary is not differentiable as a queue, so we cannot rely on back-propagation to update the key encoder $f_k$. One naive way might be to use the same encoder for both $f_q$ and $f_k$. Differently, MoCo proposed to use a momentum-based update with a momentum coefficient $m∈[0,1)$. Say, the parameters of $f_q$ and $f_k$ are labeled as $θq$ and $θk$, respectively.
 
-θk←mθk+(1−m)θqθk←mθk+(1−m)θq
+$$
+\theta_k \leftarrow m \theta_k + (1-m) \theta_q
+$$
+
 
 ![MoCo](https://lilianweng.github.io/lil-log/assets/images/MoCo.png)
 
@@ -466,21 +469,29 @@ In each iteration, DeepCluster clusters data points using the prior representati
 
 *Fig. 15. Comparison of SwAV and [contrastive instance learning](https://lilianweng.github.io/lil-log/2021/05/31/contrastive-representation-learning.html#instance-discrimination-with-memoy-bank). (Image source: [Caron et al. 2020](https://arxiv.org/abs/2006.09882))*
 
-Given features of images with two different augmentations, ztzt and zszs, SwAV computes corresponding codes qtqt and qsqs and the loss quantifies the fit by swapping two codes using ℓ(.)ℓ(.) to measure the fit between a feature and a code.
+Given features of images with two different augmentations, $z_t$ and $z_s$, SwAV computes corresponding codes $q_t$ and $q_s$ and the loss quantifies the fit by swapping two codes using $ℓ(.)$ to measure the fit between a feature and a code.
 
-LSwAV(zt,zs)=ℓ(zt,qs)+ℓ(zs,qt)LSwAV(zt,zs)=ℓ(zt,qs)+ℓ(zs,qt)
+$$
+\mathcal{L}_\text{SwAV}(\mathbf{z}_t, \mathbf{z}_s) = \ell(\mathbf{z}_t, \mathbf{q}_s) + \ell(\mathbf{z}_s, \mathbf{q}_t)
+$$
 
-The swapped fit prediction depends on the cross entropy between the predicted code and a set of KK trainable prototype vectors C={c1,…,cK}C={c1,…,cK}. The prototype vector matrix is shared across different batches and represents *anchor clusters* that each instance should be clustered to.
 
-ℓ(zt,qs)=−∑kq(k)slogp(k)t where p(k)t=exp(z⊤tck/τ)∑k′exp(z⊤tck′/τ)ℓ(zt,qs)=−∑kqs(k)log⁡pt(k) where pt(k)=exp⁡(zt⊤ck/τ)∑k′exp⁡(zt⊤ck′/τ)
+The swapped fit prediction depends on the cross entropy between the predicted code and a set of $K$ trainable prototype vectors $C={c1,…,c_K}$. The prototype vector matrix is shared across different batches and represents *anchor clusters* that each instance should be clustered to.
 
-In a mini-batch containing BB feature vectors Z=[z1,…,zB]Z=[z1,…,zB], the mapping matrix between features and prototype vectors is defined as Q=[q1,…,qB]∈RK×B+Q=[q1,…,qB]∈R+K×B. We would like to maximize the similarity between the features and the prototypes:
+$$
+\ell(\mathbf{z}_t, \mathbf{q}_s) = - \sum_k \mathbf{q}^{(k)}_s\log\mathbf{p}^{(k)}_t \text{ where } \mathbf{p}^{(k)}_t = \frac{\exp(\mathbf{z}_t^\top\mathbf{c}_k  / \tau)}{\sum_{k'}\exp(\mathbf{z}_t^\top \mathbf{c}_{k'} / \tau)}
+$$
+In a mini-batch containing $B$ feature vectors $Z=[z1,…,z_B]$, the mapping matrix between features and prototype vectors is defined as $\mathbf{Q} = [\mathbf{q}_1, \dots, \mathbf{q}_B] \in \mathbb{R}_+^{K\times B}$. We would like to maximize the similarity between the features and the prototypes:
 
-maxQ∈Qwhere QTr(Q⊤C⊤Z)+εH(Q)={Q∈RK×B+∣Q1B=1K1K,Q⊤1K=1B1B}maxQ∈QTr(Q⊤C⊤Z)+εH(Q)where Q={Q∈R+K×B∣Q1B=1K1K,Q⊤1K=1B1B}
+$$
+\begin{aligned}
+\max_{\mathbf{Q}\in\mathcal{Q}} &\text{Tr}(\mathbf{Q}^\top \mathbf{C}^\top \mathbf{Z}) + \varepsilon \mathcal{H}(\mathbf{Q}) \\
+\text{where }\mathcal{Q} &= \big\{ \mathbf{Q} \in \mathbb{R}_{+}^{K \times B} \mid \mathbf{Q}\mathbf{1}_B = \frac{1}{K}\mathbf{1}_K, \mathbf{Q}^\top\mathbf{1}_K = \frac{1}{B}\mathbf{1}_B \big\}
+\end{aligned}
+$$
+where $H$ is the entropy, $\mathcal{H}(\mathbf{Q}) = - \sum_{ij} \mathbf{Q}_{ij} \log \mathbf{Q}_{ij}$, controlling the smoothness of the code. The coefficient ϵϵ should not be too large; otherwise, all the samples will be assigned uniformly to all the clusters. The candidate set of solutions for $Q$ requires every mapping matrix to have each row sum up to $1/K$ and each column to sum up to $1/B$, enforcing that each prototype gets selected at least $B/K$ times on average.
 
-where HH is the entropy, H(Q)=−∑ijQijlogQijH(Q)=−∑ijQijlog⁡Qij, controlling the smoothness of the code. The coefficient ϵϵ should not be too large; otherwise, all the samples will be assigned uniformly to all the clusters. The candidate set of solutions for QQ requires every mapping matrix to have each row sum up to 1/K1/K and each column to sum up to 1/B1/B, enforcing that each prototype gets selected at least B/KB/K times on average.
-
-SwAV relies on the iterative Sinkhorn-Knopp algorithm ([Cuturi 2013](https://arxiv.org/abs/1306.0895)) to find the solution for QQ.
+SwAV relies on the iterative Sinkhorn-Knopp algorithm ([Cuturi 2013](https://arxiv.org/abs/1306.0895)) to find the solution for $Q$.
 
 ### Working with Supervised Datasets
 
@@ -516,13 +527,14 @@ There are several known issues with cross entropy loss, such as the lack of robu
 
 *Fig. 19. Supervised vs self-supervised contrastive losses. Supervised contrastive learning considers different samples from the same class as positive examples, in addition to augmented versions. (Image source: [Khosla et al. 2021](https://arxiv.org/abs/2004.11362))*
 
-Given a set of randomly sampled nn (image, label) pairs, {xi,yi}ni=1{xi,yi}i=1n, 2n2n training pairs can be created by applying two random augmentations of every sample, {x~i,y~i}2ni=1{x~i,y~i}i=12n.
+Given a set of randomly sampled $n$ (image, label) pairs, $\{\mathbf{x}_i, y_i\}_{i=1}^n,$2n training pairs can be created by applying two random augmentations of every sample, $\{\tilde{\mathbf{x}}_i, \tilde{y}_i\}_{i=1}^{2n}$
 
-Supervised contrastive loss LsupconLsupcon utilizes multiple positive and negative samples, very similar to [soft nearest-neighbor loss](https://lilianweng.github.io/lil-log/2021/05/31/contrastive-representation-learning.html#soft-nearest-neighbors-loss):
+Supervised contrastive loss $L_{supcon}$ utilizes multiple positive and negative samples, very similar to [soft nearest-neighbor loss](https://lilianweng.github.io/lil-log/2021/05/31/contrastive-representation-learning.html#soft-nearest-neighbors-loss):
 
-Lsupcon=−∑i=12n12|Ni|−1∑j∈N(yi),j≠ilogexp(zi⋅zj/τ)∑k∈I,k≠iexp(zi⋅zk/τ)Lsupcon=−∑i=12n12|Ni|−1∑j∈N(yi),j≠ilog⁡exp⁡(zi⋅zj/τ)∑k∈I,k≠iexp⁡(zi⋅zk/τ)
-
-where zk=P(E(xk~))zk=P(E(xk~)), in which E(.)E(.) is an encoder network (augmented image mapped to vector) P(.)P(.) is a projection network (one vector mapped to another). Ni={j∈I:y~j=y~i}Ni={j∈I:y~j=y~i} contains a set of indices of samples with label yiyi. Including more positive samples into the set $N_i$ leads to improved results.
+$$
+\mathcal{L}_\text{supcon} = - \sum_{i=1}^{2n} \frac{1}{2 \vert N_i \vert - 1} \sum_{j \in N(y_i), j \neq i} \log \frac{\exp(\mathbf{z}_i \cdot \mathbf{z}_j / \tau)}{\sum_{k \in I, k \neq i}\exp({\mathbf{z}_i \cdot \mathbf{z}_k / \tau})}
+$$
+where $\mathbf{z}_k=P(E(\tilde{\mathbf{x}_k}))$, in which $E(.)$ is an encoder network (augmented image mapped to vector) $P(.)$ is a projection network (one vector mapped to another). $N_i= \{j \in I: \tilde{y}_j = \tilde{y}_i \}$ contains a set of indices of samples with label $y_i$. Including more positive samples into the set $N_i$ leads to improved results.
 
 According to their experiments, supervised contrastive loss:
 
