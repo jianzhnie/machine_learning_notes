@@ -129,8 +129,6 @@ backbone = models._utils.IntermediateLayerGetter(base, extract_layers)
 byol = BYOL(backbone['feat5'])
 ```
 
-
-
 <iframe src="https://towardsdatascience.com/media/471734f412abd9238cd5ae825b649e8e" allowfullscreen="" frameborder="0" height="1771" width="680" title="BYOL imeplementation" class="ei ev er fa v" scrolling="auto" style="box-sizing: inherit; width: 680px; position: absolute; left: 0px; top: 0px; height: 1770.99px;"></iframe>
 
 **Why BYOL works the way it works**
