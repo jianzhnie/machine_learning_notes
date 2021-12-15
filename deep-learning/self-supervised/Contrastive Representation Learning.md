@@ -1,35 +1,12 @@
 # Contrastive Representation Learning
 
-May 31, 2021 by Lilian Weng [representation-learning ](https://lilianweng.github.io/lil-log/tag/representation-learning) [long-read ](https://lilianweng.github.io/lil-log/tag/long-read) [language-model ](https://lilianweng.github.io/lil-log/tag/language-model) [unsupervised-learning ](https://lilianweng.github.io/lil-log/tag/unsupervised-learning)
-
 > The main idea of contrastive learning is to learn representations such that similar samples stay close to each other, while dissimilar ones are far apart. Contrastive learning can be applied to both supervised and unsupervised data and has been shown to achieve good performance on a variety of vision and language tasks.
 
-The goal of contrastive representation learning is to learn such an embedding space in which similar sample pairs stay close to each other while dissimilar ones are far apart. Contrastive learning can be applied to both supervised and unsupervised settings. When working with unsupervised data, contrastive learning is one of the most powerful approaches in [self-supervised learning](https://lilianweng.github.io/lil-log/2019/11/10/self-supervised-learning.html).
+The goal of contrastive representation learning is to learn such an embedding space in which similar sample pairs stay close to each other while dissimilar ones are far apart. Contrastive learning can be applied to both supervised and unsupervised settings. When working with unsupervised data, contrastive learning is one of the most powerful approaches in [self-supervised learning]()
 
-- Contrastive Training Objectives
-  - [Contrastive Loss](https://lilianweng.github.io/lil-log/2021/05/31/contrastive-representation-learning.html#contrastive-loss)
-  - [Triplet Loss](https://lilianweng.github.io/lil-log/2021/05/31/contrastive-representation-learning.html#triplet-loss)
-  - [Lifted Structured Loss](https://lilianweng.github.io/lil-log/2021/05/31/contrastive-representation-learning.html#lifted-structured-loss)
-  - [N-pair Loss](https://lilianweng.github.io/lil-log/2021/05/31/contrastive-representation-learning.html#n-pair-loss)
-  - [NCE](https://lilianweng.github.io/lil-log/2021/05/31/contrastive-representation-learning.html#nce)
-  - [InfoNCE](https://lilianweng.github.io/lil-log/2021/05/31/contrastive-representation-learning.html#infonce)
-  - [Soft-Nearest Neighbors Loss](https://lilianweng.github.io/lil-log/2021/05/31/contrastive-representation-learning.html#soft-nearest-neighbors-loss)
-  - [Common Setup](https://lilianweng.github.io/lil-log/2021/05/31/contrastive-representation-learning.html#common-setup)
-- Key Ingredients
-  - [Heavy Data Augmentation](https://lilianweng.github.io/lil-log/2021/05/31/contrastive-representation-learning.html#heavy-data-augmentation)
-  - [Large Batch Size](https://lilianweng.github.io/lil-log/2021/05/31/contrastive-representation-learning.html#large-batch-size)
-  - [Hard Negative Mining](https://lilianweng.github.io/lil-log/2021/05/31/contrastive-representation-learning.html#hard-negative-mining)
-- Vision: Image Embedding
-  - [Image Augmentations](https://lilianweng.github.io/lil-log/2021/05/31/contrastive-representation-learning.html#image-augmentations)
-  - [Parallel Augmentation](https://lilianweng.github.io/lil-log/2021/05/31/contrastive-representation-learning.html#parallel-augmentation)
-  - [Memory Bank](https://lilianweng.github.io/lil-log/2021/05/31/contrastive-representation-learning.html#memory-bank)
-  - [Feature Clustering](https://lilianweng.github.io/lil-log/2021/05/31/contrastive-representation-learning.html#feature-clustering)
-  - [Working with Supervised Datasets](https://lilianweng.github.io/lil-log/2021/05/31/contrastive-representation-learning.html#working-with-supervised-datasets)
-- Language: Sentence Embedding
-  - [Text Augmentation](https://lilianweng.github.io/lil-log/2021/05/31/contrastive-representation-learning.html#text-augmentation)
-  - [Supervision from NLI](https://lilianweng.github.io/lil-log/2021/05/31/contrastive-representation-learning.html#supervision-from-nli)
-  - [Unsupervised Sentence Embedding Learning](https://lilianweng.github.io/lil-log/2021/05/31/contrastive-representation-learning.html#unsupervised-sentence-embedding-learning)
-- [References](https://lilianweng.github.io/lil-log/2021/05/31/contrastive-representation-learning.html#references)
+
+
+[toc]
 
 ## Contrastive Training Objectives
 
@@ -39,11 +16,11 @@ In early versions of loss functions for contrastive learning, only one positive 
 
 **Contrastive loss** ([Chopra et al. 2005](http://yann.lecun.com/exdb/publis/pdf/chopra-05.pdf)) is one of the earliest training objectives used for deep metric learning in a contrastive fashion.
 
-Given a list of input samples {xi}{xi}, each has a corresponding label yi∈{1,…,L}yi∈{1,…,L} among LL classes. We would like to learn a function fθ(.):X→Rdfθ(.):X→Rd that encodes xixi into an embedding vector such that examples from the same class have similar embeddings and samples from different classes have very different ones. Thus, contrastive loss takes a pair of inputs (xi,xj)(xi,xj) and minimizes the embedding distance when they are from the same class but maximizes the distance otherwise.
-
-Lcont(xi,xj,θ)=1[yi=yj]∥fθ(xi)−fθ(xj)∥22+1[yi≠yj]max(0,ϵ−∥fθ(xi)−fθ(xj)∥2)2Lcont(xi,xj,θ)=1[yi=yj]‖fθ(xi)−fθ(xj)‖22+1[yi≠yj]max(0,ϵ−‖fθ(xi)−fθ(xj)‖2)2
-
-where ϵϵ is a hyperparameter, defining the lower bound distance between samples of different classes.
+Given a list of input samples ${x_i}$, each has a corresponding label $y_i \in \{1, \dots, L\}$among $L$ classes. We would like to learn a function $f_\theta(.): \mathcal{X}\to\mathbb{R}^d$ that encodes $x_i$ into an embedding vector such that examples from the same class have similar embeddings and samples from different classes have very different ones. Thus, contrastive loss takes a pair of inputs $(x_i,x_j)$ and minimizes the embedding distance when they are from the same class but maximizes the distance otherwise.
+$$
+\mathcal{L}_\text{cont}(\mathbf{x}_i, \mathbf{x}_j, \theta) = \mathbb{1}[y_i=y_j] \| f_\theta(\mathbf{x}_i) - f_\theta(\mathbf{x}_j) \|^2_2 + \mathbb{1}[y_i\neq y_j]\max(0, \epsilon - \|f_\theta(\mathbf{x}_i) - f_\theta(\mathbf{x}_j)\|_2)^2
+$$
+where $ϵ$ is a hyperparameter, defining the lower bound distance between samples of different classes.
 
 ### Triplet Loss
 
@@ -53,13 +30,14 @@ where ϵϵ is a hyperparameter, defining the lower bound distance between sample
 
 Fig. 1. Illustration of triplet loss given one positive and one negative per anchor. (Image source: [Schroff et al. 2015](https://arxiv.org/abs/1503.03832))
 
-Given one anchor input xx, we select one positive sample x+x+ and one negative x−x−, meaning that x+x+ and xx belong to the same class and x−x− is sampled from another different class. Triplet loss learns to minimize the distance between the anchor xx and positive x+x+ and maximize the distance between the anchor xx and negative x−x− at the same time with the following equation:
+Given one anchor input $x$ , we select one positive sample $x^+$ and one negative $x^−$, meaning that $x^+$and $x$ belong to the same class and $x^−$ is sampled from another different class. Triplet loss learns to minimize the distance between the anchor $x$ and positive $x+$ and maximize the distance between the anchor $x$ and negative $x−$ at the same time with the following equation:
 
-Ltriplet(x,x+,x−)=∑x∈Xmax(0,∥f(x)−f(x+)∥22−∥f(x)−f(x−)∥22+ϵ)Ltriplet(x,x+,x−)=∑x∈Xmax(0,‖f(x)−f(x+)‖22−‖f(x)−f(x−)‖22+ϵ)
+$$
+\mathcal{L}_\text{triplet}(\mathbf{x}, \mathbf{x}^+, \mathbf{x}^-) = \sum_{\mathbf{x} \in \mathcal{X}} \max\big( 0, \|f(\mathbf{x}) - f(\mathbf{x}^+)\|^2_2 - \|f(\mathbf{x}) - f(\mathbf{x}^-)\|^2_2 + \epsilon \big)
+$$
+where the margin parameter $ϵ$ is configured as the minimum offset between distances of similar vs dissimilar pairs.
 
-where the margin parameter ϵϵ is configured as the minimum offset between distances of similar vs dissimilar pairs.
-
-It is crucial to select challenging x−x− to truly improve the model.
+It is crucial to select challenging $x−$ to truly improve the model.
 
 ### Lifted Structured Loss
 
@@ -69,39 +47,57 @@ It is crucial to select challenging x−x− to truly improve the model.
 
 Fig. 2. Illustration compares contrastive loss, triplet loss and lifted structured loss. Red and blue edges connect similar and dissimilar sample pairs respectively. (Image source: [Song et al. 2015](https://arxiv.org/abs/1511.06452))
 
-Let Dij=∥f(xi)−f(xj)∥2Dij=‖f(xi)−f(xj)‖2, a structured loss function is defined as
+Let $D_{ij} = \| f(\mathbf{x}_i) - f(\mathbf{x}_j) \|_2$ , a structured loss function is defined as
 
-Lstructwhere L(ij)struct=12|P|∑(i,j)∈Pmax(0,L(ij)struct)2=Dij+max(max(i,k)∈Nϵ−Dik,max(j,l)∈Nϵ−Djl)Lstruct=12|P|∑(i,j)∈Pmax(0,Lstruct(ij))2where Lstruct(ij)=Dij+max(max(i,k)∈Nϵ−Dik,max(j,l)∈Nϵ−Djl)
+$$
+\begin{aligned}
+\mathcal{L}_\text{struct} &= \frac{1}{2\vert \mathcal{P} \vert} \sum_{(i,j) \in \mathcal{P}} \max(0, \mathcal{L}_\text{struct}^{(ij)})^2 \\
+\text{where } \mathcal{L}_\text{struct}^{(ij)} &= D_{ij} + \color{red}{\max \big( \max_{(i,k)\in \mathcal{N}} \epsilon - D_{ik}, \max_{(j,l)\in \mathcal{N}} \epsilon - D_{jl} \big)}
+\end{aligned}
+$$
+where $P$ contains the set of positive pairs and $N$ is the set of negative pairs. Note that the dense pairwise squared distance matrix can be easily computed per training batch.
 
-where PP contains the set of positive pairs and NN is the set of negative pairs. Note that the dense pairwise squared distance matrix can be easily computed per training batch.
+The red part in $\mathcal{L}_\text{struct}^{(ij)}$ is used for mining hard negatives. However, it is not smooth and may cause the convergence to a bad local optimum in practice. Thus, it is relaxed to be:
 
-The red part in L(ij)structLstruct(ij) is used for mining hard negatives. However, it is not smooth and may cause the convergence to a bad local optimum in practice. Thus, it is relaxed to be:
-
-L(ij)struct=Dij+log(∑(i,k)∈Nexp(ϵ−Dik)+∑(j,l)∈Nexp(ϵ−Djl))Lstruct(ij)=Dij+log⁡(∑(i,k)∈Nexp⁡(ϵ−Dik)+∑(j,l)∈Nexp⁡(ϵ−Djl))
-
+$$
+\mathcal{L}_\text{struct}^{(ij)} = D_{ij} + \log \Big( \sum_{(i,k)\in\mathcal{N}} \exp(\epsilon - D_{ik}) + \sum_{(j,l)\in\mathcal{N}} \exp(\epsilon - D_{jl}) \Big)
+$$
 In the paper, they also proposed to enhance the quality of negative samples in each batch by actively incorporating difficult negative samples given a few random positive pairs.
 
 ### N-pair Loss
 
 **Multi-Class N-pair loss** ([Sohn 2016](https://papers.nips.cc/paper/2016/hash/6b180037abbebea991d8b1232f8a8ca9-Abstract.html)) generalizes triplet loss to include comparison with multiple negative samples.
 
-Given a (N+1)(N+1)-tuplet of training samples, {x,x+,x−1,…,x−N−1}{x,x+,x1−,…,xN−1−}, including one positive and N−1N−1 negative ones, N-pair loss is defined as:
+Given a $(N+1)$-tuplet of training samples, $\{ \mathbf{x}, \mathbf{x}^+, \mathbf{x}^-_1, \dots, \mathbf{x}^-_{N-1} \}$, including one positive and $N−1$ negative ones, $N-pair $ loss is defined as:
 
-LN-pair(x,x+,{x−i}N−1i=1)=log(1+∑i=1N−1exp(f(x)⊤f(x−i)−f(x)⊤f(x+)))=−logexp(f(x)⊤f(x+))exp(f(x)⊤f(x+))+∑N−1i=1exp(f(x)⊤f(x−i))LN-pair(x,x+,{xi−}i=1N−1)=log⁡(1+∑i=1N−1exp⁡(f(x)⊤f(xi−)−f(x)⊤f(x+)))=−log⁡exp⁡(f(x)⊤f(x+))exp⁡(f(x)⊤f(x+))+∑i=1N−1exp⁡(f(x)⊤f(xi−))
+$$
+\begin{aligned}
+\mathcal{L}_\text{N-pair}(\mathbf{x}, \mathbf{x}^+, \{\mathbf{x}^-_i\}^{N-1}_{i=1})
+&= \log\big(1 + \sum_{i=1}^{N-1} \exp(f(\mathbf{x})^\top f(\mathbf{x}^-_i) - f(\mathbf{x})^\top f(\mathbf{x}^+))\big) \\
+&= -\log\frac{\exp(f(\mathbf{x})^\top f(\mathbf{x}^+))}{\exp(f(\mathbf{x})^\top f(\mathbf{x}^+)) + \sum_{i=1}^{N-1} \exp(f(\mathbf{x})^\top f(\mathbf{x}^-_i))}
+\end{aligned}
+$$
 
-If we only sample one negative sample per class, it is equivalent to the softmax loss for multi-class classification.
+
+If we only sample one negative sample per class, it is equivalent to the `softmax` loss for multi-class classification.
 
 ### NCE
 
 **Noise Contrastive Estimation**, short for **NCE**, is a method for estimating parameters of a statistical model, proposed by [Gutmann & Hyvarinen](http://proceedings.mlr.press/v9/gutmann10a.html) in 2010. The idea is to run logistic regression to tell apart the target data from noise. Read more on how NCE is used for learning word embedding [here](https://lilianweng.github.io/lil-log/2017/10/15/learning-word-embedding.html#noise-contrastive-estimation-nce).
 
-Let xx be the target sample ∼P(x|C=1;θ)=pθ(x)∼P(x|C=1;θ)=pθ(x) and x~x~ be the noise sample ∼P(x~|C=0)=q(x~)∼P(x~|C=0)=q(x~). Note that the logistic regression models the logit (i.e. log-odds) and in this case we would like to model the logit of a sample uu from the target data distribution instead of the noise distribution:
+Let $x$ be the target sample $∼P(x|C=1;θ)=p_θ(x) $and $x$ be the noise sample $∼P(x~|C=0)=q(x~)$. Note that the logistic regression models the `logit` (i.e. log-odds) and in this case we would like to model the `logit` of a sample $u$ from the target data distribution instead of the noise distribution:
+$$
+\ell_\theta(\mathbf{u}) = \log \frac{p_\theta(\mathbf{u})}{q(\mathbf{u})} = \log p_\theta(\mathbf{u}) - \log q(\mathbf{u})
+$$
+After converting `logits` into probabilities with sigmoid $σ(.)$ we can apply cross entropy loss:
 
-ℓθ(u)=logpθ(u)q(u)=logpθ(u)−logq(u)ℓθ(u)=log⁡pθ(u)q(u)=log⁡pθ(u)−log⁡q(u)
+$$
+\begin{aligned}
+\mathcal{L}_\text{NCE} &= - \frac{1}{N} \sum_{i=1}^N \big[ \log \sigma (\ell_\theta(\mathbf{x}_i)) + \log (1 - \sigma (\ell_\theta(\tilde{\mathbf{x}}_i))) \big] \\
+\text{ where }\sigma(\ell) &= \frac{1}{1 + \exp(-\ell)} = \frac{p_\theta}{p_\theta + q}
+\end{aligned}
+$$
 
-After converting logits into probabilities with sigmoid σ(.)σ(.), we can apply cross entropy loss:
-
-LNCE where σ(ℓ)=−1N∑i=1N[logσ(ℓθ(xi))+log(1−σ(ℓθ(x~i)))]=11+exp(−ℓ)=pθpθ+qLNCE=−1N∑i=1N[log⁡σ(ℓθ(xi))+log⁡(1−σ(ℓθ(x~i)))] where σ(ℓ)=11+exp⁡(−ℓ)=pθpθ+q
 
 Here I listed the original form of NCE loss which works with only one positive and one noise sample. In many follow-up works, contrastive loss incorporating multiple negative samples is also broadly referred to as NCE.
 
@@ -109,50 +105,69 @@ Here I listed the original form of NCE loss which works with only one positive a
 
 The **InfoNCE loss** in CPC ([Contrastive Predictive Coding](https://lilianweng.github.io/lil-log/2019/11/10/self-supervised-learning.html#contrastive-predictive-coding); [van den Oord, et al. 2018](https://arxiv.org/abs/1807.03748)), inspired by [NCE](https://lilianweng.github.io/lil-log/2021/05/31/contrastive-representation-learning.html#NCE), uses categorical cross-entropy loss to identify the positive sample amongst a set of unrelated noise samples.
 
-Given a context vector cc, the positive sample should be drawn from the conditional distribution p(x|c)p(x|c), while N−1N−1 negative samples are drawn from the proposal distribution p(x)p(x), independent from the context cc. For brevity, let us label all the samples as X={xi}Ni=1X={xi}i=1N among which only one of them xposxpos is a positive sample. The probability of we detecting the positive sample correctly is:
+Given a context vector $c$, the positive sample should be drawn from the conditional distribution $p(x|c)$, while $N−1$ negative samples are drawn from the proposal distribution $p(x)$, independent from the context $c$. For brevity, let us label all the samples as $X=\{ \mathbf{x}_i \}^N_{i=1}$ among which only one of them $x_{pos}$ is a positive sample. The probability of we detecting the positive sample correctly is:
 
-p(C=pos|X,c)=p(xpos|c)∏i=1,…,N;i≠posp(xi)∑Nj=1[p(xj|c)∏i=1,…,N;i≠jp(xi)]=p(xpos|c)p(xpos)∑Nj=1p(xj|c)p(xj)=f(xpos,c)∑Nj=1f(xj,c)p(C=pos|X,c)=p(xpos|c)∏i=1,…,N;i≠posp(xi)∑j=1N[p(xj|c)∏i=1,…,N;i≠jp(xi)]=p(xpos|c)p(xpos)∑j=1Np(xj|c)p(xj)=f(xpos,c)∑j=1Nf(xj,c)
+$$
+p(C=\texttt{pos} \vert X, \mathbf{c})
+= \frac{p(x_\texttt{pos} \vert \mathbf{c}) \prod_{i=1,\dots,N; i \neq \texttt{pos}} p(\mathbf{x}_i)}{\sum_{j=1}^N \big[ p(\mathbf{x}_j \vert \mathbf{c}) \prod_{i=1,\dots,N; i \neq j} p(\mathbf{x}_i) \big]}
+= \frac{ \frac{p(\mathbf{x}_\texttt{pos}\vert c)}{p(\mathbf{x}_\texttt{pos})} }{ \sum_{j=1}^N \frac{p(\mathbf{x}_j\vert \mathbf{c})}{p(\mathbf{x}_j)} }
+= \frac{f(\mathbf{x}_\texttt{pos}, \mathbf{c})}{ \sum_{j=1}^N f(\mathbf{x}_j, \mathbf{c}) }
+$$
 
-where the scoring function is f(x,c)∝p(x|c)p(x)f(x,c)∝p(x|c)p(x).
+
+where the scoring function is $f(\mathbf{x}, \mathbf{c}) \propto \frac{p(\mathbf{x}\vert\mathbf{c})}{p(\mathbf{x})}$
 
 The InfoNCE loss optimizes the negative log probability of classifying the positive sample correctly:
+$$
+\mathcal{L}_\text{InfoNCE} = - \mathbb{E} \Big[\log \frac{f(\mathbf{x}, \mathbf{c})}{\sum_{\mathbf{x}' \in X} f(\mathbf{x}', \mathbf{c})} \Big]
+$$
+The fact that$ f(x,c)$ estimates the density ratio $p(x|c)p(x)$ has a connection with mutual information optimization. To maximize the the mutual information between input $x$ and context vector $c$, we have:
 
-LInfoNCE=−E[logf(x,c)∑x′∈Xf(x′,c)]LInfoNCE=−E[log⁡f(x,c)∑x′∈Xf(x′,c)]
+$$
+I(\mathbf{x}; \mathbf{c}) = \sum_{\mathbf{x}, \mathbf{c}} p(\mathbf{x}, \mathbf{c}) \log\frac{p(\mathbf{x}, \mathbf{c})}{p(\mathbf{x})p(\mathbf{c})} = \sum_{\mathbf{x}, \mathbf{c}} p(\mathbf{x}, \mathbf{c})\log\color{blue}{\frac{p(\mathbf{x}|\mathbf{c})}{p(\mathbf{x})}}
+$$
 
-The fact that f(x,c)f(x,c) estimates the density ratio p(x|c)p(x)p(x|c)p(x) has a connection with mutual information optimization. To maximize the the mutual information between input xx and context vector cc, we have:
 
-I(x;c)=∑x,cp(x,c)logp(x,c)p(x)p(c)=∑x,cp(x,c)logp(x|c)p(x)I(x;c)=∑x,cp(x,c)log⁡p(x,c)p(x)p(c)=∑x,cp(x,c)log⁡p(x|c)p(x)
+where the logarithmic term in blue is estimated by $ f.$
 
-where the logarithmic term in blue is estimated by ff.
+For sequence prediction tasks, rather than modeling the future observations $p_k(\mathbf{x}_{t+k} \vert \mathbf{c}_t)$ directly (which could be fairly expensive), CPC models a density function to preserve the mutual information between $x_{t+k}$ and $ct$:
+$$
+f_k(\mathbf{x}_{t+k}, \mathbf{c}_t) = \exp(\mathbf{z}_{t+k}^\top \mathbf{W}_k \mathbf{c}_t) \propto \frac{p(\mathbf{x}_{t+k}\vert\mathbf{c}_t)}{p(\mathbf{x}_{t+k})}
+$$
 
-For sequence prediction tasks, rather than modeling the future observations pk(xt+k|ct)pk(xt+k|ct) directly (which could be fairly expensive), CPC models a density function to preserve the mutual information between xt+kxt+k and ctct:
 
-fk(xt+k,ct)=exp(z⊤t+kWkct)∝p(xt+k|ct)p(xt+k)fk(xt+k,ct)=exp⁡(zt+k⊤Wkct)∝p(xt+k|ct)p(xt+k)
-
-where zt+kzt+k is the encoded input and WkWk is a trainable weight matrix.
+where $z_{t+k}$ is the encoded input and $W_k$ is a trainable weight matrix.
 
 ### Soft-Nearest Neighbors Loss
 
 **Soft-Nearest Neighbors Loss** ([Salakhutdinov & Hinton 2007](http://proceedings.mlr.press/v2/salakhutdinov07a.html), [Frosst et al. 2019](https://arxiv.org/abs/1902.01889)) extends it to include multiple positive samples.
 
-Given a batch of samples, {xi,yi)}Bi=1{xi,yi)}i=1B where yiyi is the class label of xixi and a function f(.,.)f(.,.) for measuring similarity between two inputs, the soft nearest neighbor loss at temperature ττ is defined as:
+Given a batch of samples, $p_k(\mathbf{x}_{t+k} \vert \mathbf{c}_t)$ where $y_i$ is the class label of $x_i$ and a function $f(.,.)$ for measuring similarity between two inputs, the soft nearest neighbor loss at temperature $τ$ is defined as:
+$$
+\mathcal{L}_\text{snn} = -\frac{1}{B}\sum_{i=1}^B \log \frac{\sum_{i\neq j, y_i = y_j, j=1,\dots,B} \exp(- f(\mathbf{x}_i, \mathbf{x}_j) / \tau)}{\sum_{i\neq k, k=1,\dots,B} \exp(- f(\mathbf{x}_i, \mathbf{x}_k) /\tau)}
+$$
 
-Lsnn=−1B∑i=1Blog∑i≠j,yi=yj,j=1,…,Bexp(−f(xi,xj)/τ)∑i≠k,k=1,…,Bexp(−f(xi,xk)/τ)Lsnn=−1B∑i=1Blog⁡∑i≠j,yi=yj,j=1,…,Bexp⁡(−f(xi,xj)/τ)∑i≠k,k=1,…,Bexp⁡(−f(xi,xk)/τ)
 
-The temperature ττ is used for tuning how concentrated the features are in the representation space. For example, when at low temperature, the loss is dominated by the small distances and widely separated representations cannot contribute much and become irrelevant.
+The temperature $τ$ is used for tuning how concentrated the features are in the representation space. For example, when at low temperature, the loss is dominated by the small distances and widely separated representations cannot contribute much and become irrelevant.
 
 ### Common Setup
 
 We can loosen the definition of “classes” and “labels” in soft nearest-neighbor loss to create positive and negative sample pairs out of unsupervised data by, for example, applying data augmentation to create noise versions of original samples.
 
-Most recent studies follow the following definition of contrastive learning objective to incorporate multiple positive and negative samples. According to the setup in ([Wang & Isola 2020](https://arxiv.org/abs/2005.10242)), let pdata(.)pdata(.) be the data distribution over RnRn and ppos(.,.)ppos(.,.) be the distribution of positive pairs over Rn×nRn×n. These two distributions should satisfy:
+Most recent studies follow the following definition of contrastive learning objective to incorporate multiple positive and negative samples. According to the setup in ([Wang & Isola 2020](https://arxiv.org/abs/2005.10242)), let $p_{data}(.)$ be the data distribution over $R^n$ and $p_{pos}(.,.) $be the distribution of positive pairs over $R^{n×n}$ These two distributions should satisfy:
 
-- Symmetry: ∀x,x+,ppos(x,x+)=ppos(x+,x)∀x,x+,ppos(x,x+)=ppos(x+,x)
-- Matching marginal: ∀x,∫ppos(x,x+)dx+=pdata(x)∀x,∫ppos(x,x+)dx+=pdata(x)
+- Symmetry: $\forall \mathbf{x}, \mathbf{x}^+, p_\texttt{pos}(\mathbf{x}, \mathbf{x}^+) = p_\texttt{pos}(\mathbf{x}^+, \mathbf{x})$
+- Matching marginal: $\forall \mathbf{x}, \int p_\texttt{pos}(\mathbf{x}, \mathbf{x}^+) d\mathbf{x}^+ = p_\texttt{data}(\mathbf{x})$
+- To learn an encoder $f(x)$to learn a *L2-normalized feature vector*, the contrastive learning objective is:
 
-To learn an encoder f(x)f(x) to learn a *L2-normalized feature vector*, the contrastive learning objective is:
-
-Lcontrastive=E(x,x+)∼ppos,{x−i}Mi=1∼i.i.dpdata[−logexp(f(x)⊤f(x+)/τ)exp(f(x)⊤f(x+)/τ)+∑Mi=1exp(f(x)⊤f(x−i)/τ)]≈E(x,x+)∼ppos,{x−i}Mi=1∼i.i.dpdata[−f(x)⊤f(x+)/τ+log(∑i=1Mexp(f(x)⊤f(x−i)/τ))]=−1τE(x,x+)∼pposf(x)⊤f(x+)+Ex∼pdata[logEx−∼pdata[∑i=1Mexp(f(x)⊤f(x−i)/τ)]]; Assuming infinite negativesLcontrastive=E(x,x+)∼ppos,{xi−}i=1M∼i.i.dpdata[−log⁡exp⁡(f(x)⊤f(x+)/τ)exp⁡(f(x)⊤f(x+)/τ)+∑i=1Mexp⁡(f(x)⊤f(xi−)/τ)]≈E(x,x+)∼ppos,{xi−}i=1M∼i.i.dpdata[−f(x)⊤f(x+)/τ+log⁡(∑i=1Mexp⁡(f(x)⊤f(xi−)/τ))]; Assuming infinite negatives=−1τE(x,x+)∼pposf(x)⊤f(x+)+Ex∼pdata[log⁡Ex−∼pdata[∑i=1Mexp⁡(f(x)⊤f(xi−)/τ)]]
+$$
+\begin{aligned}
+\mathcal{L}_\text{contrastive}
+&= \mathbb{E}_{(\mathbf{x},\mathbf{x}^+)\sim p_\texttt{pos}, \{\mathbf{x}^-_i\}^M_{i=1} \overset{\text{i.i.d}}{\sim} p_\texttt{data} } \Big[ -\log\frac{\exp(f(\mathbf{x})^\top f(\mathbf{x}^+) / \tau)}{ \exp(f(\mathbf{x})^\top f(\mathbf{x}^+) / \tau) + \sum_{i=1}^M \exp(f(\mathbf{x})^\top f(\mathbf{x}_i^-) / \tau)} \Big] & \\
+&\approx \mathbb{E}_{(\mathbf{x},\mathbf{x}^+)\sim p_\texttt{pos}, \{\mathbf{x}^-_i\}^M_{i=1} \overset{\text{i.i.d}}{\sim} p_\texttt{data} }\Big[ - f(\mathbf{x})^\top f(\mathbf{x}^+) / \tau + \log\big(\sum_{i=1}^M \exp(f(\mathbf{x})^\top f(\mathbf{x}_i^-) / \tau)\big) \Big] & \scriptstyle{\text{; Assuming infinite negatives}} \\
+&= -\frac{1}{\tau}\mathbb{E}_{(\mathbf{x},\mathbf{x}^+)\sim p_\texttt{pos}}f(\mathbf{x})^\top f(\mathbf{x}^+) + \mathbb{E}_{ \mathbf{x} \sim p_\texttt{data}} \Big[ \log \mathbb{E}_{\mathbf{x}^- \sim p_\texttt{data}} \big[ \sum_{i=1}^M \exp(f(\mathbf{x})^\top f(\mathbf{x}_i^-) / \tau)\big] \Big] &
+\end{aligned}
+$$
 
 ## Key Ingredients
 
@@ -166,7 +181,7 @@ Using a large batch size during training is another key ingredient in the succes
 
 ### Hard Negative Mining
 
-Hard negative samples should have different labels from the anchor sample, but have embedding features very close to the anchor embedding. With access to ground truth labels in supervised datasets, it is easy to identify task-specific hard negatives. For example when learning sentence embedding, we can treat sentence pairs labelled as “contradiction” in NLI datasets as hard negative pairs (e.g. [SimCSE](https://lilianweng.github.io/lil-log/2021/05/31/contrastive-representation-learning.html#dropout-and-cutoff), or use top incorrect candidates returned by BM25 with most keywords matched as hard negative samples ([DPR](https://lilianweng.github.io/lil-log/2020/10/29/open-domain-question-answering.html#DPR); [Karpukhin et al., 2020](https://arxiv.org/abs/2004.04906)).
+Hard negative samples should have different labels from the anchor sample, but have embedding features very close to the anchor embedding. With access to ground truth labels in supervised datasets, it is easy to identify task-specific hard negatives. For example when learning sentence embedding, we can treat sentence pairs labeled as “contradiction” in `NLI` datasets as hard negative pairs (e.g. [SimCSE](https://lilianweng.github.io/lil-log/2021/05/31/contrastive-representation-learning.html#dropout-and-cutoff), or use top incorrect candidates returned by `BM25` with most keywords matched as hard negative samples ([DPR](https://lilianweng.github.io/lil-log/2020/10/29/open-domain-question-answering.html#DPR); [Karpukhin et al., 2020](https://arxiv.org/abs/2004.04906)).
 
 However, it becomes tricky to do hard negative mining when we want to remain unsupervised. Increasing training batch size or [memory bank](https://lilianweng.github.io/lil-log/2021/05/31/contrastive-representation-learning.html#memory-bank) size implicitly introduces more hard negative samples, but it leads to a heavy burden of large memory usage as a side effect.
 
@@ -176,42 +191,52 @@ However, it becomes tricky to do hard negative mining when we want to remain uns
 
 *Fig. 3. Sampling bias which refers to false negative samples in contrastive learning can lead to a big performance drop. (Image source: [Chuang et al., 2020](https://arxiv.org/abs/2007.00224))*
 
-Let us assume the probability of anchor class cc is uniform ρ(c)=η+ρ(c)=η+ and the probability of observing a different class is η−=1−η+η−=1−η+.
+Let us assume the probability of anchor class $c$ is uniform $ρ(c)=η+$ and the probability of observing a different class is $η−=1−η+$
 
-- The probability of observing a positive example for xx is p+x(x′)=p(x′|hx′=hx)px+(x′)=p(x′|hx′=hx);
-- The probability of getting a negative sample for xx is p−x(x′)=p(x′|hx′≠hx)px−(x′)=p(x′|hx′≠hx).
+- The probability of observing a positive example for $x$ is $p^+_x(\mathbf{x}')=p(\mathbf{x}'\vert \mathbf{h}_{x'}=\mathbf{h}_x)$;
+- The probability of getting a negative sample for $x$ is $p^-_x(\mathbf{x}')=p(\mathbf{x}'\vert \mathbf{h}_{x'}\neq\mathbf{h}_x)$.
 
-When we are sampling x−x− , we cannot access the true p−x(x−)px−(x−) and thus x−x− may be sampled from the (undesired) anchor class cc with probability η+η+. The actual sampling data distribution becomes:
+When we are sampling $x−$ , we cannot access the true $p^{−x}(x−)$and thus $x−$ may be sampled from the (undesired) anchor class cc with probability η+η+. The actual sampling data distribution becomes:
 
-p(x′)=η+p+x(x′)+η−p−x(x′)p(x′)=η+px+(x′)+η−px−(x′)
+$$
+p(\mathbf{x}') = \eta^+ p^+_x(\mathbf{x}') + \eta^- p_x^-(\mathbf{x}')
+$$
 
-Thus we can use p−x(x′)=(p(x′)−η+p+x(x′))/η−px−(x′)=(p(x′)−η+px+(x′))/η− for sampling x−x− to debias the loss. With NN samples {ui}Ni=1{ui}i=1N from pp and MM samples {vi}Mi=1{vi}i=1M from p+xpx+ , we can estimate the expectation of the second term Ex−∼p−x[exp(f(x)⊤f(x−))]Ex−∼px−[exp⁡(f(x)⊤f(x−))] in the denominator of contrastive learning loss:
-
-g(x,{ui}Ni=1,{vi}Mi=1)=max{1η−(1N∑i=1Nexp(f(x)⊤f(ui))−η+M∑i=1Mexp(f(x)⊤f(vi))),exp(−1/τ)}g(x,{ui}i=1N,{vi}i=1M)=max{1η−(1N∑i=1Nexp⁡(f(x)⊤f(ui))−η+M∑i=1Mexp⁡(f(x)⊤f(vi))),exp⁡(−1/τ)}
-
-where ττ is the temperature and exp(−1/τ)exp⁡(−1/τ) is the theoretical lower bound of Ex−∼p−x[exp(f(x)⊤f(x−))]Ex−∼px−[exp⁡(f(x)⊤f(x−))].
+Thus we can use $p^-_x(\mathbf{x}') = (p(\mathbf{x}') - \eta^+ p^+_x(\mathbf{x}'))/\eta^-$ for sampling $x−$ to debias the loss. With $N$ samples $\{\mathbf{u}_i\}^N_{i=1}$ from $p$ and $M$ samples $\{ \mathbf{v}_i \}_{i=1}^M$ from $p^+_{x}$ , we can estimate the expectation of the second term $\mathbb{E}_{\mathbf{x}^-\sim p^-_x}[\exp(f(\mathbf{x})^\top f(\mathbf{x}^-))]$ in the denominator of contrastive learning loss:
+$$
+g(\mathbf{x}, \{\mathbf{u}_i\}^N_{i=1}, \{\mathbf{v}_i\}_{i=1}^M) = \max\Big\{ \frac{1}{\eta^-}\Big( \frac{1}{N}\sum_{i=1}^N \exp(f(\mathbf{x})^\top f(\mathbf{u}_i)) - \frac{\eta^+}{M}\sum_{i=1}^M \exp(f(\mathbf{x})^\top f(\mathbf{v}_i)) \Big), \exp(-1/\tau) \Big\
+$$
+where $τ$ is the temperature and $exp(−1/τ)$is the theoretical lower bound of $\mathbb{E}_{\mathbf{x}^-\sim p^-_x}[\exp(f(\mathbf{x})^\top f(\mathbf{x}^-))]$
 
 The final debiased contrastive loss looks like:
+$$
+\mathcal{L}^{N,M}_\text{debias}(f) = \mathbb{E}_{\mathbf{x},\{\mathbf{u}_i\}^N_{i=1}\sim p;\;\mathbf{x}^+, \{\mathbf{v}_i\}_{i=1}^M\sim p^+} \Big[ -\log\frac{\exp(f(\mathbf{x})^\top f(\mathbf{x}^+)}{\exp(f(\mathbf{x})^\top f(\mathbf{x}^+) + N g(x,\{\mathbf{u}_i\}^N_{i=1}, \{\mathbf{v}_i\}_{i=1}^M)} \Big]
+$$
 
-LN,Mdebias(f)=Ex,{ui}Ni=1∼p;x+,{vi}Mi=1∼p+[−logexp(f(x)⊤f(x+)exp(f(x)⊤f(x+)+Ng(x,{ui}Ni=1,{vi}Mi=1)]LdebiasN,M(f)=Ex,{ui}i=1N∼p;x+,{vi}i=1M∼p+[−log⁡exp⁡(f(x)⊤f(x+)exp⁡(f(x)⊤f(x+)+Ng(x,{ui}i=1N,{vi}i=1M)]
 
 ![Debiased t-SNE vis](https://lilianweng.github.io/lil-log/assets/images/contrastive-debias-t-SNE.png)
 
 *Fig. 4. t-SNE visualization of learned representation with debiased contrastive learning. (Image source: [Chuang et al., 2020](https://arxiv.org/abs/2007.00224))*
 
-Following the above annotation, [Robinson et al. (2021)](https://arxiv.org/abs/2010.04592) modified the sampling probabilities to target at hard negatives by up-weighting the probability p−x(x′)px−(x′) to be proportional to its similarity to the anchor sample. The new sampling probability qβ(x−)qβ(x−) is:
+Following the above annotation, [Robinson et al. (2021)](https://arxiv.org/abs/2010.04592) modified the sampling probabilities to target at hard negatives by up-weighting the probability $p^{−x}(x′)$ to be proportional to its similarity to the anchor sample. The new sampling probability $q_{β}(x−)$ is:
+$$
+q_\beta(\mathbf{x}^-) \propto \exp(\beta f(\mathbf{x})^\top f(\mathbf{x}^-)) \cdot p(\mathbf{x}^-)
+$$
+where $β$ is a hyperparameter to tune.
 
-qβ(x−)∝exp(βf(x)⊤f(x−))⋅p(x−)qβ(x−)∝exp⁡(βf(x)⊤f(x−))⋅p(x−)
+We can estimate the second term in the denominator $\mathbb{E}_{\mathbf{x}^- \sim q_\beta} [\exp(f(\mathbf{x})^\top f(\mathbf{x}^-))] $using importance sampling where both the partition functions $Z_\beta, Z^+_\beta$ can be estimated empirically.
 
-where ββ is a hyperparameter to tune.
+$$
+\begin{aligned}
+\mathbb{E}_{\mathbf{u} \sim q_\beta} [\exp(f(\mathbf{x})^\top f(\mathbf{u}))] &= \mathbb{E}_{\mathbf{u} \sim p} [\frac{q_\beta}{p}\exp(f(\mathbf{x})^\top f(\mathbf{u}))] = \mathbb{E}_{\mathbf{u} \sim p} [\frac{1}{Z_\beta}\exp((\beta + 1)f(\mathbf{x})^\top f(\mathbf{u}))] \\
+\mathbb{E}_{\mathbf{v} \sim q^+_\beta} [\exp(f(\mathbf{x})^\top f(\mathbf{v}))] &= \mathbb{E}_{\mathbf{v} \sim p^+} [\frac{q^+_\beta}{p}\exp(f(\mathbf{x})^\top f(\mathbf{v}))] = \mathbb{E}_{\mathbf{v} \sim p} [\frac{1}{Z^+_\beta}\exp((\beta + 1)f(\mathbf{x})^\top f(\mathbf{v}))]
+\end{aligned}
+$$
 
-We can estimate the second term in the denominator Ex−∼qβ[exp(f(x)⊤f(x−))]Ex−∼qβ[exp⁡(f(x)⊤f(x−))] using importance sampling where both the partition functions Zβ,Z+βZβ,Zβ+ can be estimated empirically.
-
-Eu∼qβ[exp(f(x)⊤f(u))]Ev∼q+β[exp(f(x)⊤f(v))]=Eu∼p[qβpexp(f(x)⊤f(u))]=Eu∼p[1Zβexp((β+1)f(x)⊤f(u))]=Ev∼p+[q+βpexp(f(x)⊤f(v))]=Ev∼p[1Z+βexp((β+1)f(x)⊤f(v))]Eu∼qβ[exp⁡(f(x)⊤f(u))]=Eu∼p[qβpexp⁡(f(x)⊤f(u))]=Eu∼p[1Zβexp⁡((β+1)f(x)⊤f(u))]Ev∼qβ+[exp⁡(f(x)⊤f(v))]=Ev∼p+[qβ+pexp⁡(f(x)⊤f(v))]=Ev∼p[1Zβ+exp⁡((β+1)f(x)⊤f(v))]
 
 ![Pseudo code](https://lilianweng.github.io/lil-log/assets/images/contrastive-hard-negatives-code.png)
 
-*Fig. 5. Pseudo code for computing NCE loss, debiased contrastive loss, and hard negative sample objective when setting M=1M=1. (Image source: [Robinson et al., 2021](https://arxiv.org/abs/2010.04592) )*
+*Fig. 5. Pseudo code for computing NCE loss, debiased contrastive loss, and hard negative sample objective when setting M=1. (Image source: [Robinson et al., 2021](https://arxiv.org/abs/2010.04592) )*
 
 ## Vision: Image Embedding
 
@@ -239,15 +264,15 @@ Many frameworks are designed for learning good data augmentation strategies (i.e
 - [AutoAugment](https://lilianweng.github.io/lil-log/2019/05/05/domain-randomization.html#AutoAugment) ([Cubuk, et al. 2018](https://arxiv.org/abs/1805.09501)): Inspired by [NAS](https://lilianweng.github.io/lil-log/2020/08/06/neural-architecture-search.html), AutoAugment frames the problem of learning best data augmentation operations (i.e. shearing, rotation, invert, etc.) for image classification as an RL problem and looks for the combination that leads to the highest accuracy on the evaluation set.
 - RandAugment ([Cubuk et al., 2019](https://arxiv.org/abs/1909.13719)): RandAugment greatly reduces the search space of AutoAugment by controlling the magnitudes of different transformation operations with a single magnitude parameter.
 - PBA (Population based augmentation; [Ho et al., 2019](https://arxiv.org/abs/1905.05393)): PBA combined PBT ([Jaderberg et al, 2017](https://arxiv.org/abs/1711.09846)) with AutoAugment, using the evolutionary algorithm to train a population of children models in parallel to evolve the best augmentation strategies.
-- UDA (Unsupervised Data Augmentation; [Xie et al., 2019](https://arxiv.org/abs/1904.12848)): Among a set of possible augmentation strategies, UDA selects those to minimize the KL divergence between the predicted distribution over an unlabelled example and its unlabelled augmented version.
+- UDA (Unsupervised Data Augmentation; [Xie et al., 2019](https://arxiv.org/abs/1904.12848)): Among a set of possible augmentation strategies, UDA selects those to minimize the KL divergence between the predicted distribution over an unlabeled example and its unlabeled augmented version.
 
 #### Image Mixture
 
 Image mixture methods can construct new training examples from existing data points.
 
-- Mixup ([Zhang et al., 2018](https://arxiv.org/abs/1710.09412)): It runs global-level mixture by creating a weighted pixel-wise combination of two existing images I1I1 and I2I2: Imixup←αI1+(1−α)I2Imixup←αI1+(1−α)I2 and α∈[0,1]α∈[0,1].
-- Cutmix ([Yun et al., 2019](https://arxiv.org/abs/1905.04899)): Cutmix does region-level mixture by generating a new example by combining a local region of one image with the rest of the other image. Icutmix←Mb⊙I1+(1−Mb)⊙I2Icutmix←Mb⊙I1+(1−Mb)⊙I2, where Mb∈{0,1}IMb∈{0,1}I is a binary mask and ⊙⊙ is element-wise multiplication. It is equivalent to filling the cutout ([DeVries & Taylor 2017](https://arxiv.org/abs/1708.04552)) region with the same region from another image.
-- MoCHi (“Mixing of Contrastive Hard Negatives”; [Kalantidis et al. 2020](https://arxiv.org/abs/2010.01028)): Given a query qq, MoCHi maintains a queue of KK negative features Q={n1,…,nK}Q={n1,…,nK} and sorts these negative features by similarity to the query, q⊤nq⊤n, in descending order. The first NN items in the queue are considered as the hardest negatives, QNQN. Then synthetic hard examples can be generated by h=h~/∥h~∥h=h~/‖h~‖ where h~=αni+(1−α)njh~=αni+(1−α)nj and α∈(0,1)α∈(0,1). Even harder examples can be created by mixing with the query feature, h′=h′~/∥h′~∥2h′=h′~/‖h′~‖2 where h′~=βq+(1−β)njh′~=βq+(1−β)nj and β∈(0,0.5)β∈(0,0.5).
+- Mixup ([Zhang et al., 2018](https://arxiv.org/abs/1710.09412)): It runs global-level mixture by creating a weighted pixel-wise combination of two existing images $I_1$ and $I_2$: $I_\text{mixup} \gets \alpha I_1 + (1-\alpha) I_2$ and $α∈[0,1]$.
+- Cutmix ([Yun et al., 2019](https://arxiv.org/abs/1905.04899)): Cutmix does region-level mixture by generating a new example by combining a local region of one image with the rest of the other image. $I_\text{cutmix} \gets \mathbf{M}_b \odot I_1 + (1-\mathbf{M}_b) \odot I_2$, where $\mathbf{M}_b \in \{0, 1\}^I$ is a binary mask and ⊙⊙ is element-wise multiplication. It is equivalent to filling the cutout ([DeVries & Taylor 2017](https://arxiv.org/abs/1708.04552)) region with the same region from another image.
+- MoCHi (“Mixing of Contrastive Hard Negatives”; [Kalantidis et al. 2020](https://arxiv.org/abs/2010.01028)): Given a query $q$, MoCHi maintains a queue of $K$ negative features  $Q=\{\mathbf{n}_1, \dots, \mathbf{n}_K \}$and sorts these negative features by similarity to the query, $q^⊤n$, in descending order. The first $N$ items in the queue are considered as the hardest negatives, $Q_N$. Then synthetic hard examples can be generated by $\mathbf{h} = \tilde{\mathbf{h}} / \|\tilde{\mathbf{h}}\|$ where  $\tilde{\mathbf{h}} = \alpha\mathbf{n}_i + (1-\alpha) \mathbf{n}_j$and $α∈(0,1)$. Even harder examples can be created by mixing with the query feature,  $\mathbf{h}' = \tilde{\mathbf{h}'} / \|\tilde{\mathbf{h}'}\|_2$ where $\tilde{\mathbf{h}'} = \beta\mathbf{q} + (1-\beta) \mathbf{n}_j$ and $β∈(0,0.5)$.
 
 ### Parallel Augmentation
 
@@ -261,21 +286,27 @@ This category of approaches produce two noise versions of one anchor image and a
 
 *Fig. 6. A simple framework for contrastive learning of visual representations. (Image source: [Chen et al, 2020](https://arxiv.org/abs/2002.05709))*
 
-\1) Randomly sample a minibatch of NN samples and each sample is applied with two different data augmentation operations, resulting in 2N2N augmented samples in total.
+- 1) Randomly sample a minibatch of $N$ samples and each sample is applied with two different data augmentation operations, resulting in $2N$ augmented samples in total.
 
-x~i=t(x),x~j=t′(x),t,t′∼Tx~i=t(x),x~j=t′(x),t,t′∼T
+$\tilde{\mathbf{x}}_i = t(\mathbf{x}),\quad\tilde{\mathbf{x}}_j = t'(\mathbf{x}),\quad t, t' \sim \mathcal{T}$
 
-where two separate data augmentation operators, tt and t′t′, are sampled from the same family of augmentations TT. Data augmentation includes random crop, resize with random flip, color distortions, and Gaussian blur.
+where two separate data augmentation operators, $t$ and $t′$, are sampled from the same family of augmentations $T$. Data augmentation includes random crop, resize with random flip, color distortions, and Gaussian blur.
 
-\2) Given one positive pair, other 2(N−1)2(N−1) data points are treated as negative samples. The representation is produced by a base encoder f(.)f(.):
+- 2) Given one positive pair, other $2(N−1)$ data points are treated as negative samples. The representation is produced by a base encoder $f(.)$:
 
-hi=f(x~i),hj=f(x~j)hi=f(x~i),hj=f(x~j)
+$\mathbf{h}_i = f(\tilde{\mathbf{x}}_i),\quad \mathbf{h}_j = f(\tilde{\mathbf{x}}_j)$
 
-\3) The contrastive learning loss is defined using cosine similarity sim(.,.)sim(.,.). Note that the loss operates on an extra projection layer of the representation g(.)g(.) rather than on the representation space directly. But only the representation hh is used for downstream tasks.
+- 3) The contrastive learning loss is defined using cosine similarity $sim(.,.)$. Note that the loss operates on an extra projection layer of the representation $g(.)$ rather than on the representation space directly. But only the representation $h$ is used for downstream tasks.
+  $$
+  \begin{aligned}
+  \mathbf{z}_i &= g(\mathbf{h}_i),\quad
+  \mathbf{z}_j = g(\mathbf{h}_j) \\
+  \mathcal{L}_\text{SimCLR}^{(i,j)} &= - \log\frac{\exp(\text{sim}(\mathbf{z}_i, \mathbf{z}_j) / \tau)}{\sum_{k=1}^{2N} \mathbb{1}_{[k \neq i]} \exp(\text{sim}(\mathbf{z}_i, \mathbf{z}_k) / \tau)}
+  \end{aligned}
+  $$
 
-ziL(i,j)SimCLR=g(hi),zj=g(hj)=−logexp(sim(zi,zj)/τ)∑2Nk=11[k≠i]exp(sim(zi,zk)/τ)zi=g(hi),zj=g(hj)LSimCLR(i,j)=−log⁡exp⁡(sim(zi,zj)/τ)∑k=12N1[k≠i]exp⁡(sim(zi,zk)/τ)
 
-where 1[k≠i]1[k≠i] is an indicator function: 1 if k≠ik≠i 0 otherwise.
+where $\mathbb{1}_{[k \neq i]}$ is an indicator function: 1 if $k≠i$ 0 otherwise.
 
 SimCLR needs a large batch size to incorporate enough negative samples to achieve good performance.
 
@@ -291,11 +322,18 @@ SimCLR needs a large batch size to incorporate enough negative samples to achiev
 
 *Fig. 8. Illustration of Barlow Twins learning pipeline. (Image source: [Zbontar et al. 2021](https://arxiv.org/abs/2103.03230)).*
 
-Let CC be a cross-correlation matrix computed between outputs from two identical networks along the batch dimension. CC is a square matrix with the size same as the feature network’s output dimensionality. Each entry in the matrix CijCij is the cosine similarity between network output vector dimension at index i,ji,j and batch index bb, zAb,izb,iA and zBb,jzb,jB, with a value between -1 (i.e. perfect anti-correlation) and 1 (i.e. perfect correlation).
+Let $C$ be a cross-correlation matrix computed between outputs from two identical networks along the batch dimension. $C$ is a square matrix with the size same as the feature network’s output dimensionality. Each entry in the matrix $C_{ij}$ is the cosine similarity between network output vector dimension at index $i,j$ and batch index $b, \mathbf{z}_{b,i}^A , \mathbf{z}_{b,j}^B$, with a value between -1 (i.e. perfect anti-correlation) and 1 (i.e. perfect correlation).
 
-LBTwhere Cij=∑i(1−Cii)2invariance term+λ∑i∑i≠jC2ijredundancy reduction term=∑bzAb,izBb,j∑b(zAb,i)2−−−−−−−−√∑b(zBb,j)2−−−−−−−−√LBT=∑i(1−Cii)2⏟invariance term+λ∑i∑i≠jCij2⏟redundancy reduction termwhere Cij=∑bzb,iAzb,jB∑b(zb,iA)2∑b(zb,jB)2
+$$
+\begin{aligned}
+\mathcal{L}_\text{BT} &= \underbrace{\sum_i (1-\mathcal{C}_{ii})^2}_\text{invariance term} + \lambda \underbrace{\sum_i\sum_{i\neq j} \mathcal{C}_{ij}^2}_\text{redundancy reduction term} \\ \text{where } \mathcal{C}_{ij} &= \frac{\sum_b \mathbf{z}^A_{b,i} \mathbf{z}^B_{b,j}}{\sqrt{\sum_b (\mathbf{z}^A_{b,i})^2}\sqrt{\sum_b (\mathbf{z}^B_{b,j})^2}}
+\end{aligned}
+$$
 
-Barlow Twins is competitive with SOTA methods for self-supervised learning. It naturally avoids trivial constants (i.e. collapsed representations), and is robust to different training batch sizes.
+
+Barlow Twins is competitive with SOTA methods for self-supervised learning. It naturally avoids trivial constants (i.e. collapsed representations), and is robust to different training bat\begin{aligned}
+\mathcal{L}_\text{BT} &= \underbrace{\sum_i (1-\mathcal{C}_{ii})^2}_\text{invariance term} + \lambda \underbrace{\sum_i\sum_{i\neq j} \mathcal{C}_{ij}^2}_\text{redundancy reduction term} \\ \text{where } \mathcal{C}_{ij} &= \frac{\sum_b \mathbf{z}^A_{b,i} \mathbf{z}^B_{b,j}}{\sqrt{\sum_b (\mathbf{z}^A_{b,i})^2}\sqrt{\sum_b (\mathbf{z}^B_{b,j})^2}}
+\end{aligned}ch sizes.
 
 ![Barlow twins algo](https://lilianweng.github.io/lil-log/assets/images/barlow-twins-algo.png)
 
@@ -303,37 +341,37 @@ Barlow Twins is competitive with SOTA methods for self-supervised learning. It n
 
 #### BYOL
 
-Different from the above approaches, interestingly, **BYOL** (Bootstrap Your Own Latent; [Grill, et al 2020](https://arxiv.org/abs/2006.07733)) claims to achieve a new state-of-the-art results *without using egative samples*. It relies on two neural networks, referred to as *online* and *target* networks that interact and learn from each other. The target network (parameterized by ξξ) has the same architecture as the online one (parameterized by θθ), but with polyak averaged weights, ξ←τξ+(1−τ)θξ←τξ+(1−τ)θ.
+Different from the above approaches, interestingly, **BYOL** (Bootstrap Your Own Latent; [Grill, et al 2020](https://arxiv.org/abs/2006.07733)) claims to achieve a new state-of-the-art results *without using egative samples*. It relies on two neural networks, referred to as *online* and *target* networks that interact and learn from each other. The target network (parameterized by $ξ$) has the same architecture as the online one (parameterized by $θ$), but with polyak averaged weights, $\xi \leftarrow \tau \xi + (1-\tau) \theta$.
 
-The goal is to learn a presentation yy that can be used in downstream tasks. The online network parameterized by θθ contains:
+The goal is to learn a presentation $y$ that can be used in downstream tasks. The online network parameterized by $θ$ contains:
 
-- An encoder fθfθ;
-- A projector gθgθ;
-- A predictor qθqθ.
+- An encoder $fθ$;
+- A projector $gθ$;
+- A predictor $qθ$.
 
-The target network has the same network architecture, but with different parameter ξξ, updated by polyak averaging θθ: ξ←τξ+(1−τ)θξ←τξ+(1−τ)θ.
+The target network has the same network architecture, but with different parameter $ξ$, updated by polyak averaging $θ: ξ←τξ+(1−τ)θ$.
 
 ![BYOL](https://lilianweng.github.io/lil-log/assets/images/BYOL.png)
 
-*Fig. 10. The model architecture of BYOL. After training, we only care about fθfθ for producing representation, y=fθ(x)y=fθ(x), and everything else is discarded. sgsg means stop gradient. (Image source: [Grill, et al 2020](https://arxiv.org/abs/2006.07733))*
+*Fig. 10. The model architecture of BYOL. After training, we only care about $fθ$  for producing representation, $y=f_θ(x)$, and everything else is discarded. $sg$ means stop gradient. (Image source: [Grill, et al 2020](https://arxiv.org/abs/2006.07733))*
 
 Given an image xx, the BYOL loss is constructed as follows:
 
-- Create two augmented views: v=t(x);v′=t′(x)v=t(x);v′=t′(x) with augmentations sampled t∼T,t′∼T′t∼T,t′∼T′;
-- Then they are encoded into representations, yθ=fθ(v),y′=fξ(v′)yθ=fθ(v),y′=fξ(v′);
-- Then they are projected into latent variables, zθ=gθ(yθ),z′=gξ(y′)zθ=gθ(yθ),z′=gξ(y′);
-- The online network outputs a prediction qθ(zθ)qθ(zθ);
-- Both qθ(zθ)qθ(zθ) and z′z′ are L2-normalized, giving us q¯θ(zθ)=qθ(zθ)/∥qθ(zθ)∥q¯θ(zθ)=qθ(zθ)/‖qθ(zθ)‖ and z′¯=z′/∥z′∥z′¯=z′/‖z′‖;
-- The loss LBYOLθLθBYOL is MSE between L2-normalized prediction q¯θ(z)q¯θ(z) and z′¯z′¯;
-- The other symmetric loss L~BYOLθL~θBYOL can be generated by switching v′v′ and vv; that is, feeding v′v′ to online network and vv to target network.
-- The final loss is LBYOLθ+L~BYOLθLθBYOL+L~θBYOL and only parameters θθ are optimized.
+- Create two augmented views: $v=t(x);v′=t′(x)$ with augmentations sampled $t∼T,t′∼T′$;
+- Then they are encoded into representations, $yθ=fθ(v),y′=fξ(v′)$;
+- Then they are projected into latent variables, $\mathbf{z}_\theta=g_\theta(\mathbf{y}_\theta), \mathbf{z}'=g_\xi(\mathbf{y}')$;
+- The online network outputs a prediction $qθ(zθ)$;
+- Both $qθ(zθ)$ and $z′$ are $L2-normalized$, giving us $\bar{q}_\theta(\mathbf{z}_\theta) = q_\theta(\mathbf{z}_\theta) / \| q_\theta(\mathbf{z}_\theta) \|$and $\bar{\mathbf{z}'} = \mathbf{z}' / \|\mathbf{z}'\|$;
+- The loss $\mathcal{L}^\text{BYOL}_\theta$ is MSE between L2-normalized prediction $q¯θ(z)$ and $z′¯$;
+- The other symmetric loss $\tilde{\mathcal{L}}^\text{BYOL}_\theta$ can be generated by switching $v′$ and $v$; that is, feeding $v′$ to online network and $v$ to target network.
+- The final loss is $\mathcal{L}^\text{BYOL}_\theta + \tilde{\mathcal{L}}^\text{BYOL}_\theta$ and only parameters $θ$ are optimized.
 
 Unlike most popular contrastive learning based approaches, BYOL does not use negative pairs. Most bootstrapping approaches rely on pseudo-labels or cluster indices, but BYOL directly boostrapps the latent representation.
 
 It is quite interesting and surprising that *without* negative samples, BYOL still works well. Later I ran into this [post](https://untitled-ai.github.io/understanding-self-supervised-contrastive-learning.html) by Abe Fetterman & Josh Albrecht, they highlighted two surprising findings while they were trying to reproduce BYOL:
 
 1. BYOL generally performs no better than random when *batch normalization is removed*.
-2. The presence of batch normalization implicitly causes a form of contrastive learning. They believe that using negative samples is important for avoiding model collapse (i.e. what if you use all-zeros representation for every data point?). Batch normalization injects dependency on negative samples *inexplicitly* because no matter how similar a batch of inputs are, the values are re-distributed (spread out ∼N(0,1∼N(0,1) and therefore batch normalization prevents model collapse. Strongly recommend you to read the [full article](https://untitled-ai.github.io/understanding-self-supervised-contrastive-learning.html) if you are working in this area.
+2. The presence of batch normalization implicitly causes a form of contrastive learning. They believe that using negative samples is important for avoiding model collapse (i.e. what if you use all-zeros representation for every data point?). Batch normalization injects dependency on negative samples *inexplicitly* because no matter how similar a batch of inputs are, the values are re-distributed (spread out $∼N(0,10)$ and therefore batch normalization prevents model collapse. Strongly recommend you to read the [full article](https://untitled-ai.github.io/understanding-self-supervised-contrastive-learning.html) if you are working in this area.
 
 ### Memory Bank
 
@@ -347,33 +385,46 @@ Computing embeddings for a large number of negative samples in every batch is ex
 
 *Fig. 11. The training pipeline of instance-level contrastive learning. The learned embedding is L2-normalized. (Image source: [Wu et al, 2018](https://arxiv.org/abs/1805.01978v1))*
 
-Let v=fθ(x)v=fθ(x) be an embedding function to learn and the vector is normalized to have ∥v∥=1‖v‖=1. A non-parametric classifier predicts the probability of a sample vv belonging to class ii with a temperature parameter ττ:
+Let $v=f_θ(x)$ be an embedding function to learn and the vector is normalized to have $∥v∥=1$. A non-parametric classifier predicts the probability of a sample $v$ belonging to class ii with a temperature parameter $τ$:
 
-P(C=i|v)=exp(v⊤iv/τ)∑nj=1exp(v⊤jv/τ)P(C=i|v)=exp⁡(vi⊤v/τ)∑j=1nexp⁡(vj⊤v/τ)
+$$
+P(C=i\vert \mathbf{v}) = \frac{\exp(\mathbf{v}_i^\top \mathbf{v} / \tau)}{\sum_{j=1}^n \exp(\mathbf{v}_j^\top \mathbf{v} / \tau)}
+$$
 
-Instead of computing the representations for all the samples every time, they implement an **Memory Bank** for storing sample representation in the database from past iterations. Let V={vi}V={vi} be the memory bank and fi=fθ(xi)fi=fθ(xi) be the feature generated by forwarding the network. We can use the representation from the memory bank vivi instead of the feature forwarded from the network fifi when comparing pairwise similarity.
 
-The denominator theoretically requires access to the representations of all the samples, but that is too expensive in practice. Instead we can estimate it via Monte Carlo approximation using a random subset of MM indices {jk}Mk=1{jk}k=1M.
+Instead of computing the representations for all the samples every time, they implement an **Memory Bank** for storing sample representation in the database from past iterations. Let $V={v_i}$ be the memory bank and $f_i=f_θ(x_i)$ be the feature generated by forwarding the network. We can use the representation from the memory bank $v_i$ instead of the feature forwarded from the network $f_i$ when comparing pairwise similarity.
 
-P(i|v)=exp(v⊤fi/τ)∑Nj=1exp(v⊤jfi/τ)≃exp(v⊤fi/τ)NM∑Mk=1exp(v⊤jkfi/τ)P(i|v)=exp⁡(v⊤fi/τ)∑j=1Nexp⁡(vj⊤fi/τ)≃exp⁡(v⊤fi/τ)NM∑k=1Mexp⁡(vjk⊤fi/τ)
+The denominator theoretically requires access to the representations of all the samples, but that is too expensive in practice. Instead we can estimate it via Monte Carlo approximation using a random subset of MM indices $\{j_k\}_{k=1}^M$.
 
+
+$$
+P(i\vert \mathbf{v})
+= \frac{\exp(\mathbf{v}^\top \mathbf{f}_i / \tau)}{\sum_{j=1}^N \exp(\mathbf{v}_j^\top \mathbf{f}_i / \tau)}
+\simeq \frac{\exp(\mathbf{v}^\top \mathbf{f}_i / \tau)}{\frac{N}{M} \sum_{k=1}^M \exp(\mathbf{v}_{j_k}^\top \mathbf{f}_i / \tau)}
+$$
 Because there is only one instance per class, the training is unstable and fluctuates a lot. To improve the training smoothness, they introduced an extra term for positive samples in the loss function based on the [proximal optimization method](https://web.stanford.edu/~boyd/papers/prox_algs.html). The final NCE loss objective looks like:
 
-Linstanceh(i,v)=−EPd[logh(i,v(t−1)i)−λ∥v(t)i−v(t−1)i∥22]−MEPn[log(1−h(i,v′(t−1))]=P(i|v)P(i|v)+MPn(i) where the noise distribution is uniform Pn=1/NLinstance=−EPd[log⁡h(i,vi(t−1))−λ‖vi(t)−vi(t−1)‖22]−MEPn[log⁡(1−h(i,v′(t−1))]h(i,v)=P(i|v)P(i|v)+MPn(i) where the noise distribution is uniform Pn=1/N
-
-where {v(t−1)}{v(t−1)} are embeddings stored in the memory bank from the previous iteration. The difference between iterations ∥v(t)i−v(t−1)i∥22‖vi(t)−vi(t−1)‖22 will gradually vanish as the learned embedding converges.
+$$
+\begin{aligned}
+\mathcal{L}_\text{instance} &= - \mathbb{E}_{P_d}\big[\log h(i, \mathbf{v}^{(t-1)}_i) - \lambda \|\mathbf{v}^{(t)}_i - \mathbf{v}^{(t-1)}_i\|^2_2\big] - M\mathbb{E}_{P_n}\big[\log(1 - h(i, \mathbf{v}'^{(t-1)})\big] \\
+h(i, \mathbf{v}) &= \frac{P(i\vert\mathbf{v})}{P(i\vert\mathbf{v}) + MP_n(i)} \text{ where the noise distribution is uniform }P_n = 1/N
+\end{aligned}
+$$
+where ${v^{(t−1)}}$ are embeddings stored in the memory bank from the previous iteration. The difference between iterations  $\|\mathbf{v}^{(t)}_i - \mathbf{v}^{(t-1)}_i\|^2_2$will gradually vanish as the learned embedding converges.
 
 #### MoCo & MoCo-V2
 
 **Momentum Contrast** (**MoCo**; [He et al, 2019](https://arxiv.org/abs/1911.05722)) provides a framework of unsupervised learning visual representation as a *dynamic dictionary look-up*. The dictionary is structured as a large FIFO queue of encoded representations of data samples.
 
-Given a query sample xqxq, we get a query representation through an encoder q=fq(xq)q=fq(xq). A list of key representations {k1,k2,…}{k1,k2,…} in the dictionary are encoded by a momentum encoder ki=fk(xki)ki=fk(xik). Let’s assume among them there is a single *positive* key k+k+ in the dictionary that matches qq. In the paper, they create k+k+ using a noise copy of xqxq with different [augmentation](https://lilianweng.github.io/lil-log/2021/05/31/contrastive-representation-learning.html#image-augmentations). Then the [InfoNCE](https://lilianweng.github.io/lil-log/2021/05/31/contrastive-representation-learning.html#infonce) contrastive loss with temperature ττ is used over one positive and N−1N−1 negative samples:
+Given a query sample $x_q$, we get a query representation through an encoder $q=f_q(x_q)$. A list of key representations ${k1,k2,…}$ in the dictionary are encoded by a momentum encoder $k_i=f_k(x^k_i)$. Let’s assume among them there is a single *positive* key $k^+$ in the dictionary that matches $q$ . In the paper, they create $k^+$ using a noise copy of $x^q$ with different [augmentation](https://lilianweng.github.io/lil-log/2021/05/31/contrastive-representation-learning.html#image-augmentations). Then the [InfoNCE](https://lilianweng.github.io/lil-log/2021/05/31/contrastive-representation-learning.html#infonce) contrastive loss with temperature $τ$ is used over one positive and $N−1$ negative samples:
+$$
+\mathcal{L}_\text{MoCo} = - \log \frac{\exp(\mathbf{q} \cdot \mathbf{k}^+ / \tau)}{\sum_{i=1}^N \exp(\mathbf{q} \cdot \mathbf{k}_i / \tau)}
+$$
 
-LMoCo=−logexp(q⋅k+/τ)∑Ni=1exp(q⋅ki/τ)LMoCo=−log⁡exp⁡(q⋅k+/τ)∑i=1Nexp⁡(q⋅ki/τ)
 
 Compared to the [memory bank](https://lilianweng.github.io/lil-log/2021/05/31/contrastive-representation-learning.html#instance-discrimination-with-memoy-bank), a queue-based dictionary in MoCo enables us to reuse representations of immediately preceding mini-batches of data.
 
-The MoCo dictionary is not differentiable as a queue, so we cannot rely on back-propagation to update the key encoder fkfk. One naive way might be to use the same encoder for both fqfq and fkfk. Differently, MoCo proposed to use a momentum-based update with a momentum coefficient m∈[0,1)m∈[0,1). Say, the parameters of fqfq and fkfk are labeled as θqθq and θkθk, respectively.
+The MoCo dictionary is not differentiable as a queue, so we cannot rely on back-propagation to update the key encoder $f_k$. One naive way might be to use the same encoder for both $f_q$ and $f_k$. Differently, MoCo proposed to use a momentum-based update with a momentum coefficient $m∈[0,1)$. Say, the parameters of $f_q$ and $f_k$ are labeled as θqθq and θkθk, respectively.
 
 θk←mθk+(1−m)θqθk←mθk+(1−m)θq
 
@@ -644,20 +695,6 @@ The unsupervised numbers on SentEval with IS-BERT outperforms most of the unsupe
 ![IS-BERT SentEval results](https://lilianweng.github.io/lil-log/assets/images/IS-BERT-SentEval.png)
 
 *Fig. 30. The performance of IS-BERT on the SentEval benchmark. (Image source: [Zhang et al. 2020](https://arxiv.org/abs/2009.12061))*
-
-------
-
-Cited as:
-
-```
-@article{weng2021contrastive,
-  title   = "Contrastive Representation Learning",
-  author  = "Weng, Lilian",
-  journal = "lilianweng.github.io/lil-log",
-  year    = "2021",
-  url     = "https://lilianweng.github.io/lil-log/2021/05/31/contrastive-representation-learning.html"
-}
-```
 
 ## References
 
