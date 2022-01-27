@@ -18,7 +18,7 @@ def iou(bbox1, bbox2):
     xx2 = min(bbox1[2], bbox2[2])
     yy2 = min(bbox1[3], bbox2[3])
 
-    interArea = max(0, xx2 - xx1) * max(0, yy2 - yy1)
+    interArea = max(0, xx2 - xx1 + 1) * max(0, yy2 - yy1 + 1)
     bbox1_area = (bbox1[2] - bbox1[0] + 1) * (bbox1[3] - bbox1[1] + 1)
     bbox2_area = (bbox2[2] - bbox2[0] + 1) * (bbox2[3] - bbox2[1] + 1)
     iou = interArea / float(bbox1_area + bbox2_area - interArea)
