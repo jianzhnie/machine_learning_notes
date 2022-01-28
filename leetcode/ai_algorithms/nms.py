@@ -2,6 +2,10 @@ import numpy as np
 
 
 def NMS(dets, thresh):
+    """伪代码
+    1. 根据得分对 bboxs 进行降序排列， 得到排序的 order
+    2. 计算 得分最高的 bbox 和剩余的 bboxes
+    """
 
     # x1、y1、x2、y2、以及score赋值
     # （x1、y1）（x2、y2）为box的左上和右下角标
