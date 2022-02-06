@@ -1,5 +1,5 @@
 [flake8]
-ignore = W504
+ignore = W504, W503
 max-line-length = 160
 show-source = False
 exclude =
