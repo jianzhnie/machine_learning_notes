@@ -126,3 +126,12 @@ class BilateralLinkList(object):
     def find(self, item):
         """查找元素是否存在."""
         return item in self.items()
+
+    def search(self, item):
+
+        cur = self.head
+        while cur is not None:
+            if cur.item == item:
+                return True
+            cur = cur.next
+        return False
