@@ -7,7 +7,7 @@ class Node(object):
         self.next = None
 
 
-class SingleCycleLinkList(object):
+class SingleLinkList(object):
     def __init__(self):
         self.head = None
 
@@ -17,13 +17,9 @@ class SingleCycleLinkList(object):
 
     def length(self):
         """链表长度."""
-        # 链表为空
-        if self.is_empty():
-            return 0
-        # 链表不为空
-        count = 1
+        count = 0
         cur = self.head
-        while cur.next != self.head:
+        while cur is not None:
             count += 1
             # 指针下移
             cur = cur.next
@@ -44,17 +40,8 @@ class SingleCycleLinkList(object):
     def add(self, item):
         """头部添加结点."""
         node = Node(item)
-        if self.is_empty():  # 为空
-            self.head = node
-            node.next = self.head
-        else:
-            # 添加结点指向head
-            node.next = self.head
-            cur = self.head
-            # 移动结点，将末尾的结点指向node
-            while cur.next != self.head:
-                cur = cur.next
-            cur.next = node
+        # 为空
+        node.next = self.head
         # 修改 head 指向新结点
         self.head = node
 
@@ -63,16 +50,13 @@ class SingleCycleLinkList(object):
         node = Node(item)
         if self.is_empty():  # 为空
             self.head = node
-            node.next = self.head
         else:
             # 寻找尾部
             cur = self.head
-            while cur.next != self.head:
+            while cur.next is not None:
                 cur = cur.next
             # 尾部指针指向新结点
             cur.next = node
-            # 新结点指针指向head
-            node.next = self.head
 
     def insert(self, index, item):
         """指定位置添加结点."""
@@ -100,27 +84,17 @@ class SingleCycleLinkList(object):
         pre = Node
         # 第一个元素为需要删除的元素
         if cur.item == item:
-            # 链表不止一个元素
-            if cur.next != self.head:
-                while cur.next != self.head:
-                    cur = cur.next
-                # 尾结点指向 头部结点的下一结点
-                cur.next = self.head.next
-                # 调整头部结点
-                self.head = self.head.next
-            else:
-                # 只有一个元素
-                self.head = None
+            self.head = self.head.next
+            return
         else:
             # 不是第一个元素
             pre = self.head
-            while cur.next != self.head:
+            while cur.next is not None:
                 if cur.item == item:
                     # 删除
                     pre.next = cur.next
                     return True
                 else:
-
                     pre = cur  # 记录前一个指针
                     cur = cur.next  # 调整指针位置
         # 当删除元素在末尾
