@@ -1,7 +1,7 @@
 '''
 Author: jianzhnie
 Date: 2022-02-10 10:00:34
-LastEditTime: 2022-02-11 16:43:17
+LastEditTime: 2022-02-11 17:31:12
 LastEditors: jianzhnie
 Description:
 '''
@@ -75,6 +75,18 @@ def canCompleteCircuit(gas, cost):
         else:
             i = i + cnt + 1
     return -1
+
+
+def findPeek(nums):
+    n = len(nums)
+    res = []
+    if n < 2:
+        return res
+    else:
+        for i in range(1, n - 1):
+            if nums[i] < nums[i + 1] and nums[i] > nums[i - 1]:
+                res.append(i)
+    return res
 
 
 if __name__ == '__main__':
