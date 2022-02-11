@@ -7,6 +7,8 @@ Description:
 
 '''
 
+from typing import List
+
 
 def calculateMinimumHP(nums):
     m = len(nums)
@@ -29,6 +31,19 @@ def calculateMinimumHP(nums):
         return None
     else:
         return -res
+
+
+def calculateMinimumHP2(dungeon: List[List[int]]) -> int:
+    n, m = len(dungeon), len(dungeon[0])
+    BIG = 10**9
+    dp = [[BIG] * (m + 1) for _ in range(n + 1)]
+    dp[n][m - 1] = dp[n - 1][m] = 1
+    for i in range(n - 1, -1, -1):
+        for j in range(m - 1, -1, -1):
+            minn = min(dp[i + 1][j], dp[i][j + 1])
+            dp[i][j] = max(minn - dungeon[i][j], 1)
+
+    return dp[0][0]
 
 
 if __name__ == '__main__':
