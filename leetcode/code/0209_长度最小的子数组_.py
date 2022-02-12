@@ -1,7 +1,7 @@
 '''
 Author: jianzhnie
 Date: 2022-02-12 17:32:55
-LastEditTime: 2022-02-12 17:48:58
+LastEditTime: 2022-02-12 18:01:32
 LastEditors: jianzhnie
 Description:
 
@@ -13,12 +13,14 @@ def minSubArray(nums, target):
     flag = False
     res = float('inf')
     inner_sum = 0
+    if not nums:
+        return 0
     for i in range(n - 1):
         for j in range(i + 1, n):
-            inner_sum = sum(nums[i:j])
+            inner_sum = sum(nums[i:(j + 1)])
             if inner_sum >= target:
                 flag = True
-                res = min(res, j - i)
+                res = min(res, j - i + 1)
     return res if flag else 0
 
 
