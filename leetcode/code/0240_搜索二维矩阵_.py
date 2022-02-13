@@ -15,47 +15,13 @@ def binarySearch(nums, target):
 
 
 class Solution(object):
-    def searchMatrix(self, matrix, target):
-        """
-        :type matrix: List[List[int]]
-        :type target: int
-        :rtype: bool
-        """
-        m = len(matrix)
-        n = len(matrix[0])
-
-        left = 0
-        right = m
-        up = 0
-        down = n
-
-        while left < right and up < down:
-            midL = left + (right - left) // 2
-            midH = up + (down - up) // 2
-
-            if matrix[up][midL] == target:
-                return True
-            elif matrix[up][midL] < target:
-                left = midL + 1
-            else:
-                right = midL - 1
-
-            if matrix[left][midH] == target:
-                return True
-            elif matrix[left][midH] < target:
-                up = midH + 1
-            else:
-                down = midH - 1
-
-        return matrix[midH][midL]
-
-    def searchMatrix2(self, matrix: List[List[int]], target: int) -> bool:
+    def searchMatrix(self, matrix: List[List[int]], target: int) -> bool:
         for numlist in matrix:
             if binarySearch(numlist, target):
                 return True
         return False
 
-    def searchMatrix3(self, matrix: List[List[int]], target: int) -> bool:
+    def searchMatrix2(self, matrix: List[List[int]], target: int) -> bool:
         m, n = len(matrix), len(matrix[0])
         x, y = 0, n - 1
         while x < m and y >= 0:
