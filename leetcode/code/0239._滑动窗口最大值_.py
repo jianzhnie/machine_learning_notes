@@ -1,12 +1,12 @@
 from typing import List
 
 
-def rob(nums, kernel):
+def maxSlidingWindow(nums, kernel):
     n = len(nums)
     res = []
     for i in range(0, n - kernel + 1):
         res.append(max(nums[i:i + kernel]))
-    return max(kernel)
+    return res
 
 
 class MyQueue:  # 单调队列（从大到小
