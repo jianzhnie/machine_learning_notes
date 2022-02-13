@@ -1,6 +1,12 @@
 from typing import List
 
 
+def findKthLargest(nums, k):
+    n = len(nums)
+    nums.sort()
+    return nums[n - k]
+
+
 class Solution:
     def findKthLargest(self, nums: List[int], k: int) -> int:
         n = len(nums)
