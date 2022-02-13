@@ -1,6 +1,19 @@
 from typing import List
 
 
+def binarySearch(nums, target):
+    left, right = 0, len(nums)
+    while left < right:
+        mid = left + (right - left) // 2
+        if nums[mid] == target:
+            return True
+        elif nums[mid] < target:
+            left = mid + 1
+        else:
+            right = mid - 1
+    return False
+
+
 class Solution(object):
     def searchMatrix(self, matrix, target):
         """
@@ -36,22 +49,22 @@ class Solution(object):
 
         return matrix[midH][midL]
 
-    def binarySearch(self, nums, target):
-        left, right = 0, len(nums)
-        while left < right:
-            mid = left + (right - left) // 2
-            if nums[mid] == target:
+    def searchMatrix2(self, matrix: List[List[int]], target: int) -> bool:
+        for numlist in matrix:
+            if binarySearch(numlist, target):
                 return True
-            elif nums[mid] < target:
-                left = mid + 1
-            else:
-                right = mid - 1
         return False
 
-    def binarysearchMatrix(self, matrix: List[List[int]], target: int) -> bool:
-        for numlist in matrix:
-            if self.binarySearch(numlist, target):
+    def searchMatrix3(self, matrix: List[List[int]], target: int) -> bool:
+        m, n = len(matrix), len(matrix[0])
+        x, y = 0, n - 1
+        while x < m and y >= 0:
+            if matrix[x][y] == target:
                 return True
+            if matrix[x][y] > target:
+                y -= 1
+            else:
+                x += 1
         return False
 
 
