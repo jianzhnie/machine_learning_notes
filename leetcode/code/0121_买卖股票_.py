@@ -1,7 +1,7 @@
 '''
 Author: jianzhnie
 Date: 2022-02-10 11:29:16
-LastEditTime: 2022-02-11 10:32:19
+LastEditTime: 2022-02-15 09:04:59
 LastEditors: jianzhnie
 Description:
 
@@ -78,6 +78,41 @@ def maxProfit5(prices: List[int]) -> int:
     return sell2
 
 
+# 可以进行多次交易
+# 包含冷冻期
+def maxProfit6(prices: List[int]) -> int:
+    if not prices:
+        return 0
+
+    n = len(prices)
+    # f[i][0]: 手上持有股票的最大收益
+    # f[i][1]: 手上不持有股票，并且处于冷冻期中的累计最大收益
+    # f[i][2]: 手上不持有股票，并且不在冷冻期中的累计最大收益
+    f = [[-prices[0], 0, 0]] + [[0] * 3 for _ in range(n - 1)]
+    for i in range(1, n):
+        f[i][0] = max(f[i - 1][0], f[i - 1][2] - prices[i])
+        f[i][1] = f[i - 1][0] + prices[i]
+        f[i][2] = max(f[i - 1][1], f[i - 1][2])
+
+    return max(f[n - 1][1], f[n - 1][2])
+
+
+def maxProfit7(prices):
+    if not prices:
+        return 0
+
+    n = len(prices)
+    f = [[-prices[0], 0, 0]] + [[0] * 3 for _ in range(n - 1)]
+
+    for i in range(1, n):
+        f[i][0] = max(f[i - 1][0], f[i - 1][2] - prices[i])
+        f[i][1] = f[i - 1][0] + prices[i]
+        f[i][2] = max(f[i - 1][1], f[i - 1][2])
+
+    print(f)
+    return max(f[n - 1][1], f[n - 1][2])
+
+
 if __name__ == '__main__':
     nums = [1, 5, 10, 4, 5, 12, 3, 2, 7, 5]
     res = maxProfit3(nums)
@@ -87,4 +122,6 @@ if __name__ == '__main__':
     res = maxProfit4(nums)
     print(res)
     res = maxProfit5(nums)
+    print(res)
+    res = maxProfit7(nums)
     print(res)

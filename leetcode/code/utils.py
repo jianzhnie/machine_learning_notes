@@ -1,7 +1,7 @@
 '''
 Author: jianzhnie
 Date: 2022-02-10 10:00:34
-LastEditTime: 2022-02-11 17:31:12
+LastEditTime: 2022-02-15 12:08:37
 LastEditors: jianzhnie
 Description:
 '''
@@ -89,11 +89,21 @@ def findPeek(nums):
     return res
 
 
+def countRangSum(nums, lower, upper):
+    newbounds = set([x for x in nums if x <= upper and x >= lower])
+    n = len(newbounds)
+    if n < 2:
+        return 0
+    else:
+        return n * (n - 1) / 2
+
+
 if __name__ == '__main__':
     nums1 = [[4, 2, 1], [1, 3, 2], [3, 2, 1]]
     res = minPathSum(nums1)
-    print(res)
     gas = [2, 3, 4]
     cost = [3, 4, 3]
     res = canCompleteCircuit(gas, cost)
+    nums = [1, 2, 1, 2, 3]
+    res = countRangSum(nums, 0, 2)
     print(res)
