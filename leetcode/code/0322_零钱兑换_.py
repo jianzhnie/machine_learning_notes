@@ -54,6 +54,14 @@ class Solution:
                 dp[i] = min(dp[i], dp[i - j] + 1)
         return dp[amount] if dp[amount] != float('inf') else -1
 
+    def change(self, coins, amount):
+        dp = [0] * (amount + 1)
+        dp[0] = 1
+        for i in coins:
+            for j in range(i, amount + 1):
+                dp[i] += dp[j - i]
+        return dp[amount]
+
 
 if __name__ == '__main__':
     coins = [1, 2, 5]
