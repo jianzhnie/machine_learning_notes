@@ -19,15 +19,6 @@ class Solution:
                 return hashtable[target - val], idx
         return None
 
-    def twosum2(self, nums, target):
-        hashtable = {}
-        for idx, val in enumerate(nums):
-            if target - val not in hashtable:
-                hashtable[val] = idx
-            else:
-                return [hashtable[target - val], idx]
-        return None
-
 
 if __name__ == '__main__':
     solution = Solution()
