@@ -1,9 +1,6 @@
 # CLIP
 
-
-## CLIP
-
-### 1、动机
+## 1、动机
 
 虽然深度学习在CV领域很成功，但是：
 
@@ -11,7 +8,7 @@
 -  standard vision models are good at one task and one task only, and require significant effort to adapt to a new task; （模型在单一任务上优秀，但难迁移到新任务）
 - and models that perform well on benchmarks have disappointingly poor performance on stress tests, casting doubt on the entire deep learning approach to computer vision.（泛化性和[鲁棒性](https://www.zhihu.com/search?q=鲁棒性&search_source=Entity&hybrid_search_source=Entity&hybrid_search_extra={"sourceType"%3A"answer"%2C"sourceId"%3A1669790824})堪忧）
 
-### 2、CLIP解决方案概述
+## 2、CLIP解决方案概述
 
 a、互联网上较容易搜集到大量成对的文本和图像，对于任何一个图像文本对而言，文本其实可以认为是图像的标签。也就是说，互联网上天然就存在已经标注好的CV数据集，这解决了“动机”中的问题a。
 
