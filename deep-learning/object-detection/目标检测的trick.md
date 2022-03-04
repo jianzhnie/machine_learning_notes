@@ -6,4 +6,4 @@
 - loss(focal loss, ghm loss...)
 - postprocess(soft-nms, model ensemble)
 - solver(cosine, cycle, 指数)
-- sampling(weighted sampling，比如libra-rcnn里面的)
+- sampling(weighted sampling，比如libra-rcnn里面的
