@@ -2,6 +2,12 @@
 
 # Yolov3
 
+
+
+**【简介】** 相比于YOLO v2，YOLO v3 将特征提取网络换成了DarkNet53，对象分类用Logistic取代了Softmax，并借鉴了FPN思想采用三条分支（三个不同尺度/不同感受野的特征图）去检测具有不同尺寸的对象。
+
+
+
 ## 网络结构图
 
 ![img](yolo.assets/v2-af7f12ef17655870f1c65b17878525f1_b.jpg)
@@ -130,6 +136,15 @@ x、y、w、h使用MSE作为损失函数，也可以使用smooth L1 loss（出�
 
 
 # YoloV4
+
+**【简介】** 相比于YOLO v3，**YOLO v4[15]**
+
+-  在输入端，引入了Mosaic数据增强、cmBN、SAT自对抗训练；‘
+
+- 在特征提取网络上，YOLO v4将各种新的方式结合起来，包括CSPDarknet53，Mish激活函数，Dropblock；
+- 在检测头中，引入了SPP模块，借鉴了FPN+PAN结构；
+- 在预测阶段，采用了CIOU作为网络的边界框损失函数，同时将NMS换成了DIOU_NMS等等。
+- 总体来说，YOLO v4具有极大的工程意义，将近年来深度学习领域最新研究的tricks都引入到了YOLO v4做验证测试，在YOLO v3的基础上更进一大步。
 
 ##  网络结构图
 
