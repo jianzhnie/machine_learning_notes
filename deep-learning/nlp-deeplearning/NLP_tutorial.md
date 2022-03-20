@@ -30,8 +30,6 @@
 
 ### [BERT](https://arxiv.org/pdf/1810.04805.pdf)
 
-
-
 ## **Documentation**
 
 - [Character RNN classification with pyTorch](https://pytorch.org/tutorials/intermediate/char_rnn_classification_tutorial.html)
