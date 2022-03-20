@@ -8,7 +8,7 @@ def NMS(dets, thresh):
     """
 
     # x1、y1、x2、y2、以及score赋值
-    # （x1、y1）（x2、y2）为box的左上和右下角标
+    # x1、y1）（x2、y2）为box的左上和右下角标
     x1 = dets[:, 0]
     y1 = dets[:, 1]
     x2 = dets[:, 2]
