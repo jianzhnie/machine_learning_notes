@@ -10,8 +10,6 @@ self-attention有时候也被称为intra-attention,是在单个句子不同位�
 
 对于编码得到的z，Decoder每次解码生成一个符号，直到生成完整的输出序列:(y1,…,ym) 。对于每一步解码，模型都是自回归的，即在生成下一个符号时将先前生成的符号作为附加输入。
 
-
-
 ```python
 import numpy as np
 import torch
@@ -56,8 +54,6 @@ class Generator(nn.Module):
     def forward(self, x):
         return F.log_softmax(self.proj(x), dim=-1)
 ```
-
-
 
 transformer的整体结构如下图所示，在encoder和decoder中都使用了self-attention，point-wise和全连接层。encoder和decoder的大致结构分别如下图的左半部分和右半部分所示：
 
@@ -200,8 +196,6 @@ plt.imshow(subsequent_mask(20)[0])
 
 [![png](https://jozeelin.github.io/2019/10/21/The-Annotated-Transformer-Harvard/image/transformer_23_1.png)](https://jozeelin.github.io/2019/10/21/The-Annotated-Transformer-Harvard/image/transformer_23_1.png)python
 
-
-
 ## attention
 
 attention函数可以将query和一组key-value对映射到输出，其中query、key、value和输出都是向量。输出是值的加权和，其中分配给每个value的权重由query与相应key的兼容函数计算。
@@ -247,8 +241,6 @@ $W*i^K \in \mathbb{R}^{d*{model} \times d_k}$
 $W*i^V \in \mathbb{R}^{d*{model} \times d_v}$
 
 $W^O \in \mathbb{R}^{hd*v\times d*{model}}$
-
-
 
 我们的工作中使用h=8个head并行的attention，对每一个head来说有$d*k=d_v=d*{model}/h=64$，总计算量与完整维度的单个Head的Attention很相近。
 
